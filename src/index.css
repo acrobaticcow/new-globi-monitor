@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply xl:text-lg;
+  }
+  body {
+    @apply text-neutral-100;
+  }
+}
+
+@layer components {
+  .navbar--icon {
+    @apply w-6 h-6 stroke-neutral-200 hover:stroke-neutral-100 transition-colors ease-in;
+  }
+}
