@@ -66,15 +66,19 @@ function App() {
         <div className="h-3/5 gap-6 w-full flex overflow-x-auto">
           <img
             className="w-1/2 aspect-auto"
-            src="/public/img/Home.png"
+            src="../public/img/Home.png"
             alt=""
           />
           <img
             className="w-1/2 aspect-auto"
-            src="/public/img/Home.png"
+            src="../public/img/Home.png"
             alt=""
           />
-          <img src="/public/img/Home.png" alt="" />
+          <img
+            className="w-1/2 aspect-auto"
+            src="../public/img/Home.png"
+            alt=""
+          />
         </div>
         <div className="h-2/5 grid grid-cols-12 w-full bg-neutral-200">
           <div className="col-span-3 flex items-center justify-center h-full bg-biloba-flower-500">
@@ -84,59 +88,59 @@ function App() {
             <div className="flex w-full h-1/2 flex-nowrap">
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
             </div>
             <div className="flex w-full h-1/2 flex-nowrap">
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
               <img
                 className="w-1/4 object-contain aspect-auto"
-                src="/public/img/Home(2).png"
+                src="../public/img/Home(2).png"
                 alt=""
               />
             </div>
