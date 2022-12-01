@@ -9,10 +9,29 @@
   body {
     @apply text-neutral-100;
   }
+  /* width */
+  ::-webkit-scrollbar {
+    @apply w-[10px] h-[10px];
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    @apply bg-neutral-300;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neutral-500;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 
 @layer components {
-  .navbar--icon {
-    @apply w-6 h-6 stroke-neutral-200 hover:stroke-neutral-100 transition-colors ease-in;
+  .sidebar--icon {
+    @apply w-6 h-6 stroke-neutral-200 hover:stroke-neutral-100 transition-all active:scale-90 duration-75 ease-in;
   }
 }
