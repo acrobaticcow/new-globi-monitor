@@ -104,3 +104,96 @@ export const SettingIcon: FC<IconProps> = ({ className, style }) => {
     </svg>
   );
 };
+export const WarningTriangleIcon: FC<IconProps> = ({ className, style }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      style={style}
+      className={className}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+      />
+    </svg>
+  );
+};
+
+export const MdiHumanHandsdown: FC<IconProps> = ({ className, style }) => {
+  return (
+    <svg
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      className={className}
+      style={style}
+    >
+      <path
+        fill="currentColor"
+        d="M12 1a2 2 0 0 0-2 2c0 1.11.89 2 2 2c1.11 0 2-.89 2-2a2 2 0 0 0-2-2m-2 5c-.27 0-.5.11-.69.28H9.3L4 11.59L5.42 13L9 9.41V22h2v-7h2v7h2V9.41L18.58 13L20 11.59l-5.3-5.31c-.2-.17-.43-.28-.7-.28"
+      ></path>
+    </svg>
+  );
+};
+
+export const FluentTemperature16Filled: FC<IconProps> = ({
+  className,
+  style,
+}) => {
+  return (
+    <svg
+      width="1em"
+      height="1em"
+      viewBox="0 0 16 16"
+      className={className}
+      style={style}
+    >
+      <path
+        fill="currentColor"
+        d="M4.5 3.5a3 3 0 1 1 6 0v5.354a4 4 0 1 1-6 0V3.5Zm3-1.5A1.5 1.5 0 0 0 6 3.5v5.975l-.23.22a2.5 2.5 0 1 0 3.461 0L9 9.476V3.5A1.5 1.5 0 0 0 7.5 2ZM8 6a.5.5 0 0 0-1 0v4.085a1.5 1.5 0 1 0 1 0V6Z"
+      ></path>
+    </svg>
+  );
+};
+export const HalfBatteryIcon: FC<IconProps> = ({ className, style }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      style={style}
+      className={className}
+    >
+      <path d="M4.5 9.75a.75.75 0 00-.75.75V15c0 .414.336.75.75.75h6.75A.75.75 0 0012 15v-4.5a.75.75 0 00-.75-.75H4.5z" />
+      <path
+        fillRule="evenodd"
+        d="M3.75 6.75a3 3 0 00-3 3v6a3 3 0 003 3h15a3 3 0 003-3v-.037c.856-.174 1.5-.93 1.5-1.838v-2.25c0-.907-.644-1.664-1.5-1.837V9.75a3 3 0 00-3-3h-15zm15 1.5a1.5 1.5 0 011.5 1.5v6a1.5 1.5 0 01-1.5 1.5h-15a1.5 1.5 0 01-1.5-1.5v-6a1.5 1.5 0 011.5-1.5h15z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+};
+export const CheckCircleIcon: FC<IconProps> = ({ className, style }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      style={style}
+      className={className}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  );
+};

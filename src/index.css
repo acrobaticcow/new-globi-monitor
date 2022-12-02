@@ -11,7 +11,7 @@
   }
   /* width */
   ::-webkit-scrollbar {
-    @apply w-[10px] h-[10px];
+    @apply h-[10px] w-[10px];
   }
 
   /* Track */
@@ -32,6 +32,6 @@
 
 @layer components {
   .sidebar--icon {
-    @apply w-6 h-6 stroke-neutral-200 hover:stroke-neutral-100 transition-all active:scale-90 duration-75 ease-in;
+    @apply h-6 w-6 stroke-neutral-200 transition-all duration-75 ease-in hover:stroke-neutral-100 active:scale-90;
   }
 }
