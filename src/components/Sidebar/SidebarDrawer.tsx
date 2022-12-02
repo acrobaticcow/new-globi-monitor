@@ -20,9 +20,9 @@ const SideBarDrawer: FC<SideBarDrawerProps> = ({
     createPortal(
       <div
         className={clsx(
-          "w-80 fixed inset-y-0 duration-200 shadow-lg shadow-neutral-400 ease-in-out transform -left-0 h-full",
+          "fixed inset-y-0 -left-0 z-10 h-full w-80 transform shadow-lg shadow-neutral-400 duration-200 ease-in-out",
           className,
-          isActive ? "translate-x-14 block" : "-translate-x-full"
+          isActive ? "block translate-x-14" : "-translate-x-full"
         )}
       >
         {children}

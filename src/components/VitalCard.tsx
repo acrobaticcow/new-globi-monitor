@@ -1,6 +1,5 @@
 import { clsx } from "clsx";
-import { Children, FunctionComponent, ReactNode, useRef } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import {
   DataMonitoring,
   Ecg_param,
@@ -10,13 +9,6 @@ import {
 } from "../models/realtime.models";
 import { cloneChild } from "../utils/function";
 import { HeartIcon, WarningIcon } from "./Icons";
-
-/**
- * Chuyển từ độc c sang độ f
- */
-const cToF = (c: number | undefined) => {
-  return c ? Number((c * 1.8 + 32).toFixed(1)) : 0;
-};
 
 /**
  * Các loại thẻ
@@ -49,18 +41,6 @@ export interface EcgVitalProps {
    */
   rangeHr: Followers_Data["patient_detail"]["hr_range"] | undefined;
 }
-interface EcgState {
-  resp: number;
-  hr: number;
-}
-interface VitalContentProps {
-  value: NumberOrUndefined;
-  maxRange: NumberOrUndefined;
-  minRange: NumberOrUndefined;
-  direction?: "left" | "right";
-  isDivider?: boolean;
-  variant?: Variant;
-}
 interface VitalContentMonitorProps {
   maxRange: NumberOrUndefined;
   minRange: NumberOrUndefined;
@@ -73,12 +53,14 @@ interface VitalContentMonitorProps {
   param: number[];
   className?: string;
   onChange?: (...args: any) => any;
+  showRange?: boolean;
 }
 interface VitalMonitorBlockProps {
   type: Variant;
   children: any;
   warnings: string[];
   Icon?: any;
+  isPing?: boolean;
 }
 export interface TempVitalProps {
   data: Temp_param;
@@ -117,22 +99,17 @@ export interface NibpVitalProps {
    */
   rangeNibp: Followers_Data["patient_detail"]["nibp_range"] | undefined;
 }
-interface NipbState {
-  sys: number;
-  dia: number;
-  map: number;
-}
 
 const varTxtLight = (variant: Variant | undefined) => {
   switch (variant) {
     case "ecg":
       return "text-biloba-flower-300/80";
     case "nibp":
-      return "text-pale-prim-500";
+      return "text-pale-prim-400/80";
     case "spo2":
       return "text-spray-200/80";
     case "temp":
-      return "text-pale-prim-50";
+      return "text-pale-prim-100/90";
     default:
       return "text-neutral-100";
   }
@@ -165,58 +142,73 @@ const varFillBase = (variant: Variant | undefined) => {
       return "fill-neutral-100";
   }
 };
-const varTxtMed = (variant: Variant | undefined) => {
-  switch (variant) {
-    case "ecg":
-      return "text-biloba-flower-500";
-    case "nibp":
-      return "text-pale-prim-700";
-    case "spo2":
-      return "text-spray-500";
-    case "temp":
-      return "text-pale-prim-200";
-    default:
-      return "text-neutral-100";
-  }
-};
 
 export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
   children,
   type,
   warnings,
   Icon,
+  isPing,
 }) => {
   const [warning, setWarning] = useState("");
+  const [ping, setPing] = useState(false);
   const onChange = (i: number) => {
     const warning = i <= warnings.length ? warnings[i] : undefined;
     warning && setWarning(warning);
   };
+  useEffect(() => {
+    setPing(true);
+    const timeoutId = setTimeout(() => {
+      setPing(false);
+    }, 500);
+
+    return () => {
+      setPing(false);
+      clearTimeout(timeoutId);
+    };
+  }, [warning]);
 
   return (
-    <div className="relative w-full max-w-[573px] bg-grad-4 rounded-2xl p-0.5">
-      <div className="rounded-2xl px-4 py-3 bg-grad-2 shadow-inner shadow-neutral-500">
-        <h1
-          className={clsx("font-medium text-2xl uppercase", varTxtLight(type))}
-        >
-          {type}
-        </h1>
-        {cloneChild({
-          children: Icon,
-          props: {
-            className: `${Icon?.props.className} ${varTxtBase(
-              type
-            )} ${varFillBase(type)}`,
-          },
-        })}
-        <div id="main-content" className="grid grid-cols-2">
+    <div className="relative w-full max-w-[573px] rounded  px-2">
+      <div className="rounded-2xl border-neutral-200 shadow-inner shadow-neutral-500">
+        <div className="mb-0.5 flex items-center justify-between">
+          <h1
+            className={clsx("text-sm font-medium uppercase", varTxtLight(type))}
+          >
+            {type}
+          </h1>
+          {Icon && (
+            <div className="flex">
+              {isPing &&
+                cloneChild({
+                  children: Icon,
+                  props: {
+                    className: clsx(
+                      "absolute inline-flex opacity-75 ",
+                      Icon.props.className,
+                      varTxtBase(type),
+                      ping && "animate-ping"
+                    ),
+                  },
+                })}
+              {cloneChild({
+                children: Icon,
+                props: {
+                  className: `${Icon?.props.className} ${varTxtBase(type)} `,
+                },
+              })}
+            </div>
+          )}
+        </div>
+        <div id="main-content" className="mb-1 grid grid-cols-2">
           {cloneChild({
             children,
             props: { onChange, variant: type },
           })}
         </div>
         <div className="flex items-center">
-          <WarningIcon className="inline-block h-6 w-6 stroke-neutral-200" />
-          <span className="mx-4 text-lg font-semibold">{warning}</span>
+          <WarningIcon className="inline-block h-5 w-5 stroke-neutral-200" />
+          <span className="mx-4 text-xs font-semibold">{warning}</span>
         </div>
       </div>
     </div>
@@ -236,6 +228,7 @@ export const VitalMonitorContent: FunctionComponent<
   title,
   onChange,
   className,
+  showRange = true,
 }) => {
   const [value, setValue] = useState<number | undefined>();
   useEffect(() => {
@@ -265,29 +258,43 @@ export const VitalMonitorContent: FunctionComponent<
   const rangeClsx = useMemo(
     () =>
       clsx(
-        "text-xl",
+        "text-xs",
         varTxtLight(variant),
         direction === "right" ? "text-end" : "text-start"
       ),
     []
   );
-  console.log(variant);
   return (
     <div className={className}>
-      <VitalHeader sub={sub} title={title} />
-      <div id="item" className="ml-auto mb-5 flex gap-x-2">
-        <div
-          className={clsx(
-            "self-end mb-1.5",
-            direction !== "right" && "order-last"
-          )}
-        >
-          <p className={rangeClsx}>{maxRange ?? "--"}</p>
-          <p className={rangeClsx}>{minRange ?? "--"}</p>
-        </div>
+      {!!title ? (
+        <h3 className={clsx("mb-1 text-start text-xs font-semibold uppercase")}>
+          {title ?? ""}
+          <span
+            className={clsx(
+              "ml-1.5 font-sans text-[9px] font-normal normal-case not-italic text-neutral-200"
+            )}
+          >
+            {sub ?? ""}
+          </span>
+        </h3>
+      ) : (
+        <></>
+      )}
+      <div id="item" className="ml-auto flex gap-x-2">
+        {showRange && (
+          <div
+            className={clsx(
+              "mb-1.5 self-end",
+              direction !== "right" && "order-last"
+            )}
+          >
+            <p className={rangeClsx}>{maxRange ?? "--"}</p>
+            <p className={rangeClsx}>{minRange ?? "--"}</p>
+          </div>
+        )}
         <p
           className={clsx(
-            "font-inter font-semibold text-7.25xl leading-none",
+            "font-inter text-4xl font-semibold leading-none",
             varTxtBase(variant)
             //   direction === "right" ? "order-2" : "order-1"
           )}
@@ -300,327 +307,5 @@ export const VitalMonitorContent: FunctionComponent<
         </p>
       </div>
     </div>
-  );
-};
-const VitalCardWrapper: FunctionComponent<WrapperProps> = ({
-  children,
-  type,
-  warning,
-}) => {
-  return (
-    <div className="relative w-full max-w-[573px] bg-grad-4 rounded-2xl p-0.5">
-      <div className="rounded-2xl px-4 py-3 bg-grad-2 shadow-inner shadow-neutral-500">
-        <h1
-          className={clsx("font-medium text-2xl uppercase", varTxtLight(type))}
-        >
-          {type}
-        </h1>
-        <HeartIcon
-          className={clsx(
-            "w-7 h-7 ml-auto",
-            varTxtBase(type),
-            varFillBase(type)
-          )}
-        />
-        {children}
-        <p className="mx-4 mt-3 text-end text-sm">{warning}</p>
-      </div>
-    </div>
-  );
-};
-const VitalHeader: FunctionComponent<VitalHeaderProps> = ({
-  sub,
-  title,
-  variant,
-}) => {
-  return !!title ? (
-    <h3 className={clsx("mb-2 text-start text-xl font-semibold uppercase")}>
-      {title ?? ""}
-      <span
-        className={clsx(
-          "ml-3 text-neutral-200 font-sans text-xs font-normal not-italic"
-        )}
-      >
-        {sub ?? ""}
-      </span>
-    </h3>
-  ) : (
-    <></>
-  );
-};
-const VitalContentBlock: FunctionComponent<VitalContentProps> = ({
-  value,
-  maxRange,
-  minRange,
-  isDivider,
-  direction = "right",
-  variant,
-}) => {
-  const rangeClsx = useMemo(
-    () =>
-      clsx(
-        "text-xl",
-        varTxtLight(variant),
-        direction === "right" ? "text-end" : "text-start"
-      ),
-    []
-  );
-  return (
-    <div id="item" className="ml-auto mb-5 flex gap-x-2">
-      <div
-        className={clsx(
-          "self-end mb-1.5",
-          direction !== "right" && "order-last"
-        )}
-      >
-        <p className={rangeClsx}>{maxRange ?? "--"}</p>
-        <p className={rangeClsx}>{minRange ?? "--"}</p>
-      </div>
-      <p
-        className={clsx(
-          "font-inter font-semibold text-7.25xl leading-none",
-          varTxtBase(variant)
-          //   direction === "right" ? "order-2" : "order-1"
-        )}
-      >
-        {value ?? "--"}
-
-        {!!isDivider && <span className={clsx(varTxtLight(variant))}>/</span>}
-      </p>
-    </div>
-  );
-};
-/**
- * Thẻ thông số Ecg
- */
-export const EcgVital: FunctionComponent<EcgVitalProps> = ({
-  data,
-  rangeResp,
-  rangeHr,
-}) => {
-  const [ecgData, setEcgData] = useState<EcgState | undefined>();
-  const [warning, setWarning] = useState("");
-  useEffect(() => {
-    const timeoutIdArr: number[] = [];
-    /**
-     * thời gian mà thẻ sẽ thay đổi thông số
-     * @example time = [2,2,1] thì sau 2s sẽ cập nhật thông số mới
-     * và 2s sau nữa cập nhật thông số mới và cuối cùng là 1s sau cập nhật thông số
-     */
-    const beats = data.time.map((el, i, arr) => {
-      if (i === 0) return 0;
-      return el - arr[i - 1];
-    });
-    for (let i = 0; i < beats.length; i++) {
-      const beat = beats[i];
-      let timeoutId = setTimeout(() => {
-        setEcgData(() => ({ resp: data.resp[i], hr: data.hr[i] }));
-        /**
-         * trích xuất warning, nếu không có thì là undefined
-         */
-        const warning =
-          i <= data?.warning.length ? data?.warning[i] : undefined;
-        warning && setWarning(warning);
-      }, 1000 * i * beat);
-      timeoutIdArr.push(timeoutId);
-    }
-    return () => timeoutIdArr.forEach((el) => clearTimeout(el));
-  }, []);
-
-  return (
-    <VitalCardWrapper type={"ecg"} warning={warning}>
-      <div id="main-content" className="grid h-fit grid-cols-2 gap-2">
-        <div>
-          <VitalHeader sub="bbm" title="resp" variant="ecg" />
-          <VitalContentBlock
-            maxRange={rangeResp?.max}
-            minRange={rangeResp?.min}
-            value={ecgData?.resp}
-            variant="ecg"
-          />
-        </div>
-        <div>
-          <VitalHeader sub="bbm" title="hr" variant="ecg" />
-          <VitalContentBlock
-            maxRange={rangeHr?.max}
-            minRange={rangeHr?.min}
-            value={ecgData?.hr}
-            direction="left"
-            variant="ecg"
-          />
-        </div>
-      </div>
-    </VitalCardWrapper>
-  );
-};
-
-export const NibpVital: FunctionComponent<NibpVitalProps> = ({
-  data,
-  rangeNibp,
-}) => {
-  const [nibpData, setNipbData] = useState<NipbState | undefined>();
-  const [warning, setWarning] = useState("");
-  useEffect(() => {
-    const timeoutIdArr: number[] = [];
-    const beats = data.time.map((el, i, arr) => {
-      if (i === 0) return 0;
-      return el - arr[i - 1];
-    });
-    for (let i = 0; i < beats.length; i++) {
-      const beat = beats[i];
-      let timeoutId = setTimeout(() => {
-        setNipbData(() => ({
-          sys: data.sys[i],
-          dia: data.dia[i],
-          map: data.map[i],
-        }));
-        const warning =
-          i <= data?.warning.length ? data?.warning[i] : undefined;
-        warning && setWarning(warning);
-      }, 1000 * i * beat);
-      timeoutIdArr.push(timeoutId);
-    }
-    return () => timeoutIdArr.forEach((el) => clearTimeout(el));
-  }, []);
-
-  return (
-    <VitalCardWrapper warning={warning} type="nibp">
-      <div id="main-content" className="grid h-fit grid-cols-2 gap-2 px-6 ">
-        <div>
-          <VitalHeader sub="mmHg" title="sys/dia" variant="nibp" />
-          <div
-            id="grid--cols-2__center"
-            className="grid grid-cols-2 place-items-center gap-5"
-          >
-            <VitalContentBlock
-              maxRange={rangeNibp?.high_pressure.max}
-              minRange={rangeNibp?.high_pressure.min}
-              value={nibpData?.sys}
-              variant="nibp"
-              isDivider
-            />
-            <VitalContentBlock
-              maxRange={rangeNibp?.low_pressure.max}
-              minRange={rangeNibp?.low_pressure.min}
-              value={nibpData?.dia}
-              variant="nibp"
-              direction="left"
-            />
-          </div>
-        </div>
-        <div>
-          <VitalHeader sub="mmHg" title="sys/dia" variant="nibp" />
-          <VitalContentBlock
-            maxRange={rangeNibp?.high_pressure.max}
-            minRange={rangeNibp?.high_pressure.min}
-            value={nibpData?.sys}
-            variant="nibp"
-          />
-        </div>
-      </div>
-    </VitalCardWrapper>
-  );
-};
-
-export const Spo2Vital: FunctionComponent<Spo2VitalProps> = ({
-  data,
-  rangeSpo2,
-  rangePr,
-}) => {
-  const [spo2, setSpo2] = useState<Spo2State | undefined>();
-  const [warning, setWarning] = useState("");
-  useEffect(() => {
-    const timeoutIdArr: number[] = [];
-    const beats = data.time.map((el, i, arr) => {
-      if (i === 0) return 0;
-      return el - arr[i - 1];
-    });
-    for (let i = 0; i < beats.length; i++) {
-      const beat = beats[i];
-      let timeoutId = setTimeout(() => {
-        setSpo2(() => ({ spo2: data?.spo2[i], pr: data.pr[i] }));
-        const warning =
-          i <= data?.warning.length ? data?.warning[i] : undefined;
-        warning && setWarning(warning);
-      }, 1000 * i * beat);
-      timeoutIdArr.push(timeoutId);
-    }
-    return () => timeoutIdArr.forEach((el) => clearTimeout(el));
-  }, []);
-
-  return (
-    <VitalCardWrapper type={"spo2"} warning={warning}>
-      <div id="main-content" className="grid h-fit grid-cols-2  gap-2 px-6 ">
-        <div>
-          <VitalHeader sub="%" title="spo2" variant="spo2" />
-          <VitalContentBlock
-            maxRange={rangeSpo2?.max}
-            minRange={rangeSpo2?.min}
-            value={spo2?.spo2}
-            variant="spo2"
-          />
-        </div>
-        <div>
-          <VitalHeader sub="bbm" title="pr" variant="spo2" />
-          <VitalContentBlock
-            maxRange={rangePr?.max}
-            minRange={rangePr?.min}
-            value={spo2?.pr}
-            variant="spo2"
-          />
-        </div>
-      </div>
-    </VitalCardWrapper>
-  );
-};
-
-export const TempVital: FunctionComponent<TempVitalProps> = ({
-  data,
-  rangeTemp,
-}) => {
-  const [temp, setTemp] = useState<number>();
-  const [warning, setWarning] = useState("");
-  useEffect(() => {
-    const timeoutIdArr: number[] = [];
-    const beats = data.time.map((el, i, arr) => {
-      if (i === 0) return 0;
-      return el - arr[i - 1];
-    });
-    for (let i = 0; i < beats.length; i++) {
-      const beat = beats[i];
-      let timeoutId = setTimeout(() => {
-        setTemp(Number(data.temp[i].toFixed(1)));
-        const warning =
-          i <= data?.warning.length ? data?.warning[i] : undefined;
-        warning && setWarning(warning);
-      }, 1000 * i * beat);
-      timeoutIdArr.push(timeoutId);
-    }
-    return () => timeoutIdArr.forEach((el) => clearTimeout(el));
-  }, []);
-
-  return (
-    <VitalCardWrapper type={"temp"} warning={warning}>
-      <div id="main-content" className="grid h-fit grid-cols-2 gap-2 px-6 ">
-        <div>
-          <VitalHeader sub="°C" title="temp 1" variant="temp" />
-          <VitalContentBlock
-            maxRange={rangeTemp?.max}
-            minRange={rangeTemp?.min}
-            value={temp}
-            variant="temp"
-          />
-        </div>
-        <div>
-          <VitalHeader sub="°F" title="temp 2" variant="temp" />
-          <VitalContentBlock
-            maxRange={Number(cToF(rangeTemp?.max).toFixed(0))}
-            minRange={Number(cToF(rangeTemp?.min).toFixed(0))}
-            value={cToF(temp)}
-            variant="temp"
-          />
-        </div>
-      </div>
-    </VitalCardWrapper>
   );
 };
