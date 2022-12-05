@@ -110,7 +110,14 @@ const MainMonitor: FC<MainMonitorProps> = ({ className, isError }) => {
           ) : (
             <CheckCircleIcon className="mr-2 inline-block h-5 w-5 stroke-success-100 align-middle" />
           )}
-          <span className="align-middle text-danger-50">warning</span>
+          <span
+            className={clsx(
+              "align-middle ",
+              isError ? "text-danger-50" : "text-success-50"
+            )}
+          >
+            warning
+          </span>
         </div>
       </div>
       <div className="grid grid-cols-5">

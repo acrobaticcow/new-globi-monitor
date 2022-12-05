@@ -8,39 +8,20 @@ import {
   Temp_param,
 } from "../models/realtime.models";
 import { cloneChild } from "../utils/function";
-import { HeartIcon, WarningIcon } from "./Icons";
+import { WarningIcon } from "./Icons";
 
 /**
  * Các loại thẻ
  */
-type Variant = "ecg" | "spo2" | "nibp" | "temp";
+export type Variant = "ecg" | "spo2" | "nibp" | "temp";
 type NumberOrUndefined = number | null | undefined;
 /**
  * El bọc bên ngoài thẻ
  * dùng để cung cấp tiêu đề, warning và các style bên ngoài như background-color và border-radius ...
  */
-interface WrapperProps {
-  type: Variant;
-  children: any;
-  warning: string;
-}
 /**
  * Props của EcgCard
  */
-export interface EcgVitalProps {
-  /**
-   * data được trả về từ socket, socket.param.ecg_param
-   */
-  data: Ecg_param;
-  /**
-   * data trả về từ followers api, sampleFollowers_Data.patient_detail.hr_range
-   */
-  rangeResp: Followers_Data["patient_detail"]["resp_range"] | undefined;
-  /**
-   * data trả về từ followers api, sampleFollowers_Data.patient_detail.resp_range
-   */
-  rangeHr: Followers_Data["patient_detail"]["hr_range"] | undefined;
-}
 interface VitalContentMonitorProps {
   maxRange: NumberOrUndefined;
   minRange: NumberOrUndefined;
@@ -62,45 +43,8 @@ interface VitalMonitorBlockProps {
   Icon?: any;
   isPing?: boolean;
 }
-export interface TempVitalProps {
-  data: Temp_param;
-  rangeTemp: Followers_Data["patient_detail"]["temp_range"] | undefined;
-}
-export interface Spo2VitalProps {
-  /**
-   * data được trả về từ socket, socket.param.spo2_param
-   */
-  data: Spo2_param;
-  /**
-   * data được trả về từ followers api, sample_followers.patient_detail.spo2_range
-   */
-  rangeSpo2: Followers_Data["patient_detail"]["spo2_range"] | undefined;
-  /**
-   * data được trả về từ followers api, sample_followers.patient_detail.pr_range
-   */
-  rangePr: Followers_Data["patient_detail"]["pr_range"] | undefined;
-}
-export interface Spo2State {
-  spo2: number;
-  pr: number;
-}
-interface VitalHeaderProps {
-  sub?: string;
-  title?: string;
-  variant?: Variant;
-}
-export interface NibpVitalProps {
-  /**
-   * data được trả về từ socket, socket.param.nibp_param
-   */
-  data: DataMonitoring["data"]["param"]["nibp_param"];
-  /**
-   * data được trả về từ followers api, sample_followers.patient_detail.nibp_range
-   */
-  rangeNibp: Followers_Data["patient_detail"]["nibp_range"] | undefined;
-}
 
-const varTxtLight = (variant: Variant | undefined) => {
+export const varTxtLight = (variant: Variant | undefined) => {
   switch (variant) {
     case "ecg":
       return "text-biloba-flower-300/80";
@@ -114,12 +58,12 @@ const varTxtLight = (variant: Variant | undefined) => {
       return "text-neutral-100";
   }
 };
-const varTxtBase = (variant: Variant | undefined) => {
+export const varTxtBase = (variant: Variant | undefined) => {
   switch (variant) {
     case "ecg":
       return "text-biloba-flower";
     case "nibp":
-      return "text-pale-prim-600";
+      return "text-pale-prim-200";
     case "spo2":
       return "text-spray";
     case "temp":
@@ -128,7 +72,7 @@ const varTxtBase = (variant: Variant | undefined) => {
       return "text-neutral-100";
   }
 };
-const varFillBase = (variant: Variant | undefined) => {
+export const varFillBase = (variant: Variant | undefined) => {
   switch (variant) {
     case "ecg":
       return "fill-biloba-flower";

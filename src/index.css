@@ -28,10 +28,48 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
+
+  @-moz-keyframes right-to-left {
+    from {
+      -moz-transform: translateX(30%);
+    }
+    to {
+      -moz-transform: translateX(-100%);
+    }
+  }
+
+  /* for Chrome */
+  @-webkit-keyframes right-to-left {
+    from {
+      -webkit-transform: translateX(30%);
+    }
+    to {
+      -webkit-transform: translateX(-100%);
+    }
+  }
+
+  @keyframes right-to-left {
+    from {
+      -moz-transform: translateX(30%);
+      -webkit-transform: translateX(30%);
+      transform: translateX(30%);
+    }
+    to {
+      -moz-transform: translateX(-100%);
+      -webkit-transform: translateX(-100%);
+      transform: translateX(-100%);
+    }
+  }
 }
 
 @layer components {
   .sidebar--icon {
     @apply h-6 w-6 stroke-neutral-200 transition-all duration-75 ease-in hover:stroke-neutral-100 active:scale-90;
+  }
+  .animation-right-to-left {
+    -moz-animation: right-to-left 15s linear infinite;
+    -webkit-animation: right-to-left 15s linear infinite;
+    animation: right-to-left 15s linear infinite;
+    @apply translate-x-1/3;
   }
 }
