@@ -1,11 +1,21 @@
-import { useState } from "react";
 import type { FC, MouseEvent } from "react";
-import { ChatIcon, ContactIcon, SettingIcon } from "../Icons";
-import SideBarItem from "./SidebarItem";
+import { useMemo, useState } from "react";
+import { uuid } from "../../utils/function";
+import {
+  ChatIcon,
+  ContactIcon,
+  SearchIcon,
+  SearchIconMini,
+  SettingIcon,
+} from "../Icons";
+import type { SidebarPatientItemProps } from "./SidebarPatientItem";
+import SidebarPatientList from "./SidebarPatientList";
+import SidebarTrigger from "./SidebarTrigger";
 
 interface SideBarProps {}
 const SideBar: FC<SideBarProps> = () => {
   const [activeId, setActiveId] = useState("");
+  const [, setActiveItem] = useState("");
   const handleClick = (e: MouseEvent) => {
     const id = e.currentTarget.id;
     if (activeId === id) {
@@ -14,6 +24,56 @@ const SideBar: FC<SideBarProps> = () => {
     }
     setActiveId(id);
   };
+  const onChange = (id: string) => {
+    setActiveItem(id);
+  };
+  const patientItemProps: SidebarPatientItemProps[] = useMemo(
+    () => [
+      {
+        dob: "18/12/2000",
+        name: "Nguyễn Vũ Anh",
+        img: "/img/1.globi-logo.png",
+        id: uuid(),
+        status: true,
+      },
+      {
+        dob: "18/12/2000",
+        name: "Nguyễn  Anh",
+        img: "/img/1.globi-logo.png",
+        id: uuid(),
+        status: true,
+      },
+      {
+        dob: "18/12/2000",
+        name: " Vũ Anh",
+        img: "/img/1.globi-logo.png",
+        id: uuid(),
+        status: true,
+      },
+      {
+        dob: "18/12/2000",
+        name: " Anh Nguyễn Vũ",
+        img: "/img/1.globi-logo.png",
+        id: uuid(),
+        status: true,
+      },
+      {
+        dob: "18/12/2000",
+        name: "Nguyễn Vũ ",
+        img: "/img/1.globi-logo.png",
+        id: uuid(),
+        status: true,
+      },
+      {
+        dob: "18/12/2000",
+        name: " Vũ Nguyễn ",
+        img: "/img/1.globi-logo.png",
+        id: uuid(),
+        status: true,
+      },
+    ],
+    []
+  );
   return (
     <nav className="fixed top-0 left-0 z-20 flex  h-screen max-h-screen w-14 flex-col border-r border-neutral-300 bg-neutral-500 pb-4 shadow-lg shadow-neutral-400">
       <div className="mx-2 border-b border-neutral-300 py-8">
@@ -25,7 +85,7 @@ const SideBar: FC<SideBarProps> = () => {
       </div>
       <div className="mt-7 flex h-full flex-col items-center justify-between">
         <div id="main-btn" className="flex flex-col gap-y-4">
-          <SideBarItem
+          <SidebarTrigger
             handleClick={handleClick}
             activeId={activeId}
             id="sidebar--btn__chat"
@@ -39,25 +99,40 @@ const SideBar: FC<SideBarProps> = () => {
               />
               <div>Nguyễn Vũ Anh</div>
             </div>
-          </SideBarItem>
-          <SideBarItem
+          </SidebarTrigger>
+          <SidebarTrigger
             handleClick={handleClick}
             activeId={activeId}
             id="sidebar--btn__contact"
             Icon={<ContactIcon className="sidebar--icon" />}
           >
-            <div>contact</div>
-          </SideBarItem>
+            <div
+              id="search"
+              className="group relative mx-3 mb-6 flex items-center gap-x-2 rounded-3xl border border-neutral-300 bg-neutral-500 py-2 px-3"
+            >
+              <input
+                type="text"
+                placeholder="Tìm kiếm ..."
+                className="peer z-10 w-full border-0 bg-transparent p-0 text-sm outline-none ring-0 focus:border-transparent focus:outline-transparent focus:ring-transparent"
+              />
+              <SearchIconMini className="order-first h-5 w-5 transform text-neutral-200 transition-colors duration-75 ease-in group-hover:text-neutral-100 peer-focus:text-neutral-100" />
+              <div className="absolute inset-0 z-0 h-full w-full rounded-3xl ring-neutral-200 peer-focus:ring peer-focus:ring-slate-600"></div>
+            </div>
+            <SidebarPatientList
+              onChange={onChange}
+              itemProps={patientItemProps}
+            />
+          </SidebarTrigger>
         </div>
         <div id="support-btn" className="">
-          <SideBarItem
+          <SidebarTrigger
             handleClick={handleClick}
             activeId={activeId}
             id="sidebar--btn__setting"
             Icon={<SettingIcon className="sidebar--icon" />}
           >
             <div>setting</div>
-          </SideBarItem>
+          </SidebarTrigger>
         </div>
       </div>
     </nav>
