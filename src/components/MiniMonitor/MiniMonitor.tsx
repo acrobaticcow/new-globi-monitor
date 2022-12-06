@@ -11,6 +11,7 @@ interface MiniMonitorProps {
   img?: string;
   name: string;
   dob: string; // date of birt
+  className?: string;
 }
 
 const isEllipsisActive = (inner: any, outer: any) => {
@@ -18,7 +19,7 @@ const isEllipsisActive = (inner: any, outer: any) => {
   return inner.offsetWidth >= outer.offsetWidth;
 };
 
-const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img }) => {
+const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img, className }) => {
   const nameRef = useRef<HTMLParagraphElement>(null);
   const nameWrapperRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -28,8 +29,13 @@ const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img }) => {
     }
   }, [nameRef, nameWrapperRef]);
   return (
-    <div className="h-full w-full max-w-sm rounded-md bg-neutral-500 p-4">
-      <div className="mb-4 flex items-center gap-x-2">
+    <div
+      className={clsx(
+        "row-span-1 h-full w-full max-w-sm border-2 border-l-0 border-b-0 border-neutral-300 bg-neutral-500 bg-grad-3 py-1.5 px-4 ",
+        className
+      )}
+    >
+      <div className="mb-1 flex items-center gap-x-2">
         {img ? (
           <img
             className="aspect-square w-8 rounded-full border border-neutral-200"
@@ -45,16 +51,16 @@ const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img }) => {
               ref={nameWrapperRef}
               className="w-full max-w-[22ch] overflow-hidden"
             >
-              <p ref={nameRef} className="w-fit truncate">
+              <p ref={nameRef} className="w-fit truncate text-sm">
                 {name}
               </p>
             </div>
-            <p className="text-sm text-neutral-200">{dob}</p>
+            <p className="text-xs text-neutral-200">{dob}</p>
           </div>
           <WarningTriangleIcon className="h-6 w-6 stroke-danger-600" />
         </div>
       </div>
-      <div className="mb-2 grid grid-cols-4 justify-between">
+      <div className="mb-1 grid grid-cols-4 justify-between">
         <MiniMonitorValue
           name="rr"
           unit="brpm"

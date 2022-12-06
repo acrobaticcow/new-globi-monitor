@@ -1,7 +1,8 @@
 import type { FC, MouseEvent } from "react";
 import clsx from "clsx";
 import { uuid } from "../../utils/function";
-export interface SidebarPatientItemProps {
+import { UserCircle } from "../Icons";
+export interface SidebarFollowersItemProps {
   img?: string;
   /**
    * Tên bệnh nhân
@@ -18,12 +19,12 @@ export interface SidebarPatientItemProps {
    */
   className?: string;
   /**
-   * không chuyền trực tiếp tham số này vào, muốn bắt sự kiện onChange thì listen ở <SidebarPatientList/>
+   * không chuyền trực tiếp tham số này vào, muốn bắt sự kiện onChange thì listen ở <SidebarFollowersList/>
    */
   handleClick?: (e: MouseEvent) => void;
 }
 
-const SidebarPatientItem: FC<SidebarPatientItemProps> = ({
+const SidebarFollowersItem: FC<SidebarFollowersItemProps> = ({
   img,
   name,
   id = uuid(),
@@ -43,15 +44,19 @@ const SidebarPatientItem: FC<SidebarPatientItemProps> = ({
       onClick={handleClick}
     >
       <div id="indicator" className="relative">
-        <img
-          className="aspect-square w-10 rounded-full border border-neutral-200"
-          src={img}
-          alt={name}
-        />
+        {img ? (
+          <img
+            className="aspect-square w-9 rounded-full border border-neutral-200"
+            src={img}
+            alt="name"
+          />
+        ) : (
+          <UserCircle className="h-9 w-9 text-neutral-200/75" />
+        )}
         <span
           id="indicator__status"
           className={clsx(
-            "absolute -bottom-[1px] right-0 aspect-square w-2.5  rounded-full ",
+            "absolute -bottom-[1px] right-0 aspect-square w-3 rounded-full border-2  border-neutral-400 ",
             status ? "bg-success" : "bg-slate-300"
           )}
         ></span>
@@ -65,4 +70,4 @@ const SidebarPatientItem: FC<SidebarPatientItemProps> = ({
   );
 };
 
-export default SidebarPatientItem;
+export default SidebarFollowersItem;

@@ -38,9 +38,6 @@ const MiniMonitorValue: FC<MiniMonitorValueProps> = ({
       if (i === 0) return 0;
       return el - arr[i - 1];
     });
-    if (type === "nibp") {
-      console.log(beats);
-    }
     for (let i = 0; i < beats.length; i++) {
       const beat = beats[i];
       let timeoutId = setTimeout(() => {
@@ -56,7 +53,7 @@ const MiniMonitorValue: FC<MiniMonitorValueProps> = ({
   }, []);
   return (
     <div className={className}>
-      <span className="mr-2 text-xs font-medium uppercase text-neutral-100/75">
+      <span className="mr-2 h-fit text-xs font-medium uppercase text-neutral-100/75">
         {name}
       </span>
       {showUnit && <span className="text-sm text-neutral-200">{unit}</span>}
@@ -67,7 +64,7 @@ const MiniMonitorValue: FC<MiniMonitorValueProps> = ({
           exit={{ opacity: 0, y: 50 }}
           className={clsx(
             varTxtBase(type),
-            "text-start font-inter text-xl font-semibold"
+            "text-start font-inter text-base font-semibold"
           )}
         >
           {value || "--"}
