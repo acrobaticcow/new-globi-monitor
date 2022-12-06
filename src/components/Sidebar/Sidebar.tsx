@@ -8,8 +8,8 @@ import {
   SearchIconMini,
   SettingIcon,
 } from "../Icons";
-import type { SidebarPatientItemProps } from "./SidebarPatientItem";
-import SidebarPatientList from "./SidebarPatientList";
+import type { SidebarFollowersItemProps } from "./SidebarFollowersItem";
+import SidebarFollowersList from "./SidebarFollowersList";
 import SidebarTrigger from "./SidebarTrigger";
 
 interface SideBarProps {}
@@ -27,53 +27,6 @@ const SideBar: FC<SideBarProps> = () => {
   const onChange = (id: string) => {
     setActiveItem(id);
   };
-  const patientItemProps: SidebarPatientItemProps[] = useMemo(
-    () => [
-      {
-        dob: "18/12/2000",
-        name: "Nguyễn Vũ Anh",
-        img: "/img/1.globi-logo.png",
-        id: uuid(),
-        status: true,
-      },
-      {
-        dob: "18/12/2000",
-        name: "Nguyễn  Anh",
-        img: "/img/1.globi-logo.png",
-        id: uuid(),
-        status: true,
-      },
-      {
-        dob: "18/12/2000",
-        name: " Vũ Anh",
-        img: "/img/1.globi-logo.png",
-        id: uuid(),
-        status: true,
-      },
-      {
-        dob: "18/12/2000",
-        name: " Anh Nguyễn Vũ",
-        img: "/img/1.globi-logo.png",
-        id: uuid(),
-        status: true,
-      },
-      {
-        dob: "18/12/2000",
-        name: "Nguyễn Vũ ",
-        img: "/img/1.globi-logo.png",
-        id: uuid(),
-        status: true,
-      },
-      {
-        dob: "18/12/2000",
-        name: " Vũ Nguyễn ",
-        img: "/img/1.globi-logo.png",
-        id: uuid(),
-        status: true,
-      },
-    ],
-    []
-  );
   return (
     <nav className="fixed top-0 left-0 z-20 flex  h-screen max-h-screen w-14 flex-col border-r border-neutral-300 bg-neutral-500 pb-4 shadow-lg shadow-neutral-400">
       <div className="mx-2 border-b border-neutral-300 py-8">
@@ -118,10 +71,7 @@ const SideBar: FC<SideBarProps> = () => {
               <SearchIconMini className="order-first h-5 w-5 transform text-neutral-200 transition-colors duration-75 ease-in group-hover:text-neutral-100 peer-focus:text-neutral-100" />
               <div className="absolute inset-0 z-0 h-full w-full rounded-3xl ring-neutral-200 peer-focus:ring peer-focus:ring-slate-600"></div>
             </div>
-            <SidebarPatientList
-              onChange={onChange}
-              itemProps={patientItemProps}
-            />
+            <SidebarFollowersList onChange={onChange} />
           </SidebarTrigger>
         </div>
         <div id="support-btn" className="">
