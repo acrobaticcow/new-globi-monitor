@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { FC, useMemo } from "react";
+import type { FC } from "react";
 import { createPortal } from "react-dom";
 interface SideBarDrawerProps {
   className?: string;
@@ -15,14 +15,16 @@ const SideBarDrawer: FC<SideBarDrawerProps> = ({
   className,
   id,
 }) => {
-  const isActive = useMemo(() => activeId === id, [activeId]);
+  const isActive = activeId === id;
   return drawerPlaceholder ? (
     createPortal(
       <div
         className={clsx(
-          "fixed inset-y-0 -left-0 z-10 h-full w-80 transform overflow-y-auto rounded-r-md shadow-lg shadow-neutral-400 duration-200 ease-in-out",
+          "fixed inset-y-0 -left-0 z-10 h-full w-80 transform rounded-r-md shadow-lg shadow-neutral-400 transition-all duration-200 ease-in-out will-change-transform",
           className,
-          isActive ? "block translate-x-14" : "-translate-x-full"
+          isActive
+            ? "block translate-x-14 opacity-100"
+            : "-translate-x-full opacity-0"
         )}
       >
         {children}

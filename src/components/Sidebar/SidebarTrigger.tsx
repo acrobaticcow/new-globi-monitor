@@ -1,5 +1,4 @@
-import { FC, MouseEvent, useEffect } from "react";
-import { useState } from "react";
+import type { FC, MouseEvent } from "react";
 import clsx from "clsx";
 import { cloneChild } from "../../utils/function";
 import SideBarDrawer from "./SidebarDrawer";
@@ -13,10 +12,12 @@ interface SidebarTriggerProps {
    * event onclick
    */
   handleClick: (e: MouseEvent) => void;
+  /**
+   * children sẽ được nhét vào trong drawer
+   */
   children: any;
   /**
-   * id của phần tử đang được chọn
-   */
+   * id của phần tử đang được chọn */
   activeId: string;
   id: string;
   /**
@@ -34,7 +35,6 @@ interface SidebarTriggerProps {
   /**
    * mỗi khi active item được thay đổi, hàm sẽ được thực thi với tham số là id của active item đấy
    */
-  onChange?: (id: string) => void;
 }
 const SidebarTrigger: FC<SidebarTriggerProps> = ({
   btnClassname,
@@ -45,18 +45,8 @@ const SidebarTrigger: FC<SidebarTriggerProps> = ({
   drawerClassname = "bg-neutral-400 py-7",
   activeIconClassname = "!stroke-neutral-100",
   Icon,
-  onChange,
 }) => {
   const isActive = activeId === id;
-  const [activeItem, setActiveItem] = useState("");
-  const handleItemClick = (e: MouseEvent) => {
-    console.log("something");
-    setActiveItem(e.currentTarget.id);
-  };
-  useEffect(() => {
-    console.log(activeItem);
-    onChange && onChange(activeItem);
-  }, [activeItem]);
   return (
     <>
       <button
