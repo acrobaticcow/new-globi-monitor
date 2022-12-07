@@ -38,7 +38,7 @@ const SidebarFollowersItem: FC<SidebarFollowersItemProps> = ({
       key={id}
       id={id}
       className={clsx(
-        "flex w-full cursor-pointer items-center gap-x-4 px-3 py-3 transition-colors duration-200 ease-in-out hover:bg-neutral-200/20 active:rounded-r active:ring-1 active:ring-neutral-200",
+        "flex w-full cursor-pointer items-center gap-x-4 px-3 py-3 transition-colors duration-200 ease-in-out hover:bg-neutral-200/20 active:ring-1 active:ring-neutral-200",
         className
       )}
       onClick={handleClick}

@@ -7,7 +7,7 @@ import {
   MdiHumanHandsdown,
   WarningTriangleIcon,
 } from "../Icons";
-import { VitalMonitorBlock, VitalMonitorContent } from "../VitalCard";
+import { VitalMonitorBlock } from "../VitalCard";
 import genSampleSocketData, {
   sampleFollowers_Data,
 } from "../../utils/sampleData";
@@ -135,101 +135,93 @@ const MainMonitor: FC<MainMonitorProps> = ({ className, isError }) => {
             type="ecg"
             isPing
             warnings={ecgParam("warning")}
-          >
-            <VitalMonitorContent
-              param={ecgParam("resp")}
-              maxRange={rangeParam("resp").max}
-              minRange={rangeParam("resp").min}
-              sub="bpm"
-              title="resp"
-              time={ecgParam("time")}
-            />
-            <VitalMonitorContent
-              param={ecgParam("hr")}
-              maxRange={rangeParam("hr").max}
-              minRange={rangeParam("hr").min}
-              direction="left"
-              sub="bpm"
-              title="hr"
-              time={ecgParam("time")}
-            />
-          </VitalMonitorBlock>
-
+            times={ecgParam("time")}
+            childrenProps={[
+              {
+                param: ecgParam("resp"),
+                maxRange: rangeParam("resp").max,
+                minRange: rangeParam("resp").min,
+                sub: "bpm",
+                title: "resp",
+              },
+              {
+                param: ecgParam("hr"),
+                maxRange: rangeParam("hr").max,
+                minRange: rangeParam("hr").min,
+                sub: "bpm",
+                title: "hr",
+              },
+            ]}
+          />
           <VitalMonitorBlock
             Icon={<HeartIcon className="ml-auto h-5 w-5" />}
             type="spo2"
             isPing
             warnings={spo2Param("warning")}
-          >
-            <VitalMonitorContent
-              param={spo2Param("spo2")}
-              maxRange={rangeParam("spo2").max}
-              minRange={rangeParam("spo2").min}
-              sub="%"
-              title="spo2"
-              time={spo2Param("time")}
-            />
-            <VitalMonitorContent
-              param={spo2Param("pr")}
-              maxRange={rangeParam("pr").max}
-              minRange={rangeParam("pr").min}
-              direction="left"
-              sub="bpm"
-              title="pr"
-              time={spo2Param("time")}
-            />
-          </VitalMonitorBlock>
+            times={spo2Param("time")}
+            childrenProps={[
+              {
+                param: spo2Param("spo2"),
+                maxRange: rangeParam("spo2").max,
+                minRange: rangeParam("spo2").min,
+                sub: "%",
+                title: "spo2",
+              },
+              {
+                param: spo2Param("pr"),
+                maxRange: rangeParam("pr").max,
+                minRange: rangeParam("pr").min,
+                sub: "bpm",
+                title: "pr",
+              },
+            ]}
+          />
+
           <VitalMonitorBlock
             Icon={<MdiHumanHandsdown className="h-5 w-5" />}
             type="nibp"
             warnings={nipbParam("warning")}
-          >
-            <div className="flex items-end">
-              <VitalMonitorContent
-                param={nipbParam("sys")}
-                maxRange={rangeParam("nibp").high_pressure.max}
-                minRange={rangeParam("nibp").high_pressure.min}
-                sub="mmHg"
-                variant="nibp"
-                title="sys/dia"
-                time={nipbParam("time")}
-                hasDivider
-              />
-              <VitalMonitorContent
-                param={nipbParam("dia")}
-                maxRange={rangeParam("nibp").low_pressure.max}
-                minRange={rangeParam("nibp").low_pressure.max}
-                direction="left"
-                variant="nibp"
-                time={nipbParam("time")}
-              />
-            </div>
-            <VitalMonitorContent
-              className="flex flex-col items-end"
-              param={nipbParam("map")}
-              maxRange={rangeParam("nibp").low_pressure.max}
-              minRange={rangeParam("nibp").low_pressure.max}
-              direction="left"
-              showRange={false}
-              sub="mmHg"
-              title="map"
-              time={nipbParam("time")}
-            />
-          </VitalMonitorBlock>
+            times={nipbParam("time")}
+            childrenProps={[
+              {
+                param: nipbParam("sys"),
+                maxRange: rangeParam("nibp").high_pressure.max,
+                minRange: rangeParam("nibp").high_pressure.min,
+                param2: nipbParam("dia"),
+                maxRange2: rangeParam("nibp").low_pressure.max,
+                minRange2: rangeParam("nibp").low_pressure.max,
+                sub: "nibp",
+                title: "sys/dia",
+              },
+
+              {
+                className: "flex flex-col items-end",
+                param: nipbParam("map"),
+                maxRange: rangeParam("nibp").low_pressure.max,
+                minRange: rangeParam("nibp").low_pressure.max,
+                direction: "left",
+                showRange: false,
+                sub: "mmHg",
+                title: "map",
+              },
+            ]}
+          />
           <VitalMonitorBlock
             Icon={<FluentTemperature16Filled className="h-5 w-5" />}
             type="temp"
             warnings={tempParam("warning")}
-          >
-            <VitalMonitorContent
-              param={tempParam("temp")}
-              maxRange={rangeParam("temp").max}
-              minRange={rangeParam("temp").min}
-              sub="°C"
-              title="Temp 1"
-              time={ecgParam("time")}
-            />
-            {/* <VitalMonitorContent
+            times={ecgParam("time")}
+            childrenProps={[
+              {
+                param: tempParam("temp"),
+                maxRange: rangeParam("temp").max,
+                minRange: rangeParam("temp").min,
+                sub: "°C",
+                title: "Temp 1",
+              },
+            ]}
+          />
+          {/* <VitalMonitorContent
               param={ecgParam("resp")}
               maxRange={rangeParam("resp").max}
               minRange={rangeParam("resp").min}
@@ -238,7 +230,6 @@ const MainMonitor: FC<MainMonitorProps> = ({ className, isError }) => {
               title="Temp 2"
               time={ecgParam("time")}
             /> */}
-          </VitalMonitorBlock>
         </div>
       </div>
     </div>

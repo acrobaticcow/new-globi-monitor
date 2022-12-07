@@ -1,35 +1,33 @@
-import { FC, MouseEvent } from "react";
-import { useState, useEffect } from "react";
+import type { FC, MouseEvent } from "react";
 import { uuid } from "../../utils/function";
 import type { SidebarFollowersItemProps } from "./SidebarFollowersItem";
 import SidebarFollowersItem from "./SidebarFollowersItem";
 import { useFollowersList } from "../../api/FollowersDataProvider";
-import { Followers } from "../../models/realtime.models";
 interface UserInfoSideBarListProps {
   onChange?: (id: string) => void;
+  className?: string;
 }
 
-const SidebarFollowersList: FC<UserInfoSideBarListProps> = ({ onChange }) => {
+const SidebarFollowersList: FC<UserInfoSideBarListProps> = ({
+  onChange,
+  className,
+}) => {
   const { data, isLoading, error } = useFollowersList();
-  const [item, setItem] = useState<SidebarFollowersItemProps[]>();
-  useEffect(() => {
-    if (isLoading || !data) return;
-    const requiredData: SidebarFollowersItemProps[] = data.data.map(
-      ({ patient_detail: { dob, patient_id, patient_name, image } }) => ({
-        id: patient_id,
-        name: patient_name,
-        dob,
-        img: image,
-      })
-    );
-    setItem(requiredData);
-  }, [isLoading]);
+  const item: SidebarFollowersItemProps[] | undefined = data?.data.map(
+    ({ patient_detail: { dob, patient_id, patient_name, image } }) => ({
+      id: patient_id,
+      name: patient_name,
+      dob,
+      img: image,
+    })
+  );
   const handleClick = (e: MouseEvent) => {
     onChange && onChange(e.currentTarget.id);
   };
   if (isLoading) return <div>Loading</div>;
+  if (error) return <div>error</div>;
   return (
-    <ul>
+    <ul className={className}>
       {item?.map((prop) => {
         return (
           <SidebarFollowersItem

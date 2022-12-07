@@ -1,13 +1,13 @@
 import clsx from "clsx";
-import { FC, useLayoutEffect, useRef } from "react";
+import type { FC } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { UserCircle, WarningTriangleIcon } from "../Icons";
-import { varTxtBase, varTxtLight, Variant } from "../VitalCard";
 import MiniMonitorValue from "./MiniMonitorValue";
 import socketDataGen from "../../utils/sampleData";
 
 const socketData = socketDataGen();
 
-interface MiniMonitorProps {
+export interface MiniMonitorProps {
   img?: string;
   name: string;
   dob: string; // date of birt
@@ -65,14 +65,14 @@ const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img, className }) => {
           name="rr"
           unit="brpm"
           param={socketData.param.ecg_param.resp}
-          time={socketData.param.ecg_param.time}
+          times={socketData.param.ecg_param.time}
           type="ecg"
         />
         <MiniMonitorValue
           name="hr"
           unit="bpm"
           param={socketData.param.ecg_param.hr}
-          time={socketData.param.ecg_param.time}
+          times={socketData.param.ecg_param.time}
           type="ecg"
         />
         <MiniMonitorValue
@@ -80,7 +80,7 @@ const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img, className }) => {
           unit="mmHg"
           param={socketData.param.nibp_param.sys}
           param2={socketData.param.nibp_param.dia}
-          time={socketData.param.nibp_param.time}
+          times={socketData.param.nibp_param.time}
           type="nibp"
           className="col-span-2"
         />
@@ -90,14 +90,14 @@ const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img, className }) => {
           name="spo2"
           unit="%"
           param={socketData.param.spo2_param.spo2}
-          time={socketData.param.ecg_param.time}
+          times={socketData.param.ecg_param.time}
           type="spo2"
         />
         <MiniMonitorValue
           name="pr"
           unit="bpm"
           param={socketData.param.spo2_param.pr}
-          time={socketData.param.ecg_param.time}
+          times={socketData.param.ecg_param.time}
           type="spo2"
         />
         <MiniMonitorValue
@@ -105,7 +105,7 @@ const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img, className }) => {
           name="temp"
           unit="°C"
           param={socketData.param.temp_param.temp}
-          time={socketData.param.temp_param.time}
+          times={socketData.param.temp_param.time}
           type="temp"
         />
       </div>

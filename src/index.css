@@ -16,17 +16,12 @@
 
   /* Track */
   ::-webkit-scrollbar-track {
-    @apply bg-neutral-300;
+    @apply bg-neutral-600;
   }
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    @apply bg-neutral-500;
-  }
-
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    @apply rounded-xl bg-neutral-300 hover:bg-neutral-200/75;
   }
 
   @-moz-keyframes right-to-left {

@@ -124,6 +124,9 @@ module.exports = {
           900: "#6e4715",
         },
       },
+      animation: {
+        "ping-once": "ping 1s cubic-bezier(0, 0, 0.2, 1)",
+      },
     },
     backgroundImage: {
       "grad-1": "linear-gradient(180deg, #121417 0%, #171A20 100%)",

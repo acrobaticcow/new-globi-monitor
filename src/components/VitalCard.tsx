@@ -1,14 +1,9 @@
 import { clsx } from "clsx";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
-import {
-  DataMonitoring,
-  Ecg_param,
-  Followers_Data,
-  Spo2_param,
-  Temp_param,
-} from "../models/realtime.models";
+import { ReactElement, useEffect, useState } from "react";
+import type { FunctionComponent, ReactNode } from "react";
 import { cloneChild } from "../utils/function";
 import { WarningIcon } from "./Icons";
+import { useValueInterval } from "../hooks/useValueInterval";
 
 /**
  * Các loại thẻ
@@ -25,23 +20,29 @@ type NumberOrUndefined = number | null | undefined;
 interface VitalContentMonitorProps {
   maxRange: NumberOrUndefined;
   minRange: NumberOrUndefined;
+  maxRange2?: NumberOrUndefined;
+  minRange2?: NumberOrUndefined;
   direction?: "left" | "right";
-  hasDivider?: boolean;
   variant?: Variant;
   sub?: string;
   title?: string;
-  time: number[];
   param: number[];
+  param2?: number[];
+  value?: number;
+  value2?: number;
   className?: string;
-  onChange?: (...args: any) => any;
   showRange?: boolean;
 }
 interface VitalMonitorBlockProps {
   type: Variant;
-  children: any;
+  /**
+   * type of VitalMonitorContent
+   */
+  times: number[];
   warnings: string[];
   Icon?: any;
   isPing?: boolean;
+  childrenProps: Omit<VitalContentMonitorProps, "value" | "value2">[];
 }
 
 export const varTxtLight = (variant: Variant | undefined) => {
@@ -88,24 +89,29 @@ export const varFillBase = (variant: Variant | undefined) => {
 };
 
 export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
-  children,
   type,
   warnings,
   Icon,
   isPing,
+  childrenProps,
+  times,
 }) => {
-  const [warning, setWarning] = useState("");
   const [ping, setPing] = useState(false);
-  const onChange = (i: number) => {
-    const warning = i <= warnings.length ? warnings[i] : undefined;
-    warning && setWarning(warning);
-  };
+  const { warning, currentValueAndParams } = useValueInterval({
+    warnings: warnings,
+    times,
+    valuesAndParams: childrenProps.map(({ param, param2 }) => ({
+      param,
+      param2,
+      value: param[0],
+      value2: param2?.length ? param2[0] : undefined,
+    })),
+  });
   useEffect(() => {
     setPing(true);
     const timeoutId = setTimeout(() => {
       setPing(false);
     }, 500);
-
     return () => {
       setPing(false);
       clearTimeout(timeoutId);
@@ -113,7 +119,7 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
   }, [warning]);
 
   return (
-    <div className="relative w-full max-w-[573px] rounded  px-2">
+    <div className="relative  w-full max-w-[573px] rounded px-2">
       <div className="rounded-2xl border-neutral-200 shadow-inner shadow-neutral-500">
         <div className="mb-0.5 flex items-center justify-between">
           <h1
@@ -129,9 +135,9 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
                   props: {
                     className: clsx(
                       "absolute inline-flex opacity-75 ",
-                      Icon.props.className,
+                      Icon?.props.className,
                       varTxtBase(type),
-                      ping && "animate-ping"
+                      ping && "animate-ping-once"
                     ),
                   },
                 })}
@@ -145,10 +151,15 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
           )}
         </div>
         <div id="main-content" className="mb-1 grid grid-cols-2">
-          {cloneChild({
-            children,
-            props: { onChange, variant: type },
-          })}
+          {childrenProps.map((prop, index) => (
+            <VitalMonitorContent
+              key={index}
+              {...prop}
+              variant={type}
+              value={currentValueAndParams[index].value}
+              value2={currentValueAndParams[index].value2}
+            />
+          ))}
         </div>
         <div className="flex items-center">
           <WarningIcon className="inline-block h-5 w-5 stroke-neutral-200" />
@@ -161,52 +172,23 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
 export const VitalMonitorContent: FunctionComponent<
   VitalContentMonitorProps
 > = ({
-  time,
-  param,
   maxRange,
   minRange,
-  hasDivider,
+  maxRange2,
+  minRange2,
   direction = "right",
   variant,
   sub,
   title,
-  onChange,
   className,
   showRange = true,
+  value,
+  value2,
 }) => {
-  const [value, setValue] = useState<number | undefined>();
-  useEffect(() => {
-    const timeoutIdArr: number[] = [];
-    /**
-     * thời gian mà thẻ sẽ thay đổi thông số
-     * @example time = [2,2,1] thì sau 2s sẽ cập nhật thông số mới
-     * và 2s sau nữa cập nhật thông số mới và cuối cùng là 1s sau cập nhật thông số
-     */
-    const beats = time.map((el, i, arr) => {
-      if (i === 0) return 0;
-      return el - arr[i - 1];
-    });
-    for (let i = 0; i < beats.length; i++) {
-      const beat = beats[i];
-      let timeoutId = setTimeout(() => {
-        setValue(param[i]);
-        /**
-         * trích xuất warning, nếu không có thì là undefined
-         */
-        !!onChange && onChange(i);
-      }, 1000 * i * beat);
-      timeoutIdArr.push(timeoutId);
-    }
-    return () => timeoutIdArr.forEach((el) => clearTimeout(el));
-  }, []);
-  const rangeClsx = useMemo(
-    () =>
-      clsx(
-        "text-xs",
-        varTxtLight(variant),
-        direction === "right" ? "text-end" : "text-start"
-      ),
-    []
+  const rangeClsx = clsx(
+    "text-xs",
+    varTxtLight(variant),
+    direction === "right" ? "text-end" : "text-start"
   );
   return (
     <div className={className}>
@@ -224,31 +206,47 @@ export const VitalMonitorContent: FunctionComponent<
       ) : (
         <></>
       )}
-      <div id="item" className="ml-auto flex gap-x-2">
-        {showRange && (
-          <div
+      <div className={clsx(!!value2 && "flex justify-between")}>
+        <div id="item" className="ml-auto flex gap-x-2">
+          {showRange && (
+            <div
+              className={clsx(
+                "mb-1.5 self-end",
+                direction !== "right" && "order-last"
+              )}
+            >
+              <p className={rangeClsx}>{maxRange ?? "--"}</p>
+              <p className={rangeClsx}>{minRange ?? "--"}</p>
+            </div>
+          )}
+          <span
             className={clsx(
-              "mb-1.5 self-end",
-              direction !== "right" && "order-last"
+              "font-inter text-4xl font-semibold leading-none",
+              varTxtBase(variant)
             )}
           >
-            <p className={rangeClsx}>{maxRange ?? "--"}</p>
-            <p className={rangeClsx}>{minRange ?? "--"}</p>
+            {value ?? "--"}
+          </span>
+        </div>
+        {!!value2 && (
+          <div id="item2" className="ml-auto flex gap-x-2">
+            {showRange && (
+              <div className="order-last mb-1.5 self-end">
+                <p className={rangeClsx}>{maxRange2 ?? "--"}</p>
+                <p className={rangeClsx}>{minRange2 ?? "--"}</p>
+              </div>
+            )}
+            <span
+              className={clsx(
+                "font-inter text-4xl font-semibold leading-none",
+                varTxtBase(variant)
+              )}
+            >
+              <span className={clsx(varTxtBase(variant))}>/</span>
+              {value2 ?? "--"}
+            </span>
           </div>
         )}
-        <p
-          className={clsx(
-            "font-inter text-4xl font-semibold leading-none",
-            varTxtBase(variant)
-            //   direction === "right" ? "order-2" : "order-1"
-          )}
-        >
-          {value ?? "--"}
-
-          {!!hasDivider && (
-            <span className={clsx(varTxtLight(variant))}>/</span>
-          )}
-        </p>
       </div>
     </div>
   );
