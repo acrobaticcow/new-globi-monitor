@@ -1,6 +1,6 @@
 import { clsx } from "clsx";
-import { ReactElement, useEffect, useState } from "react";
-import type { FunctionComponent, ReactNode } from "react";
+import { useEffect, useState } from "react";
+import type { FunctionComponent } from "react";
 import { cloneChild } from "../utils/function";
 import { WarningIcon } from "./Icons";
 import { useValueInterval } from "../hooks/useValueInterval";
