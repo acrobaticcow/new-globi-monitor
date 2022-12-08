@@ -1,7 +1,12 @@
-import type { FC, MouseEvent } from "react";
+import type { FC } from "react";
 import clsx from "clsx";
 import { uuid } from "../../utils/function";
 import { UserCircle } from "../Icons";
+import { useContext } from "react";
+import {
+  MiniMonitorContext,
+  MiniMonitorContextType,
+} from "../../hooks/useActiveMonitorProvider";
 export interface SidebarFollowersItemProps {
   img?: string;
   /**
@@ -21,7 +26,7 @@ export interface SidebarFollowersItemProps {
   /**
    * không chuyền trực tiếp tham số này vào, muốn bắt sự kiện onChange thì listen ở <SidebarFollowersList/>
    */
-  handleClick?: (e: MouseEvent) => void;
+  // handleClick?: (e: MouseEvent) => void;
 }
 
 const SidebarFollowersItem: FC<SidebarFollowersItemProps> = ({
@@ -31,8 +36,10 @@ const SidebarFollowersItem: FC<SidebarFollowersItemProps> = ({
   status,
   dob,
   className,
-  handleClick,
 }) => {
+  const { addMiniMonitorIds } = useContext(
+    MiniMonitorContext
+  ) as MiniMonitorContextType;
   return (
     <li
       key={id}
@@ -41,7 +48,7 @@ const SidebarFollowersItem: FC<SidebarFollowersItemProps> = ({
         "flex w-full cursor-pointer items-center gap-x-4 px-3 py-3 transition-colors duration-200 ease-in-out hover:bg-neutral-200/20 active:ring-1 active:ring-neutral-200",
         className
       )}
-      onClick={handleClick}
+      onClick={() => addMiniMonitorIds(id)}
     >
       <div id="indicator" className="relative">
         {img ? (

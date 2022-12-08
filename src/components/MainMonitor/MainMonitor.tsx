@@ -56,9 +56,22 @@ const rangeParam = (target: string) => {
 interface MainMonitorProps {
   className?: string;
   isError?: boolean;
+  name: string;
+  dob: string;
+  gender: string;
+  phone: number;
+  id: string;
 }
 
-const MainMonitor: FC<MainMonitorProps> = ({ className, isError }) => {
+const MainMonitor: FC<MainMonitorProps> = ({
+  className,
+  isError,
+  name,
+  dob,
+  phone,
+  gender,
+  id,
+}) => {
   return (
     <div
       id="main-monitor"
@@ -81,17 +94,19 @@ const MainMonitor: FC<MainMonitorProps> = ({ className, isError }) => {
                 data-tip="Nguyễn Vũ Anh sdfsdfsdfsdfsdfsdfsdf"
               >
                 <p className="w-fit text-ellipsis font-inter text-sm leading-tight line-clamp-1">
-                  Nguyễn Vũ Anh
+                  {name}
                 </p>
               </div>
               <p className="mr-1 text-xs leading-tight text-neutral-200">
-                16/7/2012
+                {dob}
               </p>
             </div>
             <div>
-              <p className="mr-1 text-sm leading-tight text-neutral-200">Nam</p>
+              <p className="mr-1 text-sm leading-tight text-neutral-200">
+                {gender}
+              </p>
               <p className="mr-1 text-xs leading-tight text-neutral-200">
-                1900 6886
+                {phone}
               </p>
             </div>
             <HalfBatteryIcon className="h-5 w-5 fill-neutral-200 stroke-neutral-200 stroke-0" />

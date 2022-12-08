@@ -1,9 +1,13 @@
 import clsx from "clsx";
-import type { FC } from "react";
+import { FC, useContext } from "react";
 import { useLayoutEffect, useRef } from "react";
 import { UserCircle, WarningTriangleIcon } from "../Icons";
 import MiniMonitorValue from "./MiniMonitorValue";
 import socketDataGen from "../../utils/sampleData";
+import {
+  MonitorContext,
+  MonitorContextType,
+} from "../../hooks/useActiveMonitorProvider";
 
 const socketData = socketDataGen();
 
@@ -12,6 +16,7 @@ export interface MiniMonitorProps {
   name: string;
   dob: string; // date of birt
   className?: string;
+  id: string;
 }
 
 const isEllipsisActive = (inner: any, outer: any) => {
@@ -19,7 +24,14 @@ const isEllipsisActive = (inner: any, outer: any) => {
   return inner.offsetWidth >= outer.offsetWidth;
 };
 
-const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img, className }) => {
+const MiniMonitor: FC<MiniMonitorProps> = ({
+  name,
+  dob,
+  img,
+  className,
+  id,
+}) => {
+  const { addMonitorIds } = useContext(MonitorContext) as MonitorContextType;
   const nameRef = useRef<HTMLParagraphElement>(null);
   const nameWrapperRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -34,6 +46,7 @@ const MiniMonitor: FC<MiniMonitorProps> = ({ name, dob, img, className }) => {
         "row-span-1 h-full w-full max-w-sm border-2 border-l-0 border-b-0 border-neutral-300 bg-neutral-500 bg-grad-3 py-1.5 px-4 ",
         className
       )}
+      onClick={() => addMonitorIds(id)}
     >
       <div className="mb-1 flex items-center gap-x-2">
         {img ? (
