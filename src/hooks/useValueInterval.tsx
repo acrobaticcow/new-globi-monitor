@@ -47,7 +47,7 @@ export const useSocketValueInterval = (patientId: string) => {
     const paramEntries = Object.entries(extractedParam);
     const currentEntry = paramEntries.map(([key, value]) => [
       key,
-      value[index],
+      value[index] ?? value[index - 1],
     ]);
     const result = Object.fromEntries(currentEntry) as Value;
     return result;
@@ -61,12 +61,15 @@ export const useSocketValueInterval = (patientId: string) => {
         const current = prev + 1;
         if (current > elapsed) {
           clearInterval(intervalId);
-          return 0;
+          return prev;
         }
         return current;
       });
     }, 1000);
-    return () => clearInterval(intervalId);
+    return () => {
+      clearInterval(intervalId);
+      setIndex(0);
+    };
   }, [data]);
 
   return { currentParam, isLoading, error };

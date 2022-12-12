@@ -13,6 +13,7 @@ import { useSocketValueInterval } from "../../hooks/useValueInterval";
 import { useSelectFollowers } from "../../api/hooks/useFetchPatients";
 import Chart, { ConfigType } from "../Chart/Chart";
 import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
+import { usePageVisibility } from "react-page-visibility";
 /**
  * Chuyển từ độc c sang độ f
  */
@@ -68,6 +69,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
     error: currentParamError,
   } = useSocketValueInterval(patient_id);
   const { data: socket } = useSocketQuery(patient_id);
+  const isVisible = usePageVisibility();
 
   const EcgChart = useMemo(() => {
     return <Chart data={socket} config={ecgConfig} />;
@@ -79,6 +81,9 @@ const MainMonitor: FC<MainMonitorProps> = ({
     return <Chart data={socket} config={spo2Config} />;
   }, [socket]);
 
+  if (!isVisible) {
+    return <div></div>;
+  }
   if (isCurrentParamLoading) return <div>current param loading</div>;
   if (isFollowerLoading) return <div>follower loading</div>;
   if (currentParamError || !currentParam) return <div>socket error</div>;

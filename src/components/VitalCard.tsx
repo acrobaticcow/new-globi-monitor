@@ -97,6 +97,7 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
     const timeoutId = setTimeout(() => {
       setPing(false);
     }, 500);
+    console.log("anything");
     return () => {
       setPing(false);
       clearTimeout(timeoutId);
@@ -122,7 +123,7 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
                       "absolute inline-flex opacity-75 ",
                       Icon?.props.className,
                       varTxtBase(type),
-                      ping && "animate-ping-once"
+                      ping && "animate-ping"
                     ),
                   },
                 })}
@@ -146,7 +147,7 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
             />
           ))}
         </div>
-        <div className="flex items-center">
+        <div className="flex  items-center">
           <WarningIcon className="inline-block h-5 w-5 stroke-neutral-200" />
           <span className="mx-4 text-xs font-semibold">{warning}</span>
         </div>

@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 // @ts-ignore
 import { LayoutUtil, BeepWrapper, IndicatorRenderer } from "./engine.js";
 import { SocketData } from "../../models/realtime.models.js";
@@ -84,7 +84,7 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
     render.render();
   }, [data, config]);
 
-  const maximize = () => {
+  const maximize = useCallback(() => {
     const chart = chartRef.current;
     const overlay = overlayRef.current;
     if (!overlay || !chart) return;
@@ -97,10 +97,9 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
       canvas.style.height = `${overlay.clientHeight}px`;
       overlayChartWrapper.appendChild(canvas);
     }
-    // overlay.appendChild(overlayChartWrapper);
-  };
+  }, []);
 
-  const minimize = () => {
+  const minimize = useCallback(() => {
     const chart = chartRef.current;
     const overlay = overlayRef.current;
     if (!overlay || !chart) return;
@@ -115,7 +114,7 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
       canvasOfOverlayChartWrapper.style.height = `${chart.clientHeight}px`;
       chart.appendChild(canvasOfOverlayChartWrapper);
     }
-  };
+  }, []);
 
   return (
     <div ref={parentRef} className="relative h-full w-full">
