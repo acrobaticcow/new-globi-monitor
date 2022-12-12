@@ -4,8 +4,8 @@ import { uuid } from "../../utils/function";
 import { UserCircle } from "../Icons";
 import { useContext } from "react";
 import {
-  MiniMonitorContext,
-  MiniMonitorContextType,
+  ActiveMonitorsApiContext,
+  ActiveMonitorsApiContextType,
 } from "../../hooks/useActiveMonitorProvider";
 export interface SidebarFollowersItemProps {
   img?: string;
@@ -37,9 +37,9 @@ const SidebarFollowersItem: FC<SidebarFollowersItemProps> = ({
   dob,
   className,
 }) => {
-  const { addMiniMonitorIds } = useContext(
-    MiniMonitorContext
-  ) as MiniMonitorContextType;
+  const { onAddMiniMonitorIds } = useContext(
+    ActiveMonitorsApiContext
+  ) as ActiveMonitorsApiContextType;
   return (
     <li
       key={id}
@@ -48,7 +48,7 @@ const SidebarFollowersItem: FC<SidebarFollowersItemProps> = ({
         "flex w-full cursor-pointer items-center gap-x-4 px-3 py-3 transition-colors duration-200 ease-in-out hover:bg-neutral-200/20 active:ring-1 active:ring-neutral-200",
         className
       )}
-      onClick={() => addMiniMonitorIds(id)}
+      onClick={() => onAddMiniMonitorIds(id)}
     >
       <div id="indicator" className="relative">
         {img ? (

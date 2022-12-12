@@ -2,7 +2,7 @@ import { currentTime, getRandInt } from "./function";
 
 const current = Date.now();
 
-export default function generate_data(patient_id = getRandInt) {
+export default function generate_data(patient_id = "") {
   return {
     patient_id: patient_id,
     from: Math.floor(Date.now() / 1000),
@@ -257,7 +257,6 @@ export default function generate_data(patient_id = getRandInt) {
     },
     param: {
       ecg_param: {
-        time: [current, current + 1, current + 2, current + 3],
         signal: [
           getRandInt(0, 1),
           getRandInt(0, 1),
@@ -295,10 +294,8 @@ export default function generate_data(patient_id = getRandInt) {
           getRandInt(0, 250),
         ],
         st: [-1, -0.5, 0, 0.5],
-        warning: ["something", "sometthing else", "Ting go burr", "Da da da"],
       },
       nibp_param: {
-        time: [Date.now(), Date.now() + 1, Date.now() + 3, Date.now() + 5],
         patient_mode: [0, 0, 0, 0],
         test_result: [
           getRandInt(0, 10),
@@ -331,10 +328,8 @@ export default function generate_data(patient_id = getRandInt) {
           getRandInt(0, 250),
           getRandInt(0, 250),
         ],
-        warning: ["something", "sometthing else", "Ting go burr", "Da da da"],
       },
       spo2_param: {
-        time: [Date.now(), Date.now() + 1, Date.now() + 3, Date.now() + 4],
         status: [0, 0, 0, 0],
         spo2: [
           getRandInt(0, 100),
@@ -348,10 +343,8 @@ export default function generate_data(patient_id = getRandInt) {
           getRandInt(0, 250),
           getRandInt(0, 250),
         ],
-        warning: ["something", "sometthing else", "Ting go burr", "Da da da"],
       },
       temp_param: {
-        time: [Date.now(), Date.now() + 1, Date.now() + 2, Date.now() + 3],
         status: [0, 0, 0, 0],
         temp: [
           getRandInt(0, 45) + 0.5,
@@ -359,10 +352,9 @@ export default function generate_data(patient_id = getRandInt) {
           getRandInt(0, 45) + 0.5,
           getRandInt(0, 45) + 0.5,
         ],
-        warning: ["something", "sometthing else", "Ting go burr", "Da da da"],
       },
       ecg_peak: {
-        time: [currentTime, currentTime + 1, currentTime + 3, currentTime + 4],
+        time: [1, 2, 3, 4],
         peak: [
           getRandInt(0, 1),
           getRandInt(0, 1),
@@ -371,7 +363,7 @@ export default function generate_data(patient_id = getRandInt) {
         ],
       },
       spo2_peak: {
-        time: [currentTime, currentTime + 1, currentTime + 2, currentTime + 5],
+        time: [1, 2, 3, 4],
         peak: [
           getRandInt(0, 1),
           getRandInt(0, 1),
@@ -382,18 +374,15 @@ export default function generate_data(patient_id = getRandInt) {
     },
     device: {
       bluetooth: {
-        time: [currentTime, currentTime + 1, currentTime + 3, currentTime + 4],
         name: ["bluetooth", "bluetooth", "bluetooth", "bluetooth"],
         status: [0, 0, 0, 0],
       },
       battery: {
-        time: [currentTime, currentTime + 1, currentTime + 3, currentTime + 4],
         charging: [0, 0, 0, 0],
         level: [100, 100, 100, 100],
       },
     },
     warning: {
-      time: [currentTime + 1, currentTime + 4],
       warning: ["warning_1", "waring_2"],
     },
   };

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import type { FunctionComponent } from "react";
 import { cloneChild } from "../utils/function";
 import { WarningIcon } from "./Icons";
-import { useValueInterval } from "../hooks/useValueInterval";
 
 /**
  * Các loại thẻ
@@ -26,23 +25,20 @@ interface VitalContentMonitorProps {
   variant?: Variant;
   sub?: string;
   title?: string;
-  param: number[];
-  param2?: number[];
   value?: number;
   value2?: number;
   className?: string;
   showRange?: boolean;
 }
 interface VitalMonitorBlockProps {
-  type: Variant;
   /**
    * type of VitalMonitorContent
    */
-  times: number[];
-  warnings: string[];
+  type: Variant;
+  warning: string;
   Icon?: any;
   isPing?: boolean;
-  childrenProps: Omit<VitalContentMonitorProps, "value" | "value2">[];
+  childrenProps: VitalContentMonitorProps[];
 }
 
 export const varTxtLight = (variant: Variant | undefined) => {
@@ -90,23 +86,12 @@ export const varFillBase = (variant: Variant | undefined) => {
 
 export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
   type,
-  warnings,
+  warning,
   Icon,
   isPing,
   childrenProps,
-  times,
 }) => {
   const [ping, setPing] = useState(false);
-  const { warning, currentValueAndParams } = useValueInterval({
-    warnings: warnings,
-    times,
-    valuesAndParams: childrenProps.map(({ param, param2 }) => ({
-      param,
-      param2,
-      value: param[0],
-      value2: param2?.length ? param2[0] : undefined,
-    })),
-  });
   useEffect(() => {
     setPing(true);
     const timeoutId = setTimeout(() => {
@@ -116,7 +101,7 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
       setPing(false);
       clearTimeout(timeoutId);
     };
-  }, [warning]);
+  }, []);
 
   return (
     <div className="relative  w-full max-w-[573px] rounded px-2">
@@ -156,8 +141,8 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
               key={index}
               {...prop}
               variant={type}
-              value={currentValueAndParams[index].value}
-              value2={currentValueAndParams[index].value2}
+              value={childrenProps[index].value}
+              value2={childrenProps[index].value2}
             />
           ))}
         </div>

@@ -1,16 +1,32 @@
 import clsx from "clsx";
 import type { FC } from "react";
 import { varTxtBase, Variant } from "../VitalCard";
-import { useValueInterval } from "../../hooks/useValueInterval";
 
 interface MiniMonitorValueProps {
+  /**
+   * kiểu thông tin như ecg hay nibp ...
+   */
   type: Variant;
+  /**
+   * tên thông tin như resp hoặc hr trong ecg
+   */
   name: string;
+  /**
+   * đơn vị đo lường
+   */
   unit?: string;
-  param: number[];
-  param2?: number[];
+  /**
+   * giá trị một
+   */
+  value: number | undefined;
+  /**
+   * chỉ có kiểu đo sys/dia mới có giá trị thứ 2
+   */
+  value2?: number;
+  /**
+   * thích thì show đơn vị
+   */
   showUnit?: boolean;
-  times: number[];
   className?: string;
 }
 
@@ -19,23 +35,10 @@ const MiniMonitorValue: FC<MiniMonitorValueProps> = ({
   type,
   name,
   unit,
-  param,
-  param2,
   showUnit,
-  times,
+  value,
+  value2,
 }) => {
-  const { currentValueAndParams } = useValueInterval({
-    times,
-    valuesAndParams: [
-      {
-        param,
-        param2,
-        value: param[0],
-        value2: param2?.length ? param2[0] : undefined,
-      },
-    ],
-  });
-
   return (
     <div className={className}>
       <span className="mr-2 h-fit text-xs font-medium uppercase text-neutral-100/75">
@@ -48,9 +51,8 @@ const MiniMonitorValue: FC<MiniMonitorValueProps> = ({
           "text-start font-inter text-base font-semibold"
         )}
       >
-        {currentValueAndParams[0].value || "--"}
-        {!!currentValueAndParams[0].value2 &&
-          ` / ${currentValueAndParams[0].value2 || "--"}`}
+        {value || "--"}
+        {!!value2 && ` / ${value2 || "--"}`}
       </p>
     </div>
   );

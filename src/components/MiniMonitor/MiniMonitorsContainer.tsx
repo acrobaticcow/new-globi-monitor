@@ -28,7 +28,7 @@ const MiniMonitorsContainer: FC<MiniMonitorsProps> = () => {
               dob={dob}
               img={image}
               key={patient_id}
-              id={patient_id}
+              patientId={patient_id}
             />
           )
         )}

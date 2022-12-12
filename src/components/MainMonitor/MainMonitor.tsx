@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { FC, useMemo } from "react";
 import {
   CheckCircleIcon,
   FluentTemperature16Filled,
@@ -8,51 +8,14 @@ import {
   WarningTriangleIcon,
 } from "../Icons";
 import { VitalMonitorBlock } from "../VitalCard";
-import genSampleSocketData, {
-  sampleFollowers_Data,
-} from "../../utils/sampleData";
-import { extractor } from "../../utils/function";
 import clsx from "clsx";
-const sampleSocketData = genSampleSocketData();
-const patientDetail = sampleFollowers_Data.patient_detail;
-const param = sampleSocketData.param;
+import { useSocketValueInterval } from "../../hooks/useValueInterval";
+import { useSelectFollowers } from "../../api/hooks/useFetchPatients";
+import Chart, { ConfigType } from "../Chart/Chart";
+import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
 /**
  * Chuyển từ độc c sang độ f
  */
-const cToF = (c: number | undefined) => {
-  return c ? Number((c * 1.8 + 32).toFixed(1)) : 0;
-};
-const ecgParam = (variant: string) => {
-  const root = extractor({
-    root: param,
-    target: "ecg_param",
-  });
-  return extractor({ root, target: variant });
-};
-const spo2Param = (variant: string) => {
-  const root = extractor({
-    root: param,
-    target: "spo2_param",
-  });
-  return extractor({ root, target: variant });
-};
-const nipbParam = (variant: string) => {
-  const root = extractor({
-    root: param,
-    target: "nibp_param",
-  });
-  return extractor({ root, target: variant });
-};
-const tempParam = (variant: string) => {
-  const root = extractor({
-    root: param,
-    target: "temp_param",
-  });
-  return extractor({ root, target: variant });
-};
-const rangeParam = (target: string) => {
-  return extractor({ root: patientDetail, target, suffix: "_range" });
-};
 interface MainMonitorProps {
   className?: string;
   isError?: boolean;
@@ -60,8 +23,30 @@ interface MainMonitorProps {
   dob: string;
   gender: string;
   phone: number;
-  id: string;
+  patient_id: string;
 }
+
+const ecgConfig = {
+    color: "00FF00",
+    WINDOW_POINTS: 250,
+    scanBarLength: 40,
+    INTERVAL: 15,
+    type: "ecg",
+  } as ConfigType,
+  spo2Config = {
+    color: "FFFF00",
+    WINDOW_POINTS: 50,
+    scanBarLength: 40,
+    INTERVAL: 150,
+    type: "spo2",
+  } as ConfigType,
+  respConfig = {
+    color: "00FFFF",
+    WINDOW_POINTS: 50,
+    scanBarLength: 40,
+    INTERVAL: 100,
+    type: "resp",
+  } as ConfigType;
 
 const MainMonitor: FC<MainMonitorProps> = ({
   className,
@@ -70,13 +55,40 @@ const MainMonitor: FC<MainMonitorProps> = ({
   dob,
   phone,
   gender,
-  id,
+  patient_id,
 }) => {
+  const {
+    data: selectedFollowers,
+    isLoading: isFollowerLoading,
+    error: followerError,
+  } = useSelectFollowers([patient_id]);
+  const {
+    currentParam,
+    isLoading: isCurrentParamLoading,
+    error: currentParamError,
+  } = useSocketValueInterval(patient_id);
+  const { data: socket } = useSocketQuery(patient_id);
+
+  const EcgChart = useMemo(() => {
+    return <Chart data={socket} config={ecgConfig} />;
+  }, [socket]);
+  const RespChart = useMemo(() => {
+    return <Chart data={socket} config={respConfig} />;
+  }, [socket]);
+  const Spo2Chart = useMemo(() => {
+    return <Chart data={socket} config={spo2Config} />;
+  }, [socket]);
+
+  if (isCurrentParamLoading) return <div>current param loading</div>;
+  if (isFollowerLoading) return <div>follower loading</div>;
+  if (currentParamError || !currentParam) return <div>socket error</div>;
+  if (followerError || !selectedFollowers) return <div>follower error</div>;
+  const follower = selectedFollowers[0];
   return (
     <div
       id="main-monitor"
       className={clsx(
-        "h-full min-w-[calc(50%-1.5rem)] rounded-lg border border-neutral-200 ",
+        "h-full w-1/2 min-w-[50%] rounded-lg border border-neutral-200 ",
         className
       )}
     >
@@ -138,33 +150,32 @@ const MainMonitor: FC<MainMonitorProps> = ({
       <div className="grid grid-cols-5">
         <div
           id="main-monitor__wave"
-          className="col-span-3 grid h-full grid-rows-3"
+          className="col-span-3 grid h-full grid-cols-1 grid-rows-3"
         >
-          <div className="bg-neutral-500"></div>
-          <div className="bg-neutral-400"></div>
-          <div className="bg-neutral-300"></div>
+          {EcgChart}
+          {RespChart}
+          {Spo2Chart}
         </div>
         <div id="main-monitor__param" className="col-span-2 grid grid-rows-4">
           <VitalMonitorBlock
             Icon={<HeartIcon className="ml-auto h-5 w-5 " />}
             type="ecg"
             isPing
-            warnings={ecgParam("warning")}
-            times={ecgParam("time")}
+            warning={currentParam.warning}
             childrenProps={[
               {
-                param: ecgParam("resp"),
-                maxRange: rangeParam("resp").max,
-                minRange: rangeParam("resp").min,
+                maxRange: follower.patient_detail.resp_range.max,
+                minRange: follower.patient_detail.resp_range.min,
                 sub: "bpm",
                 title: "resp",
+                value: currentParam.resp,
               },
               {
-                param: ecgParam("hr"),
-                maxRange: rangeParam("hr").max,
-                minRange: rangeParam("hr").min,
+                maxRange: follower.patient_detail.hr_range.max,
+                minRange: follower.patient_detail.hr_range.min,
                 sub: "bpm",
                 title: "hr",
+                value: currentParam.hr,
               },
             ]}
           />
@@ -172,22 +183,21 @@ const MainMonitor: FC<MainMonitorProps> = ({
             Icon={<HeartIcon className="ml-auto h-5 w-5" />}
             type="spo2"
             isPing
-            warnings={spo2Param("warning")}
-            times={spo2Param("time")}
+            warning={currentParam.warning}
             childrenProps={[
               {
-                param: spo2Param("spo2"),
-                maxRange: rangeParam("spo2").max,
-                minRange: rangeParam("spo2").min,
+                maxRange: follower.patient_detail.spo2_range.max,
+                minRange: follower.patient_detail.spo2_range.min,
                 sub: "%",
                 title: "spo2",
+                value: currentParam.spo2,
               },
               {
-                param: spo2Param("pr"),
-                maxRange: rangeParam("pr").max,
-                minRange: rangeParam("pr").min,
+                maxRange: follower.patient_detail.pr_range.max,
+                minRange: follower.patient_detail.pr_range.min,
                 sub: "bpm",
                 title: "pr",
+                value: currentParam.pr,
               },
             ]}
           />
@@ -195,25 +205,24 @@ const MainMonitor: FC<MainMonitorProps> = ({
           <VitalMonitorBlock
             Icon={<MdiHumanHandsdown className="h-5 w-5" />}
             type="nibp"
-            warnings={nipbParam("warning")}
-            times={nipbParam("time")}
+            warning={currentParam.warning}
             childrenProps={[
               {
-                param: nipbParam("sys"),
-                maxRange: rangeParam("nibp").high_pressure.max,
-                minRange: rangeParam("nibp").high_pressure.min,
-                param2: nipbParam("dia"),
-                maxRange2: rangeParam("nibp").low_pressure.max,
-                minRange2: rangeParam("nibp").low_pressure.max,
+                maxRange: follower.patient_detail.nibp_range.high_pressure.max,
+                minRange: follower.patient_detail.nibp_range.high_pressure.min,
+                maxRange2: follower.patient_detail.nibp_range.low_pressure.max,
+                minRange2: follower.patient_detail.nibp_range.low_pressure.min,
+                value: currentParam.sys,
+                value2: currentParam.dia,
                 sub: "nibp",
                 title: "sys/dia",
               },
 
               {
                 className: "flex flex-col items-end",
-                param: nipbParam("map"),
-                maxRange: rangeParam("nibp").low_pressure.max,
-                minRange: rangeParam("nibp").low_pressure.max,
+                maxRange: undefined,
+                minRange: undefined,
+                value: currentParam.map,
                 direction: "left",
                 showRange: false,
                 sub: "mmHg",
@@ -224,13 +233,12 @@ const MainMonitor: FC<MainMonitorProps> = ({
           <VitalMonitorBlock
             Icon={<FluentTemperature16Filled className="h-5 w-5" />}
             type="temp"
-            warnings={tempParam("warning")}
-            times={ecgParam("time")}
+            warning={currentParam.warning}
             childrenProps={[
               {
-                param: tempParam("temp"),
-                maxRange: rangeParam("temp").max,
-                minRange: rangeParam("temp").min,
+                maxRange: follower.patient_detail.temp_range.max,
+                minRange: follower.patient_detail.temp_range.min,
+                value: currentParam.temp,
                 sub: "°C",
                 title: "Temp 1",
               },
