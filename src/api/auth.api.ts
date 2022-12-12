@@ -5,7 +5,7 @@ export const fetchAuth = async (): Promise<UserData> => {
     {
       headers: {
         fcm_token: "test4",
-        Authorization: "Basic Kzg0ODM2NjUwMzc0OjY2NzczNTA4",
+        Authorization: "Basic Kzg0OTczOTgxMjA0OjEyMzQ1Ng==",
       },
     }
   );
