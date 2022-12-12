@@ -5,18 +5,17 @@ import { UserCircle, WarningTriangleIcon } from "../Icons";
 import MiniMonitorValue from "./MiniMonitorValue";
 import socketDataGen from "../../utils/sampleData";
 import {
-  MonitorContext,
-  MonitorContextType,
+  ActiveMonitorsApiContext,
+  ActiveMonitorsApiContextType,
 } from "../../hooks/useActiveMonitorProvider";
-
-const socketData = socketDataGen();
+import { useSocketValueInterval } from "../../hooks/useValueInterval";
 
 export interface MiniMonitorProps {
   img?: string;
   name: string;
   dob: string; // date of birt
   className?: string;
-  id: string;
+  patientId: string;
 }
 
 const isEllipsisActive = (inner: any, outer: any) => {
@@ -29,9 +28,18 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
   dob,
   img,
   className,
-  id,
+  patientId,
 }) => {
-  const { addMonitorIds } = useContext(MonitorContext) as MonitorContextType;
+  // const { data, isLoading, error } = useSocketSubscription(patientId);
+  const { onAddMonitorIds } = useContext(
+    ActiveMonitorsApiContext
+  ) as ActiveMonitorsApiContextType;
+  const {
+    currentParam: value,
+    isLoading,
+    error,
+  } = useSocketValueInterval(patientId);
+
   const nameRef = useRef<HTMLParagraphElement>(null);
   const nameWrapperRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -40,13 +48,15 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
       nameRef.current.classList.add("animation-right-to-left");
     }
   }, [nameRef, nameWrapperRef]);
+  if (isLoading) return <div>loading</div>;
+  if (error) return <div>error</div>;
   return (
     <div
       className={clsx(
         "row-span-1 h-full w-full max-w-sm border-2 border-l-0 border-b-0 border-neutral-300 bg-neutral-500 bg-grad-3 py-1.5 px-4 ",
         className
       )}
-      onClick={() => addMonitorIds(id)}
+      onClick={() => onAddMonitorIds(patientId)}
     >
       <div className="mb-1 flex items-center gap-x-2">
         {img ? (
@@ -60,10 +70,7 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
         )}
         <div className="flex w-full items-center justify-between">
           <div>
-            <div
-              ref={nameWrapperRef}
-              className="w-full max-w-[22ch] overflow-hidden"
-            >
+            <div ref={nameWrapperRef} className="w-[22ch] overflow-hidden">
               <p ref={nameRef} className="w-fit truncate text-sm">
                 {name}
               </p>
@@ -75,25 +82,17 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
       </div>
       <div className="mb-1 grid grid-cols-4 justify-between">
         <MiniMonitorValue
-          name="rr"
+          name="resp"
           unit="brpm"
-          param={socketData.param.ecg_param.resp}
-          times={socketData.param.ecg_param.time}
+          value={value?.resp}
           type="ecg"
         />
-        <MiniMonitorValue
-          name="hr"
-          unit="bpm"
-          param={socketData.param.ecg_param.hr}
-          times={socketData.param.ecg_param.time}
-          type="ecg"
-        />
+        <MiniMonitorValue name="hr" unit="bpm" value={value?.hr} type="ecg" />
         <MiniMonitorValue
           name="sys / dia"
           unit="mmHg"
-          param={socketData.param.nibp_param.sys}
-          param2={socketData.param.nibp_param.dia}
-          times={socketData.param.nibp_param.time}
+          value={value?.sys}
+          value2={value?.dia}
           type="nibp"
           className="col-span-2"
         />
@@ -102,23 +101,15 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
         <MiniMonitorValue
           name="spo2"
           unit="%"
-          param={socketData.param.spo2_param.spo2}
-          times={socketData.param.ecg_param.time}
+          value={value?.spo2}
           type="spo2"
         />
-        <MiniMonitorValue
-          name="pr"
-          unit="bpm"
-          param={socketData.param.spo2_param.pr}
-          times={socketData.param.ecg_param.time}
-          type="spo2"
-        />
+        <MiniMonitorValue name="pr" unit="bpm" value={value?.pr} type="spo2" />
         <MiniMonitorValue
           className="col-span-2"
           name="temp"
           unit="°C"
-          param={socketData.param.temp_param.temp}
-          times={socketData.param.temp_param.time}
+          value={value?.temp}
           type="temp"
         />
       </div>

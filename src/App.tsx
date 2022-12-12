@@ -1,15 +1,12 @@
 import SideBar from "./components/Sidebar/Sidebar";
 import MiniMonitors from "./components/MiniMonitor/MiniMonitorsContainer";
 import { ActiveMonitorsProvider } from "./hooks/useActiveMonitorProvider";
-import { fetchAuth } from "./api/auth.api";
-import { useQuery } from "@tanstack/react-query";
 import MainMonitorsContainer from "./components/MainMonitor/MainMonitorContainer";
+import { useFetchUser } from "./api/hooks/useFetchUser";
 
 function App() {
-  const { data: user } = useQuery({
-    queryKey: ["auth"],
-    queryFn: fetchAuth,
-  });
+  const { data: user } = useFetchUser();
+  console.log(user);
   return (
     <ActiveMonitorsProvider>
       <div className="w-full bg-neutral-600 pl-14">

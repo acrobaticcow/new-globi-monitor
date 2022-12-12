@@ -1,94 +1,73 @@
-import { useReducer, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useSocketQuery } from "../api/hooks/useSocketSubscription";
 
-type valuesAndParams = {
-  param: ReadonlyArray<number>;
-  param2?: ReadonlyArray<number>;
-  value: number;
-  value2: number | undefined;
+type ExtractedParam = {
+  resp: number[];
+  hr: number[];
+  sys: number[];
+  dia: number[];
+  cuff: number[];
+  map: number[];
+  spo2: number[];
+  pr: number[];
+  temp: number[];
+  warning: string[];
 };
-interface ValueIntervalState {
-  warning?: string;
-  warnings?: string[];
-  valuesAndParams: valuesAndParams[];
-}
-
-enum ValueIntervalActionKind {
-  UPDATE = "update",
-  PING = "ping",
-}
-type ValueIntervalActionPayload = {
-  index: number;
-};
-interface ValueIntervalAction {
-  type: ValueIntervalActionKind;
-  payload?: ValueIntervalActionPayload;
-}
-
-const valueIntervalReducer = (
-  state: ValueIntervalState,
-  { type, payload }: ValueIntervalAction
-): ValueIntervalState => {
-  const { warnings, valuesAndParams } = state;
-  switch (type) {
-    case ValueIntervalActionKind.UPDATE:
-      if (!payload) return state;
-      return {
-        ...state,
-        warning: warnings ? warnings[payload.index] : undefined,
-        valuesAndParams: valuesAndParams.map((el) => ({
-          ...el,
-          value: el.param[payload.index],
-          value2: el.param2 ? el.param2[payload.index] : undefined,
-        })),
-      };
-    default:
-      return state;
-  }
+type Value = {
+  resp: number;
+  hr: number;
+  sys: number;
+  dia: number;
+  cuff: number;
+  map: number;
+  spo2: number;
+  pr: number;
+  temp: number;
+  warning: string;
 };
 
-interface useValueIntervalProps {
-  valuesAndParams: valuesAndParams[];
-  warnings?: string[];
-  times: number[];
-}
+export const useSocketValueInterval = (patientId: string) => {
+  const { data, isLoading, error } = useSocketQuery(patientId);
+  const [index, setIndex] = useState(0);
 
-export const useValueInterval = ({
-  valuesAndParams,
-  times,
-  warnings,
-}: useValueIntervalProps) => {
-  const [{ warning, valuesAndParams: currentValueAndParams }, dispatch] =
-    useReducer(valueIntervalReducer, {
-      warnings,
-      valuesAndParams,
-    });
+  const currentParam = useMemo(() => {
+    if (!data) return;
+    const extractedParam = {
+      cuff: data.param.nibp_param.cuff,
+      dia: data.param.nibp_param.dia,
+      hr: data.param.ecg_param.hr,
+      map: data.param.nibp_param.map,
+      pr: data.param.spo2_param.pr,
+      resp: data.param.ecg_param.resp,
+      spo2: data.param.spo2_param.spo2,
+      sys: data.param.nibp_param.sys,
+      temp: data.param.temp_param.temp,
+      warning: data.warning.warning,
+    } as ExtractedParam;
+    const paramEntries = Object.entries(extractedParam);
+    const currentEntry = paramEntries.map(([key, value]) => [
+      key,
+      value[index],
+    ]);
+    const result = Object.fromEntries(currentEntry) as Value;
+    return result;
+  }, [data, index]);
 
   useEffect(() => {
-    const timeoutIdArr: number[] = [];
-    /**
-     * thời gian mà thẻ sẽ thay đổi thông số
-     * @example time = [2,2,1] thì sau 2s sẽ cập nhật thông số mới
-     * và 2s sau nữa cập nhật thông số mới và cuối cùng là 1s sau cập nhật thông số
-     */
-    const beats = times.map((el, i, arr) => {
-      if (i === 0) return 0;
-      return el - arr[i - 1];
-    });
-    for (let i = 0; i < beats.length; i++) {
-      const beat = beats[i];
-      let timeoutId = setTimeout(() => {
-        dispatch({
-          type: ValueIntervalActionKind.UPDATE,
-          payload: { index: i },
-        });
-        /**
-         * trích xuất warning, nếu không có thì là undefined
-         */
-      }, 1000 * i * beat);
-      timeoutIdArr.push(timeoutId);
-    }
-    return () => timeoutIdArr.forEach((el) => clearTimeout(el));
-  }, [times]);
+    if (!data) return;
+    const elapsed = data.to - data.from;
+    const intervalId = setInterval(() => {
+      setIndex((prev) => {
+        const current = prev + 1;
+        if (current > elapsed) {
+          clearInterval(intervalId);
+          return 0;
+        }
+        return current;
+      });
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, [data]);
 
-  return { warning, currentValueAndParams };
+  return { currentParam, isLoading, error };
 };
