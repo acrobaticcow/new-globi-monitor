@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { FC, useContext } from "react";
-import { useLayoutEffect, useRef } from "react";
-import { UserCircle, WarningTriangleIcon } from "../Icons";
+import { useLayoutEffect, useRef, useState } from "react";
+import { UserCircle, WarningTriangleIcon, XMarkIcon } from "../Icons";
 import MiniMonitorValue from "./MiniMonitorValue";
 import socketDataGen from "../../utils/sampleData";
 import {
@@ -9,6 +9,7 @@ import {
   ActiveMonitorsApiContextType,
 } from "../../hooks/useActiveMonitorProvider";
 import { useSocketValueInterval } from "../../hooks/useValueInterval";
+import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
 
 export interface MiniMonitorProps {
   img?: string;
@@ -31,7 +32,7 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
   patientId,
 }) => {
   // const { data, isLoading, error } = useSocketSubscription(patientId);
-  const { onAddMonitorIds } = useContext(
+  const { onAddMonitorIds, onDelMiniMonitorId } = useContext(
     ActiveMonitorsApiContext
   ) as ActiveMonitorsApiContextType;
   const {
@@ -39,6 +40,8 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
     isLoading,
     error,
   } = useSocketValueInterval(patientId);
+  const { turnOffSocket } = useSocketQuery(patientId);
+  const [isHover, setIsHover] = useState(false);
 
   const nameRef = useRef<HTMLParagraphElement>(null);
   const nameWrapperRef = useRef<HTMLDivElement>(null);
@@ -57,6 +60,8 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
         className
       )}
       onClick={() => onAddMonitorIds(patientId)}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
     >
       <div className="mb-1 flex items-center gap-x-2">
         {img ? (
@@ -77,7 +82,19 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
             </div>
             <p className="text-xs text-neutral-200">{dob}</p>
           </div>
-          <WarningTriangleIcon className="h-6 w-6 stroke-danger-600" />
+          {isHover ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelMiniMonitorId(patientId);
+                turnOffSocket();
+              }}
+            >
+              <XMarkIcon className="h-5 w-5 fill-neutral-300 stroke-transparent stroke-0 text-neutral-200 " />
+            </button>
+          ) : (
+            <WarningTriangleIcon className="h-6 w-6 stroke-danger-600" />
+          )}
         </div>
       </div>
       <div className="mb-1 grid grid-cols-4 justify-between">

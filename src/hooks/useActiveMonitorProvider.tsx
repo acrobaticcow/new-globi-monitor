@@ -1,5 +1,5 @@
 import { createContext, useMemo, useReducer } from "react";
-import { produce } from "immer";
+import { produce, current } from "immer";
 
 export type MiniMonitorContextType = {
   activeMiniMonitorIds: string[];
@@ -10,6 +10,8 @@ export type MonitorContextType = {
 export interface ActiveMonitorsApiContextType {
   onAddMiniMonitorIds: (id: string) => void;
   onAddMonitorIds: (id: string) => void;
+  onDelMiniMonitorId: (id: string) => void;
+  onDelMonitorId: (id: string) => void;
 }
 interface ActiveMonitorsProviderProps {
   children: any;
@@ -30,10 +32,14 @@ interface State {
 enum ActionKind {
   addMiniMonitorId = "addMiniMonitorIds",
   addMonitorId = "addMonitorIds",
+  delMonitorId = "delMonitorId",
+  delMiniMonitorId = "delMiniMonitorId",
 }
 type Action =
   | { type: ActionKind.addMiniMonitorId; payload: string }
-  | { type: ActionKind.addMonitorId; payload: string };
+  | { type: ActionKind.addMonitorId; payload: string }
+  | { type: ActionKind.delMiniMonitorId; payload: string }
+  | { type: ActionKind.delMonitorId; payload: string };
 
 const reducer = produce((state: State, action: Action): State => {
   const { type, payload } = action;
@@ -48,6 +54,22 @@ const reducer = produce((state: State, action: Action): State => {
     case ActionKind.addMonitorId:
       if (state.activeMonitorIds.includes(payload)) return state;
       state.activeMonitorIds.push(payload);
+      return state;
+    case ActionKind.delMiniMonitorId:
+      state.activeMiniMonitorIds = state.activeMiniMonitorIds.filter(
+        (id) => id !== payload
+      );
+      state.activeMonitorIds = state.activeMonitorIds.filter(
+        (id) => id !== payload
+      );
+      // state.activeMonitorIds = state.activeMonitorIds.filter(
+      //   (id) => id !== payload
+      // );
+      return state;
+    case ActionKind.delMonitorId:
+      state.activeMonitorIds = state.activeMonitorIds.filter(
+        (id) => id !== payload
+      );
       return state;
     default:
       return state;
@@ -67,15 +89,23 @@ export const ActiveMonitorsProvider = ({
   const api = useMemo(() => {
     const onAddMiniMonitorIds = (id: string) => {
       dispatch({ type: ActionKind.addMiniMonitorId, payload: id });
-      // if (activeMiniMonitorIds.length < 2) {
-      //   dispatch({ type: ActionKind.addMonitorId, payload: id });
-      // }
     };
     const onAddMonitorIds = (id: string) => {
       dispatch({ type: ActionKind.addMonitorId, payload: id });
     };
-    return { onAddMiniMonitorIds, onAddMonitorIds };
-  }, []);
+    const onDelMiniMonitorId = (id: string) => {
+      dispatch({ type: ActionKind.delMiniMonitorId, payload: id });
+    };
+    const onDelMonitorId = (id: string) => {
+      dispatch({ type: ActionKind.delMonitorId, payload: id });
+    };
+    return {
+      onAddMiniMonitorIds,
+      onAddMonitorIds,
+      onDelMiniMonitorId,
+      onDelMonitorId,
+    };
+  }, []) as ActiveMonitorsApiContextType;
 
   return (
     <ActiveMonitorsApiContext.Provider value={api}>

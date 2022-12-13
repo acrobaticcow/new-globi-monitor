@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import type { FunctionComponent } from "react";
 import { cloneChild } from "../utils/function";
 import { WarningIcon } from "./Icons";
@@ -35,7 +35,7 @@ interface VitalMonitorBlockProps {
    * type of VitalMonitorContent
    */
   type: Variant;
-  warning: string;
+  status: string;
   Icon?: any;
   isPing?: boolean;
   childrenProps: VitalContentMonitorProps[];
@@ -86,10 +86,10 @@ export const varFillBase = (variant: Variant | undefined) => {
 
 export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
   type,
-  warning,
   Icon,
   isPing,
   childrenProps,
+  status,
 }) => {
   const [ping, setPing] = useState(false);
   useEffect(() => {
@@ -97,12 +97,11 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
     const timeoutId = setTimeout(() => {
       setPing(false);
     }, 500);
-    console.log("anything");
     return () => {
       setPing(false);
       clearTimeout(timeoutId);
     };
-  }, []);
+  }, [childrenProps]);
 
   return (
     <div className="relative  w-full max-w-[573px] rounded px-2">
@@ -149,7 +148,7 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
         </div>
         <div className="flex  items-center">
           <WarningIcon className="inline-block h-5 w-5 stroke-neutral-200" />
-          <span className="mx-4 text-xs font-semibold">{warning}</span>
+          <span className="mx-4 text-xs font-semibold">{status}</span>
         </div>
       </div>
     </div>
