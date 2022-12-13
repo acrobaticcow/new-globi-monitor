@@ -561,7 +561,7 @@ export class IndicatorRenderer {
 }
 
 // for handling zoom
-class ZoomHandler {
+export class ZoomHandler {
   data;
   numPoints;
   minVal;
@@ -607,12 +607,12 @@ class ZoomHandler {
             gl_FragColor = vec4(0.0, 0.0,0.0,1.0);               
         }`;
 
-  constructor(divId, data) {
+  constructor(parent, data) {
     this.data = data;
-    let parent = document.getElementById(divId);
-    if (!parent) {
-      throw "container not found!";
-    }
+    // let parent = document.getElementById(divId);
+    // if (!parent) {
+    //   throw "container not found!";
+    // }
     //create canvas
     this.width = parent.offsetWidth;
     this.height = parent.offsetHeight - 80;

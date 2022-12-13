@@ -6,7 +6,6 @@ import { useFetchUser } from "./api/hooks/useFetchUser";
 
 function App() {
   const { data: user } = useFetchUser();
-  console.log(user);
   return (
     <ActiveMonitorsProvider>
       <div className="w-full bg-neutral-600 pl-14">

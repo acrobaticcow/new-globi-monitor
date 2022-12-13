@@ -1,7 +1,12 @@
 import type { FC } from "react";
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 // @ts-ignore
-import { LayoutUtil, BeepWrapper, IndicatorRenderer } from "./engine.js";
+import {
+  LayoutUtil,
+  BeepWrapper,
+  IndicatorRenderer,
+  ZoomHandler,
+} from "./engine.js";
 import { SocketData } from "../../models/realtime.models.js";
 import { ExitFullScreenMiniIcon, FullScreenMiniIcon } from "../Icons.js";
 
@@ -52,11 +57,13 @@ const visualContext = {
 
 const Chart: FC<ChartProps> = ({ data, config }) => {
   const parentRef = useRef<HTMLDivElement>(null);
-  const modalContentRef = useRef(null);
+  const modalContentRef = useRef<HTMLDivElement>(null);
   const chartWrapperRef = useRef<HTMLDivElement>(null);
   const renderRef = useRef<any>(null);
   const chartRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const zoomHandlerRef = useRef<any>(null);
+  // const [isShowZoomModal, setIsShowZoomModal] = useState(false);
 
   // init
   useEffect(() => {
@@ -66,7 +73,35 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
     const chart = chartRef.current;
     if (!parent || !modal || !chartWrapper || !chart) return;
     LayoutUtil.enableDrag(modalContentRef.current);
-    renderRef.current = new IndicatorRenderer(chart, config);
+    const render = (renderRef.current = new IndicatorRenderer(chart, config));
+
+    const zoom = (
+      data: SocketData["wave"],
+      numPoints: number,
+      minVal: number,
+      maxVal: number,
+      startIdx: number,
+      endIdx: number
+    ) => {
+      console.log("anything");
+      // tìm zôm handler,
+      const modal = modalContentRef.current;
+      if (!modal) return;
+      modal.style.display = "block";
+      // setIsShowZoomModal(true);
+      const zoomHandler = (zoomHandlerRef.current = new ZoomHandler(
+        modal,
+        data
+      ));
+      zoomHandler.numPoints = numPoints;
+      zoomHandler.minVal = minVal;
+      zoomHandler.maxVal = maxVal;
+      zoomHandler.startIdx = startIdx;
+      zoomHandler.endIdx = endIdx;
+      zoomHandler.render();
+    };
+
+    render.registerZoomFn(zoom);
 
     return () => {
       if (!chart.lastChild) return;
@@ -116,6 +151,25 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
     }
   }, []);
 
+  const unzoom = () => {
+    const modal = modalContentRef.current;
+    const zoomHandler = zoomHandlerRef.current;
+    if (!modal || !zoomHandler) return;
+
+    // setIsShowZoomModal(false);
+    modal.style.display = "none";
+    zoomHandler.cleanup();
+    const zoomCanvas = document.getElementById("zoom-canvas"),
+      zoomDetail = document.getElementById("zoom-detail");
+    if (!zoomCanvas || !zoomDetail) {
+      console.log("cant find 'zoom-canvas' and 'zoom-detail' element");
+      return;
+    }
+    modal.removeChild(zoomDetail);
+    modal.removeChild(zoomCanvas);
+    // zoomHandlerRef.current = null; // exp
+  };
+
   return (
     <div ref={parentRef} className="relative h-full w-full">
       {/* <div className="sound-request">
@@ -126,14 +180,16 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         </p>
       </div> */}
       <div className="h-full w-full" id="main-div">
-        <div id="zoomModal" className="modal">
+        <div id="zoomModal" className="hidden">
           <div
             ref={modalContentRef}
             className="modal-content"
             id="model-content"
           >
             <strong>Zoom in</strong>
-            <span className="close">&times;</span>
+            <span className="close" onClick={unzoom}>
+              &times;
+            </span>
           </div>
         </div>
         <div

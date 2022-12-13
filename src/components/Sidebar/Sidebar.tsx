@@ -18,7 +18,7 @@ const SideBar: FC<SideBarProps> = ({ onChange }) => {
     setActiveId(id);
   };
   return (
-    <nav className="fixed top-0 left-0 z-20 flex h-screen max-h-screen w-14 flex-col border-r border-neutral-300 bg-neutral-500 pb-4 shadow-lg shadow-neutral-400">
+    <nav className="fixed top-0 left-0 z-50 flex h-screen max-h-screen w-14 flex-col border-r border-neutral-300 bg-neutral-500 pb-4 shadow-lg shadow-neutral-400">
       <div className="mx-2 py-2">
         <img
           className="aspect-square w-full rounded-full bg-neutral-100 object-cover object-center ring-1 ring-neutral-200"

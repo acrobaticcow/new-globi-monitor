@@ -1,4 +1,5 @@
-import { FC, useMemo } from "react";
+import { useMemo, useState, useContext } from "react";
+import type { FC } from "react";
 import {
   CheckCircleIcon,
   FluentTemperature16Filled,
@@ -6,14 +7,21 @@ import {
   HeartIcon,
   MdiHumanHandsdown,
   WarningTriangleIcon,
+  XMarkIcon,
 } from "../Icons";
 import { VitalMonitorBlock } from "../VitalCard";
 import clsx from "clsx";
 import { useSocketValueInterval } from "../../hooks/useValueInterval";
 import { useSelectFollowers } from "../../api/hooks/useFetchPatients";
 import Chart, { ConfigType } from "../Chart/Chart";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
-import { usePageVisibility } from "react-page-visibility";
+import {
+  ActiveMonitorsApiContext,
+  ActiveMonitorsApiContextType,
+} from "../../hooks/useActiveMonitorProvider";
+import { UserData } from "../../models/auth.models";
+import { SocketData } from "../../models/realtime.models";
 /**
  * Chuyển từ độc c sang độ f
  */
@@ -31,7 +39,7 @@ const ecgConfig = {
     color: "00FF00",
     WINDOW_POINTS: 250,
     scanBarLength: 40,
-    INTERVAL: 15,
+    INTERVAL: 20,
     type: "ecg",
   } as ConfigType,
   spo2Config = {
@@ -68,8 +76,17 @@ const MainMonitor: FC<MainMonitorProps> = ({
     isLoading: isCurrentParamLoading,
     error: currentParamError,
   } = useSocketValueInterval(patient_id);
-  const { data: socket } = useSocketQuery(patient_id);
-  const isVisible = usePageVisibility();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData(["user"]) as UserData;
+  const socket = queryClient.getQueryData([
+    user.user_id,
+    patient_id,
+    Promise,
+  ]) as SocketData;
+  const [isHover, setIsHover] = useState(false);
+  const { onDelMonitorId } = useContext(
+    ActiveMonitorsApiContext
+  ) as ActiveMonitorsApiContextType;
 
   const EcgChart = useMemo(() => {
     return <Chart data={socket} config={ecgConfig} />;
@@ -81,9 +98,6 @@ const MainMonitor: FC<MainMonitorProps> = ({
     return <Chart data={socket} config={spo2Config} />;
   }, [socket]);
 
-  if (!isVisible) {
-    return <div></div>;
-  }
   if (isCurrentParamLoading) return <div>current param loading</div>;
   if (isFollowerLoading) return <div>follower loading</div>;
   if (currentParamError || !currentParam) return <div>socket error</div>;
@@ -96,6 +110,8 @@ const MainMonitor: FC<MainMonitorProps> = ({
         "h-full w-1/2 min-w-[50%] rounded-lg border border-neutral-200 ",
         className
       )}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
     >
       <div className="flex items-center justify-between py-2 pl-2.5 pr-1.5">
         <div className="flex items-center gap-x-3">
@@ -129,28 +145,40 @@ const MainMonitor: FC<MainMonitorProps> = ({
             <HalfBatteryIcon className="h-5 w-5 fill-neutral-200 stroke-neutral-200 stroke-0" />
           </div>
         </div>
-        <div
-          className={clsx(
-            "w-[calc(40%-0.625rem)] rounded-md border px-2 py-1 text-sm",
-            isError
-              ? "border-danger-500 bg-danger/[22%] "
-              : "border-success bg-success/[22%] "
-          )}
-        >
-          {isError ? (
-            <WarningTriangleIcon className="mr-2 inline-block h-5 w-5 stroke-danger-100 align-middle" />
-          ) : (
-            <CheckCircleIcon className="mr-2 inline-block h-5 w-5 stroke-success-100 align-middle" />
-          )}
-          <span
+        {currentParam.warning && !isHover && (
+          <div
             className={clsx(
-              "align-middle ",
-              isError ? "text-danger-50" : "text-success-50"
+              "w-[calc(40%-0.625rem)] rounded-md border px-2 py-1 text-sm",
+              isError
+                ? "border-danger-500 bg-danger/[22%] "
+                : "border-success bg-success/[22%] "
             )}
           >
-            warning
-          </span>
-        </div>
+            {isError ? (
+              <WarningTriangleIcon className="mr-2 inline-block h-5 w-5 stroke-danger-100 align-middle" />
+            ) : (
+              <CheckCircleIcon className="mr-2 inline-block h-5 w-5 stroke-success-100 align-middle" />
+            )}
+            <span
+              className={clsx(
+                "align-middle ",
+                isError ? "text-danger-50" : "text-success-50"
+              )}
+            >
+              {currentParam.warning}
+            </span>
+          </div>
+        )}
+        {isHover && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelMonitorId(patient_id);
+            }}
+          >
+            <XMarkIcon className="h-5 w-5 fill-neutral-300 stroke-transparent stroke-0 text-neutral-200 " />
+          </button>
+        )}
       </div>
       <div className="grid grid-cols-5">
         <div
@@ -166,7 +194,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
             Icon={<HeartIcon className="ml-auto h-5 w-5 " />}
             type="ecg"
             isPing
-            warning={currentParam.warning}
+            status={currentParam.ecgSt}
             childrenProps={[
               {
                 maxRange: follower.patient_detail.resp_range.max,
@@ -188,7 +216,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
             Icon={<HeartIcon className="ml-auto h-5 w-5" />}
             type="spo2"
             isPing
-            warning={currentParam.warning}
+            status={currentParam.spo2St}
             childrenProps={[
               {
                 maxRange: follower.patient_detail.spo2_range.max,
@@ -210,7 +238,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
           <VitalMonitorBlock
             Icon={<MdiHumanHandsdown className="h-5 w-5" />}
             type="nibp"
-            warning={currentParam.warning}
+            status={currentParam.nibpSt}
             childrenProps={[
               {
                 maxRange: follower.patient_detail.nibp_range.high_pressure.max,
@@ -238,7 +266,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
           <VitalMonitorBlock
             Icon={<FluentTemperature16Filled className="h-5 w-5" />}
             type="temp"
-            warning={currentParam.warning}
+            status={currentParam.tempSt}
             childrenProps={[
               {
                 maxRange: follower.patient_detail.temp_range.max,
