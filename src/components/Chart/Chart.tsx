@@ -185,7 +185,7 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         <div
           ref={zoomModalRef}
           id="zoomModal"
-          className="fixed left-0 top-0 z-40 hidden h-full w-full cursor-move overflow-auto bg-neutral-600/40 pt-24"
+          className="fixed left-0 top-0 z-30 hidden h-full w-full cursor-move overflow-auto bg-neutral-600/40 pt-24"
         >
           <div
             ref={modalContentRef}
@@ -194,7 +194,7 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
           >
             <div className="inset-x-0 inset-y-0 flex items-center justify-between">
               <button
-                className="close group peer rounded-full border border-neutral-300"
+                className="close shadow-xs group peer rounded-full shadow-neutral-100"
                 onClick={unzoom}
               >
                 <XMarkIcon className=" order-last h-6 w-6 text-neutral-200 shadow-neutral-300 transition-colors duration-200 ease-in group-hover:text-neutral-100/80 group-hover:shadow-md" />
@@ -210,7 +210,10 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
           className="fixed inset-0 z-50 hidden h-screen w-screen bg-black"
           id="overlay"
         >
-          <div className="absolute inset-0 z-40 bg-inherit"></div>
+          <div
+            id="maximize-canvas-container"
+            className="absolute inset-0 z-40 bg-inherit"
+          ></div>
           <button
             className="absolute top-2 right-2 z-50 text-neutral-200 transition-all hover:text-neutral-100  active:scale-90 active:text-neutral-100"
             onClick={minimize}
@@ -221,11 +224,14 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         <div id="container" className="relative h-full w-full">
           <div
             ref={chartWrapperRef}
-            className="relative h-full w-full overflow-x-auto overflow-y-auto"
+            className="relative h-full w-full overflow-x-hidden overflow-y-hidden"
             id="left-pane"
           >
+            <div className="absolute left-2 top-2 z-20 text-lg font-semibold uppercase leading-none text-neutral-100">
+              {config.type}
+            </div>
             <button
-              className="absolute top-2 right-2 z-30 text-neutral-200 transition-all hover:text-neutral-100  active:scale-90 active:text-neutral-100"
+              className="absolute top-2 right-2 z-20 text-neutral-200 transition-all hover:text-neutral-100  active:scale-90 active:text-neutral-100"
               onClick={maximize}
             >
               <FullScreenMiniIcon className="h-5 w-5" />

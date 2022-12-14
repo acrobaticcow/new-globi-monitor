@@ -3,7 +3,6 @@ import { FC, useContext } from "react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { UserCircle, WarningTriangleIcon, XMarkIcon } from "../Icons";
 import MiniMonitorValue from "./MiniMonitorValue";
-import socketDataGen from "../../utils/sampleData";
 import {
   ActiveMonitorsApiContext,
   ActiveMonitorsApiContextType,
