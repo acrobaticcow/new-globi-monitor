@@ -14,10 +14,11 @@ const MainMonitorsContainer: FC<MainMonitorsContainerProps> = () => {
 
   return (
     <div className="flex h-3/5 w-full gap-6 overflow-x-scroll">
-      {data?.map(
-        ({
+      {data?.map((follower) => {
+        const {
           patient_detail: { dob, phone, patient_name, gender, patient_id },
-        }) => (
+        } = follower;
+        return (
           <MainMonitor
             dob={dob}
             phone={phone}
@@ -25,9 +26,10 @@ const MainMonitorsContainer: FC<MainMonitorsContainerProps> = () => {
             name={patient_name}
             key={patient_id}
             patient_id={patient_id}
+            follower={follower}
           />
-        )
-      )}
+        );
+      })}
     </div>
   );
 };

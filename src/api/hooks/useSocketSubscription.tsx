@@ -21,7 +21,6 @@ export const useSocketQuery = (
   const turnOff = useCallback(() => {
     const socket = socketRef.current;
     if (!socket || !user) return;
-    console.log(socket);
     socket.off("connect");
     socket.off("disconnect");
     socket.off("join-status");
@@ -66,12 +65,8 @@ export const useSocketQuery = (
       token: user.user_api_key,
       topic,
     });
-    // return () => { socket.off("connect"); socket.off("disconnect");
-    //   socket.off("join-status");
-    //   socket.off("new-records");
-    //   queryClient.removeQueries([user.user_id, patientId, Promise]);
-    // };
   }, [queryClient, user, patientId, socketRef]);
+
   return {
     ...useQuery<SocketData, Error>({
       queryKey: [user?.user_id, patientId, Promise],
@@ -81,13 +76,11 @@ export const useSocketQuery = (
           const socket = (socketRef.current = io(
             "https://glassy-totality-324307.uc.r.appspot.com/"
           ));
-          console.log(socket);
           socket.on("error", () => {
             throw new Error("lỗi kết nỗi socket");
           });
         }),
       staleTime: Infinity,
-      keepPreviousData: true,
       ...options,
     }),
     turnOffSocket: turnOff,
