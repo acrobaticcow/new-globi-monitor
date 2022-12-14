@@ -247,7 +247,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
           </div>
         </div>
         <AnimatePresence>
-          {!!currentParam.warning && !isHover && (
+          {!!currentParam.warning && (
             <m.div
               initial={{
                 opacity: 0,
@@ -261,7 +261,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
               transition={{
                 type: "spring",
                 stiffness: 120,
-                damping: 18,
+                damping: 20,
               }}
               className={clsx(
                 "absolute left-1/2 top-4 z-50 flex w-80 -translate-x-1/2  items-center justify-between rounded-md border px-2 py-1 text-sm shadow-lg shadow-neutral-400 backdrop-blur-md",

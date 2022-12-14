@@ -6,6 +6,8 @@ import MiniMonitorValue from "./MiniMonitorValue";
 import {
   ActiveMonitorsApiContext,
   ActiveMonitorsApiContextType,
+  MonitorContext,
+  MonitorContextType,
 } from "../../hooks/useActiveMonitorProvider";
 import { useSocketValueInterval } from "../../hooks/useValueInterval";
 import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
@@ -31,9 +33,10 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
   patientId,
 }) => {
   // const { data, isLoading, error } = useSocketSubscription(patientId);
-  const { onAddMonitorIds, onDelMiniMonitorId } = useContext(
+  const { onAddMonitorIds, onDelMiniMonitorId, onDelMonitorId } = useContext(
     ActiveMonitorsApiContext
   ) as ActiveMonitorsApiContextType;
+  const { activeMonitorIds } = useContext(MonitorContext) as MonitorContextType;
   const {
     currentParam: value,
     isLoading,
@@ -55,10 +58,17 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
   return (
     <div
       className={clsx(
-        "row-span-1 h-full w-full max-w-sm border-2 border-l-0 border-b-0 border-neutral-300 bg-neutral-500 bg-grad-3 py-1.5 px-4 ",
-        className
+        "row-span-1 h-full w-full max-w-sm rounded-md border border-neutral-300 bg-neutral-500 bg-grad-3 py-1.5 px-4 ",
+        className,
+        activeMonitorIds.includes(patientId) &&
+          "border-spacing-1 border-2 border-red-900"
       )}
-      onClick={() => onAddMonitorIds(patientId)}
+      onClick={() => {
+        onAddMonitorIds(patientId);
+        if (activeMonitorIds.includes(patientId)) {
+          onDelMonitorId(patientId);
+        }
+      }}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
