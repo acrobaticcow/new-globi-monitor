@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSocketQuery } from "../api/hooks/useSocketSubscription";
-import { SocketData } from "../models/realtime.models";
 
 type ExtractedParam = {
   resp: number[];

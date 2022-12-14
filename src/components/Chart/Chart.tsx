@@ -8,7 +8,11 @@ import {
   ZoomHandler,
 } from "./engine.js";
 import { SocketData } from "../../models/realtime.models.js";
-import { ExitFullScreenMiniIcon, FullScreenMiniIcon } from "../Icons.js";
+import {
+  ExitFullScreenMiniIcon,
+  FullScreenMiniIcon,
+  XMarkIcon,
+} from "../Icons.js";
 
 export type ConfigType = {
   color: string;
@@ -63,20 +67,23 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const zoomHandlerRef = useRef<any>(null);
+  const zoomModalRef = useRef<HTMLDivElement>(null);
   // const [isShowZoomModal, setIsShowZoomModal] = useState(false);
 
   // init
   useEffect(() => {
     const parent = parentRef.current;
-    const modal = modalContentRef.current;
+    const modalContent = modalContentRef.current;
     const chartWrapper = chartWrapperRef.current;
+    const zoomModal = zoomModalRef.current;
     const chart = chartRef.current;
-    if (!parent || !modal || !chartWrapper || !chart) return;
+    if (!parent || !modalContent || !chartWrapper || !chart || !zoomModal)
+      return;
     LayoutUtil.enableDrag(modalContentRef.current);
     const render = (renderRef.current = new IndicatorRenderer(chart, config));
 
     const zoom = (
-      data: SocketData["wave"],
+      data: unknown,
       numPoints: number,
       minVal: number,
       maxVal: number,
@@ -84,13 +91,9 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
       endIdx: number
     ) => {
       console.log("anything");
-      // tìm zôm handler,
-      const modal = modalContentRef.current;
-      if (!modal) return;
-      modal.style.display = "block";
-      // setIsShowZoomModal(true);
+      zoomModal.style.display = "block";
       const zoomHandler = (zoomHandlerRef.current = new ZoomHandler(
-        modal,
+        modalContent,
         data
       ));
       zoomHandler.numPoints = numPoints;
@@ -152,12 +155,12 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
   }, []);
 
   const unzoom = () => {
-    const modal = modalContentRef.current;
+    const zoomModal = zoomModalRef.current;
     const zoomHandler = zoomHandlerRef.current;
-    if (!modal || !zoomHandler) return;
+    const modalContent = modalContentRef.current;
+    if (!zoomModal || !zoomHandler || !modalContent) return;
 
-    // setIsShowZoomModal(false);
-    modal.style.display = "none";
+    zoomModal.style.display = "none";
     zoomHandler.cleanup();
     const zoomCanvas = document.getElementById("zoom-canvas"),
       zoomDetail = document.getElementById("zoom-detail");
@@ -165,9 +168,8 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
       console.log("cant find 'zoom-canvas' and 'zoom-detail' element");
       return;
     }
-    modal.removeChild(zoomDetail);
-    modal.removeChild(zoomCanvas);
-    // zoomHandlerRef.current = null; // exp
+    modalContent.removeChild(zoomDetail);
+    modalContent.removeChild(zoomCanvas);
   };
 
   return (
@@ -180,16 +182,27 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         </p>
       </div> */}
       <div className="h-full w-full" id="main-div">
-        <div id="zoomModal" className="hidden">
+        <div
+          ref={zoomModalRef}
+          id="zoomModal"
+          className="fixed left-0 top-0 z-40 hidden h-full w-full cursor-move overflow-auto bg-neutral-600/40 pt-24"
+        >
           <div
             ref={modalContentRef}
-            className="modal-content"
+            className="absolute m-auto flex aspect-video w-2/5 flex-col justify-between rounded-md border border-neutral-300 bg-neutral-400 px-4 py-2 shadow-xl  shadow-neutral-500"
             id="model-content"
           >
-            <strong>Zoom in</strong>
-            <span className="close" onClick={unzoom}>
-              &times;
-            </span>
+            <div className="inset-x-0 inset-y-0 flex items-center justify-between">
+              <button
+                className="close group peer rounded-full border border-neutral-300"
+                onClick={unzoom}
+              >
+                <XMarkIcon className=" order-last h-6 w-6 text-neutral-200 shadow-neutral-300 transition-colors duration-200 ease-in group-hover:text-neutral-100/80 group-hover:shadow-md" />
+              </button>
+              <p className="order-first text-lg font-bold leading-none tracking-wide transition-colors duration-200 ease-in peer-hover:text-neutral-200">
+                Zoom in
+              </p>
+            </div>
           </div>
         </div>
         <div

@@ -21,8 +21,6 @@ export const useSocketQuery = (
   const turnOff = useCallback(() => {
     const socket = socketRef.current;
     if (!socket || !user) return;
-    console.log("something");
-    console.log(socket);
     socket.off("connect");
     socket.off("disconnect");
     socket.off("join-status");
@@ -31,7 +29,11 @@ export const useSocketQuery = (
   }, [queryClient, user, patientId, socketRef]);
 
   useEffect(() => {
-    const socket = socketRef.current;
+    const socket =
+      socketRef.current ??
+      (socketRef.current = io(
+        "https://glassy-totality-324307.uc.r.appspot.com/"
+      ));
     if (!user || !socket) return;
     const topic = [user.user_id, patientId].join(".");
     const onConnect = () => {
@@ -63,12 +65,8 @@ export const useSocketQuery = (
       token: user.user_api_key,
       topic,
     });
-    // return () => { socket.off("connect"); socket.off("disconnect");
-    //   socket.off("join-status");
-    //   socket.off("new-records");
-    //   queryClient.removeQueries([user.user_id, patientId, Promise]);
-    // };
   }, [queryClient, user, patientId, socketRef]);
+
   return {
     ...useQuery<SocketData, Error>({
       queryKey: [user?.user_id, patientId, Promise],
@@ -78,13 +76,11 @@ export const useSocketQuery = (
           const socket = (socketRef.current = io(
             "https://glassy-totality-324307.uc.r.appspot.com/"
           ));
-          console.log(socket);
           socket.on("error", () => {
             throw new Error("lỗi kết nỗi socket");
           });
         }),
       staleTime: Infinity,
-      keepPreviousData: true,
       ...options,
     }),
     turnOffSocket: turnOff,

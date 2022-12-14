@@ -22,9 +22,12 @@ import {
 } from "../../hooks/useActiveMonitorProvider";
 import { UserData } from "../../models/auth.models";
 import { SocketData } from "../../models/realtime.models";
+import { ArrayElement } from "../../models/utils.models";
+import { Followers } from "../../models/followers.models";
 /**
  * Chuyển từ độc c sang độ f
  */
+
 interface MainMonitorProps {
   className?: string;
   isError?: boolean;
@@ -33,6 +36,7 @@ interface MainMonitorProps {
   gender: string;
   phone: number;
   patient_id: string;
+  follower: ArrayElement<Followers["data"]>;
 }
 
 const ecgConfig = {
@@ -65,12 +69,8 @@ const MainMonitor: FC<MainMonitorProps> = ({
   phone,
   gender,
   patient_id,
+  follower,
 }) => {
-  const {
-    data: selectedFollowers,
-    isLoading: isFollowerLoading,
-    error: followerError,
-  } = useSelectFollowers([patient_id]);
   const {
     currentParam,
     isLoading: isCurrentParamLoading,
@@ -97,12 +97,103 @@ const MainMonitor: FC<MainMonitorProps> = ({
   const Spo2Chart = useMemo(() => {
     return <Chart data={socket} config={spo2Config} />;
   }, [socket]);
+  const MainMonitorParam = useMemo(() => {
+    if (currentParam) {
+      return (
+        <>
+          <VitalMonitorBlock
+            Icon={<HeartIcon className="ml-auto h-5 w-5 " />}
+            type="ecg"
+            isPing
+            status={currentParam.ecgSt}
+            childrenProps={[
+              {
+                maxRange: follower.patient_detail.resp_range.max,
+                minRange: follower.patient_detail.resp_range.min,
+                sub: "bpm",
+                title: "resp",
+                value: currentParam.resp,
+              },
+              {
+                maxRange: follower.patient_detail.hr_range.max,
+                minRange: follower.patient_detail.hr_range.min,
+                sub: "bpm",
+                title: "hr",
+                value: currentParam.hr,
+              },
+            ]}
+          />
+          <VitalMonitorBlock
+            Icon={<HeartIcon className="ml-auto h-5 w-5" />}
+            type="spo2"
+            isPing
+            status={currentParam.spo2St}
+            childrenProps={[
+              {
+                maxRange: follower.patient_detail.spo2_range.max,
+                minRange: follower.patient_detail.spo2_range.min,
+                sub: "%",
+                title: "spo2",
+                value: currentParam.spo2,
+              },
+              {
+                maxRange: follower.patient_detail.pr_range.max,
+                minRange: follower.patient_detail.pr_range.min,
+                sub: "bpm",
+                title: "pr",
+                value: currentParam.pr,
+              },
+            ]}
+          />
+          <VitalMonitorBlock
+            Icon={<MdiHumanHandsdown className="h-5 w-5" />}
+            type="nibp"
+            status={currentParam.nibpSt}
+            childrenProps={[
+              {
+                maxRange: follower.patient_detail.nibp_range.high_pressure.max,
+                minRange: follower.patient_detail.nibp_range.high_pressure.min,
+                maxRange2: follower.patient_detail.nibp_range.low_pressure.max,
+                minRange2: follower.patient_detail.nibp_range.low_pressure.min,
+                value: currentParam.sys,
+                value2: currentParam.dia,
+                sub: "nibp",
+                title: "sys/dia",
+              },
+
+              {
+                className: "flex flex-col items-end",
+                maxRange: undefined,
+                minRange: undefined,
+                value: currentParam.map,
+                direction: "left",
+                showRange: false,
+                sub: "mmHg",
+                title: "map",
+              },
+            ]}
+          />
+          <VitalMonitorBlock
+            Icon={<FluentTemperature16Filled className="h-5 w-5" />}
+            type="temp"
+            status={currentParam.tempSt}
+            childrenProps={[
+              {
+                maxRange: follower.patient_detail.temp_range.max,
+                minRange: follower.patient_detail.temp_range.min,
+                value: currentParam.temp,
+                sub: "°C",
+                title: "Temp 1",
+              },
+            ]}
+          />
+        </>
+      );
+    }
+  }, [currentParam, follower]);
 
   if (isCurrentParamLoading) return <div>current param loading</div>;
-  if (isFollowerLoading) return <div>follower loading</div>;
   if (currentParamError || !currentParam) return <div>socket error</div>;
-  if (followerError || !selectedFollowers) return <div>follower error</div>;
-  const follower = selectedFollowers[0];
   return (
     <div
       id="main-monitor"
@@ -190,102 +281,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
           {Spo2Chart}
         </div>
         <div id="main-monitor__param" className="col-span-2 grid grid-rows-4">
-          <VitalMonitorBlock
-            Icon={<HeartIcon className="ml-auto h-5 w-5 " />}
-            type="ecg"
-            isPing
-            status={currentParam.ecgSt}
-            childrenProps={[
-              {
-                maxRange: follower.patient_detail.resp_range.max,
-                minRange: follower.patient_detail.resp_range.min,
-                sub: "bpm",
-                title: "resp",
-                value: currentParam.resp,
-              },
-              {
-                maxRange: follower.patient_detail.hr_range.max,
-                minRange: follower.patient_detail.hr_range.min,
-                sub: "bpm",
-                title: "hr",
-                value: currentParam.hr,
-              },
-            ]}
-          />
-          <VitalMonitorBlock
-            Icon={<HeartIcon className="ml-auto h-5 w-5" />}
-            type="spo2"
-            isPing
-            status={currentParam.spo2St}
-            childrenProps={[
-              {
-                maxRange: follower.patient_detail.spo2_range.max,
-                minRange: follower.patient_detail.spo2_range.min,
-                sub: "%",
-                title: "spo2",
-                value: currentParam.spo2,
-              },
-              {
-                maxRange: follower.patient_detail.pr_range.max,
-                minRange: follower.patient_detail.pr_range.min,
-                sub: "bpm",
-                title: "pr",
-                value: currentParam.pr,
-              },
-            ]}
-          />
-
-          <VitalMonitorBlock
-            Icon={<MdiHumanHandsdown className="h-5 w-5" />}
-            type="nibp"
-            status={currentParam.nibpSt}
-            childrenProps={[
-              {
-                maxRange: follower.patient_detail.nibp_range.high_pressure.max,
-                minRange: follower.patient_detail.nibp_range.high_pressure.min,
-                maxRange2: follower.patient_detail.nibp_range.low_pressure.max,
-                minRange2: follower.patient_detail.nibp_range.low_pressure.min,
-                value: currentParam.sys,
-                value2: currentParam.dia,
-                sub: "nibp",
-                title: "sys/dia",
-              },
-
-              {
-                className: "flex flex-col items-end",
-                maxRange: undefined,
-                minRange: undefined,
-                value: currentParam.map,
-                direction: "left",
-                showRange: false,
-                sub: "mmHg",
-                title: "map",
-              },
-            ]}
-          />
-          <VitalMonitorBlock
-            Icon={<FluentTemperature16Filled className="h-5 w-5" />}
-            type="temp"
-            status={currentParam.tempSt}
-            childrenProps={[
-              {
-                maxRange: follower.patient_detail.temp_range.max,
-                minRange: follower.patient_detail.temp_range.min,
-                value: currentParam.temp,
-                sub: "°C",
-                title: "Temp 1",
-              },
-            ]}
-          />
-          {/* <VitalMonitorContent
-              param={ecgParam("resp")}
-              maxRange={rangeParam("resp").max}
-              minRange={rangeParam("resp").min}
-              direction="left"
-              sub="°F"
-              title="Temp 2"
-              time={ecgParam("time")}
-            /> */}
+          {MainMonitorParam}
         </div>
       </div>
     </div>
