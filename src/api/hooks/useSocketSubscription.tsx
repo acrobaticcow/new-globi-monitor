@@ -21,7 +21,6 @@ export const useSocketQuery = (
   const turnOff = useCallback(() => {
     const socket = socketRef.current;
     if (!socket || !user) return;
-    console.log("something");
     console.log(socket);
     socket.off("connect");
     socket.off("disconnect");
@@ -31,7 +30,11 @@ export const useSocketQuery = (
   }, [queryClient, user, patientId, socketRef]);
 
   useEffect(() => {
-    const socket = socketRef.current;
+    const socket =
+      socketRef.current ??
+      (socketRef.current = io(
+        "https://glassy-totality-324307.uc.r.appspot.com/"
+      ));
     if (!user || !socket) return;
     const topic = [user.user_id, patientId].join(".");
     const onConnect = () => {
