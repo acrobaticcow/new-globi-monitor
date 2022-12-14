@@ -12,10 +12,8 @@ import {
 import { VitalMonitorBlock } from "../VitalCard";
 import clsx from "clsx";
 import { useSocketValueInterval } from "../../hooks/useValueInterval";
-import { useSelectFollowers } from "../../api/hooks/useFetchPatients";
 import Chart, { ConfigType } from "../Chart/Chart";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
 import {
   ActiveMonitorsApiContext,
   ActiveMonitorsApiContextType,
@@ -24,6 +22,8 @@ import { UserData } from "../../models/auth.models";
 import { SocketData } from "../../models/realtime.models";
 import { ArrayElement } from "../../models/utils.models";
 import { Followers } from "../../models/followers.models";
+import { m, AnimatePresence } from "framer-motion";
+import { CheckIcon, ArchiveBoxArrowDownIcon } from "@heroicons/react/20/solid";
 /**
  * Chuyển từ độc c sang độ f
  */
@@ -181,7 +181,9 @@ const MainMonitor: FC<MainMonitorProps> = ({
               {
                 maxRange: follower.patient_detail.temp_range.max,
                 minRange: follower.patient_detail.temp_range.min,
-                value: currentParam.temp,
+                value: Number(
+                  currentParam.temp?.toFixed(1) ?? currentParam.temp
+                ),
                 sub: "°C",
                 title: "Temp 1",
               },
@@ -195,10 +197,18 @@ const MainMonitor: FC<MainMonitorProps> = ({
   if (isCurrentParamLoading) return <div>current param loading</div>;
   if (currentParamError || !currentParam) return <div>socket error</div>;
   return (
-    <div
+    <m.div
+      initial={{ opacity: 0, scale: "0%" }}
+      animate={{ opacity: 100, scale: "100%" }}
+      exit={{ opacity: 0, scale: "0%" }}
+      transition={{
+        type: "spring",
+        damping: 30,
+        stiffness: 290,
+      }}
       id="main-monitor"
       className={clsx(
-        "h-full w-1/2 min-w-[50%] rounded-lg border border-neutral-200 ",
+        "relative h-full w-1/2 min-w-[50%] origin-bottom-left rounded-lg border border-neutral-200 ",
         className
       )}
       onMouseEnter={() => setIsHover(true)}
@@ -236,40 +246,63 @@ const MainMonitor: FC<MainMonitorProps> = ({
             <HalfBatteryIcon className="h-5 w-5 fill-neutral-200 stroke-neutral-200 stroke-0" />
           </div>
         </div>
-        {currentParam.warning && !isHover && (
-          <div
-            className={clsx(
-              "w-[calc(40%-0.625rem)] rounded-md border px-2 py-1 text-sm",
-              isError
-                ? "border-danger-500 bg-danger/[22%] "
-                : "border-success bg-success/[22%] "
-            )}
-          >
-            {isError ? (
-              <WarningTriangleIcon className="mr-2 inline-block h-5 w-5 stroke-danger-100 align-middle" />
-            ) : (
-              <CheckCircleIcon className="mr-2 inline-block h-5 w-5 stroke-success-100 align-middle" />
-            )}
-            <span
+        <AnimatePresence>
+          {!!currentParam.warning && !isHover && (
+            <m.div
+              initial={{
+                opacity: 0,
+                top: "-100%",
+              }}
+              animate={{
+                opacity: 100,
+                top: "1rem",
+              }}
+              exit={{ opacity: 0, top: "-100%" }}
+              transition={{
+                type: "spring",
+                stiffness: 120,
+                damping: 18,
+              }}
               className={clsx(
-                "align-middle ",
-                isError ? "text-danger-50" : "text-success-50"
+                "absolute left-1/2 top-4 z-50 flex w-80 -translate-x-1/2  items-center justify-between rounded-md border px-2 py-1 text-sm shadow-lg shadow-neutral-400 backdrop-blur-md",
+                isError
+                  ? "border-danger-500 bg-danger/[22%] "
+                  : "border-success bg-success/[22%] "
               )}
             >
-              {currentParam.warning}
-            </span>
-          </div>
-        )}
-        {isHover && (
+              {isError ? (
+                <WarningTriangleIcon className="inline-block h-5 w-5 stroke-danger-100 align-middle" />
+              ) : (
+                <CheckIcon className="inline-block h-5 w-5 stroke-success-100 align-middle" />
+                // <CheckCircleIcon className="inline-block h-5 w-5 stroke-success-100 align-middle" />
+              )}
+              <span
+                className={clsx(
+                  "text-ellipsis leading-none",
+                  isError ? "text-danger-50" : "text-success-50"
+                )}
+              >
+                {currentParam.warning}
+              </span>
+            </m.div>
+          )}
+        </AnimatePresence>
+        {/* isHover && */}
+        {
           <button
             onClick={(e) => {
               e.stopPropagation();
               onDelMonitorId(patient_id);
             }}
+            className="group relative flex w-52 items-center justify-between rounded-md border border-neutral-300 bg-neutral-500 px-2 py-1 text-sm leading-none transition-colors duration-200 hover:border-neutral-200/75"
           >
-            <XMarkIcon className="h-5 w-5 fill-neutral-300 stroke-transparent stroke-0 text-neutral-200 " />
+            <span className="relative font-thin text-neutral-100">
+              Gỡ theo dõi chi tiết
+            </span>
+            <ArchiveBoxArrowDownIcon className="relative h-5 w-5 fill-neutral-200 stroke-transparent stroke-0 text-neutral-200 transition-colors duration-200 group-hover:fill-neutral-100/95 " />
+            {/* <XMarkIcon className="h-5 w-5 fill-neutral-300 stroke-transparent stroke-0 text-neutral-200 " /> */}
           </button>
-        )}
+        }
       </div>
       <div className="grid grid-cols-5">
         <div
@@ -277,14 +310,14 @@ const MainMonitor: FC<MainMonitorProps> = ({
           className="col-span-3 grid h-full grid-cols-1 grid-rows-3"
         >
           {EcgChart}
-          {RespChart}
           {Spo2Chart}
+          {RespChart}
         </div>
         <div id="main-monitor__param" className="col-span-2 grid grid-rows-4">
           {MainMonitorParam}
         </div>
       </div>
-    </div>
+    </m.div>
   );
 };
 
