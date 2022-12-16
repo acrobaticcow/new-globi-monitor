@@ -1,3 +1,5 @@
+import { setAutoFreeze } from "immer";
+
 //layout util
 export class LayoutUtil {
   static createGLContainer(parent_div_id, expand_callback, audio_callback) {
@@ -526,6 +528,9 @@ export class IndicatorRenderer {
       setTimeout(function () {
         self.drawScene();
       }, self.context.INTERVAL);
+      // animationId = requestAnimationFrame(() => {
+      //   self.drawScene();
+      // });
     } else {
       if (this.soundHandler) {
         clearInterval(this.soundHandler);

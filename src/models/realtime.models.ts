@@ -98,10 +98,10 @@ export interface socketCntArg {
 
 export type Followers_Data = typeof sampleFollowers_Data;
 
-export interface Followers {
-  code: number;
-  data: Array<Followers_Data>;
-}
+// export interface Followers {
+//   code: number;
+//   data: Array<Followers_Data>;
+// }
 
 // const obj: FollowersDataFaker = {
 //   user_detail: {

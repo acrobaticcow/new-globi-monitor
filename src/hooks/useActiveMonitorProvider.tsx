@@ -1,5 +1,5 @@
 import { createContext, useMemo, useReducer } from "react";
-import { produce, current } from "immer";
+import { produce } from "immer";
 
 export type MiniMonitorContextType = {
   activeMiniMonitorIds: string[];
@@ -62,9 +62,6 @@ const reducer = produce((state: State, action: Action): State => {
       state.activeMonitorIds = state.activeMonitorIds.filter(
         (id) => id !== payload
       );
-      // state.activeMonitorIds = state.activeMonitorIds.filter(
-      //   (id) => id !== payload
-      // );
       return state;
     case ActionKind.delMonitorId:
       state.activeMonitorIds = state.activeMonitorIds.filter(

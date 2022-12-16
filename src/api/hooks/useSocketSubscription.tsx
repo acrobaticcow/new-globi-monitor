@@ -1,6 +1,5 @@
-import { io } from "socket.io-client";
 import type { Socket } from "socket.io-client";
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useCallback, useContext } from "react";
 import {
   QueryKey,
   useQuery,
@@ -9,6 +8,10 @@ import {
 } from "@tanstack/react-query";
 import type { SocketData } from "../../models/realtime.models";
 import { useFetchUser } from "./useFetchUser";
+import {
+  SocketContext,
+  SocketContextType,
+} from "../../hooks/useSocketProvider";
 
 export const useSocketQuery = (
   patientId: string,
@@ -16,45 +19,47 @@ export const useSocketQuery = (
 ) => {
   const { data: user } = useFetchUser();
   const queryClient = useQueryClient();
-  const socketRef = useRef<Socket | null>(null);
+  const { socket } = useContext(SocketContext) as SocketContextType;
 
-  const turnOff = useCallback(() => {
-    const socket = socketRef.current;
-    if (!socket || !user) return;
-    socket.off("connect");
-    socket.off("disconnect");
-    socket.off("join-status");
-    socket.off("new-records");
-    queryClient.removeQueries([user.user_id, patientId, Promise]);
-  }, [queryClient, user, patientId, socketRef]);
-
-  useEffect(() => {
-    const socket =
-      socketRef.current ??
-      (socketRef.current = io(
-        "https://glassy-totality-324307.uc.r.appspot.com/"
-      ));
-    if (!user || !socket) return;
-    const topic = [user.user_id, patientId].join(".");
-    const onConnect = () => {
-      console.log("connected");
-    };
-    const onDisconnect = (reason: Socket.DisconnectReason) => {
+  const onError = (err: any) => {
+    console.log(err);
+  };
+  const onConnect = () => {
+    console.log("connected");
+  };
+  const onDisconnect = useCallback(
+    (reason: Socket.DisconnectReason) => {
       console.log("disconnect reason", reason);
-      if (reason === "io server disconnect") {
+      if (reason === "io server disconnect" && socket) {
         // the disconnection was initiated by the server, you need to reconnect manually
         socket.connect();
       }
-    };
-    const onError = (err: any) => {
-      console.log(err);
-    };
-    const onJoinStatus = (status: string) => {
-      console.log(`join-status: ${status}`);
-    };
-    const onNewRecords = (res: SocketData) => {
+    },
+    [socket]
+  );
+  const onJoinStatus = (status: string) => {
+    console.log(`join-status: ${status}`);
+  };
+  const onNewRecords = useCallback(
+    (res: SocketData) => {
+      if (!user) return;
       queryClient.setQueryData([user.user_id, patientId, Promise], res);
-    };
+    },
+    [patientId, queryClient, user]
+  );
+  const turnOff = useCallback(() => {
+    if (!socket || !user) return;
+    socket.off("connect", onConnect);
+    socket.off("disconnect", onDisconnect);
+    socket.off("error", onError);
+    socket.off("join-status", onJoinStatus);
+    socket.off("new-records", onNewRecords);
+    queryClient.removeQueries([user.user_id, patientId, Promise]);
+  }, [queryClient, user, patientId, onNewRecords, socket, onDisconnect]);
+
+  useEffect(() => {
+    if (!user || !socket) return;
+    const topic = [user.user_id, patientId].join(".");
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
@@ -65,21 +70,13 @@ export const useSocketQuery = (
       token: user.user_api_key,
       topic,
     });
-  }, [queryClient, user, patientId, socketRef]);
+  }, [queryClient, user, patientId, onNewRecords, socket, onDisconnect]);
 
   return {
     ...useQuery<SocketData, Error>({
       queryKey: [user?.user_id, patientId, Promise],
       enabled: !!user,
-      queryFn: () =>
-        new Promise<SocketData>(() => {
-          const socket = (socketRef.current = io(
-            "https://glassy-totality-324307.uc.r.appspot.com/"
-          ));
-          socket.on("error", () => {
-            throw new Error("lỗi kết nỗi socket");
-          });
-        }),
+      queryFn: () => new Promise<SocketData>(() => {}),
       staleTime: Infinity,
       ...options,
     }),

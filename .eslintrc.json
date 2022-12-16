@@ -1,4 +1,12 @@
 {
-  "extends": ["react-app", "plugin:@tanstack/eslint-plugin-query/recommended"],
-  "plugins": ["@tanstack/query"]
+  "extends": [
+    "react-app",
+    "plugin:@tanstack/eslint-plugin-query/recommended",
+    "plugin:tailwindcss/recommended"
+  ],
+  "plugins": ["@tanstack/query", "tailwindcss"],
+  "rules": {
+    "tailwindcss/classnames-order": "off",
+    "tailwindcss/no-customclassname": "off"
+  }
 }

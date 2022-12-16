@@ -1,9 +1,9 @@
 import type { FC } from "react";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 // @ts-ignore
 import {
   LayoutUtil,
-  BeepWrapper,
+  // BeepWrapper,
   IndicatorRenderer,
   ZoomHandler,
 } from "./engine.js";
@@ -27,37 +27,7 @@ interface ChartProps {
   data: SocketData | undefined;
   config: ConfigType;
 }
-const soundPlayer = new BeepWrapper();
-const visualContext = {
-  ecg: {
-    color: "00FF00",
-    WINDOW_POINTS: 250,
-    scanBarLength: 40,
-    INTERVAL: 15,
-    soundPlayer: soundPlayer,
-  },
-  spo2: {
-    color: "FFFF00",
-    WINDOW_POINTS: 50,
-    scanBarLength: 40,
-    INTERVAL: 150,
-    soundPlayer: soundPlayer,
-  },
-  resp: {
-    color: "00FFFF",
-    WINDOW_POINTS: 50,
-    scanBarLength: 40,
-    INTERVAL: 100,
-    soundPlayer: soundPlayer,
-  },
-  ecg_sound: {
-    color: "00FF00",
-    WINDOW_POINTS: 250,
-    scanBarLength: 40,
-    INTERVAL: 15,
-    soundPlayer: soundPlayer,
-  },
-};
+// const soundPlayer = new BeepWrapper();
 
 const Chart: FC<ChartProps> = ({ data, config }) => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -189,15 +159,15 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         >
           <div
             ref={modalContentRef}
-            className="absolute m-auto flex aspect-video w-2/5 flex-col justify-between rounded-md border border-neutral-300 bg-neutral-400 px-4 py-2 shadow-xl  shadow-neutral-500"
+            className="absolute m-auto flex aspect-video w-2/5 flex-col justify-between rounded-md border border-neutral-300 bg-neutral-400 px-4 py-2 shadow-xl shadow-neutral-500"
             id="model-content"
           >
-            <div className="inset-x-0 inset-y-0 flex items-center justify-between">
+            <div className="inset-0 flex items-center justify-between">
               <button
-                className="close shadow-xs group peer rounded-full shadow-neutral-100"
+                className="group peer rounded-full shadow-neutral-100"
                 onClick={unzoom}
               >
-                <XMarkIcon className=" order-last h-6 w-6 text-neutral-200 shadow-neutral-300 transition-colors duration-200 ease-in group-hover:text-neutral-100/80 group-hover:shadow-md" />
+                <XMarkIcon className="order-last h-6 w-6 text-neutral-200 shadow-neutral-300 transition-colors duration-200 ease-in group-hover:text-neutral-100/80 group-hover:shadow-md" />
               </button>
               <p className="order-first text-lg font-bold leading-none tracking-wide transition-colors duration-200 ease-in peer-hover:text-neutral-200">
                 Zoom in
@@ -207,12 +177,12 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         </div>
         <div
           ref={overlayRef}
-          className="fixed inset-0 z-50 hidden h-screen w-screen bg-black"
+          className="fixed inset-0 z-40 hidden h-screen w-screen bg-black"
           id="overlay"
         >
           <div
             id="maximize-canvas-container"
-            className="absolute inset-0 z-40 bg-inherit"
+            className="absolute inset-0 z-50 bg-inherit"
           ></div>
           <button
             className="absolute top-2 right-2 z-50 text-neutral-200 transition-all hover:text-neutral-100  active:scale-90 active:text-neutral-100"
@@ -224,7 +194,7 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         <div id="container" className="relative h-full w-full">
           <div
             ref={chartWrapperRef}
-            className="relative h-full w-full overflow-x-hidden overflow-y-hidden"
+            className="relative h-full w-full overflow-hidden"
             id="left-pane"
           >
             <div className="absolute left-2 top-2 z-20 text-lg font-semibold uppercase leading-none text-neutral-100">

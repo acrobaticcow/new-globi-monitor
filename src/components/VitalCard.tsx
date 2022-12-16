@@ -4,6 +4,7 @@ import type { FunctionComponent } from "react";
 import { cloneChild } from "../utils/function";
 import { WarningIcon } from "./Icons";
 import { varTxtLight, varTxtBase, Variant } from "../utils/textColorClass";
+import { generalStTranslator } from "../utils/paramTranslator";
 
 type NumberOrUndefined = number | null | undefined;
 
@@ -26,7 +27,7 @@ interface VitalMonitorBlockProps {
    * type of VitalMonitorContent
    */
   type: Variant;
-  status: string;
+  status: number;
   Icon?: any;
   isPing?: boolean;
   childrenProps: VitalContentMonitorProps[];
@@ -39,17 +40,18 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
   childrenProps,
   status,
 }) => {
-  const [ping, setPing] = useState(false);
-  useEffect(() => {
-    setPing(true);
-    const timeoutId = setTimeout(() => {
-      setPing(false);
-    }, 500);
-    return () => {
-      setPing(false);
-      clearTimeout(timeoutId);
-    };
-  }, [childrenProps]);
+  // const [ping, setPing] = useState(false);
+  // useEffect(() => {
+  //   if (!isPing) return;
+  //   setPing(true);
+  //   const timeoutId = setTimeout(() => {
+  //     setPing(false);
+  //   }, 500);
+  //   return () => {
+  //     setPing(false);
+  //     clearTimeout(timeoutId);
+  //   };
+  // }, [childrenProps, isPing]);
 
   return (
     <div className="relative  w-full max-w-[573px] rounded px-2">
@@ -62,8 +64,7 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
           </h1>
           {Icon && (
             <div className="flex">
-              {isPing &&
-                cloneChild({
+              {/* {isPing && cloneChild({
                   children: Icon,
                   props: {
                     className: clsx(
@@ -73,7 +74,7 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
                       ping && "animate-ping"
                     ),
                   },
-                })}
+                })} */}
               {cloneChild({
                 children: Icon,
                 props: {
@@ -96,7 +97,9 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
         </div>
         <div className="flex  items-center">
           <WarningIcon className="inline-block h-5 w-5 stroke-neutral-200" />
-          <span className="mx-4 text-xs font-semibold">{status}</span>
+          <span className="mx-4 text-xs font-semibold">
+            {generalStTranslator({ status, type })}
+          </span>
         </div>
       </div>
     </div>

@@ -1,13 +1,10 @@
-import { useMemo, useState, useContext } from "react";
+import { useMemo, useContext } from "react";
 import type { FC } from "react";
 import {
-  CheckCircleIcon,
   FluentTemperature16Filled,
   HalfBatteryIcon,
   HeartIcon,
-  MdiHumanHandsdown,
   WarningTriangleIcon,
-  XMarkIcon,
 } from "../Icons";
 import { VitalMonitorBlock } from "../VitalCard";
 import clsx from "clsx";
@@ -41,7 +38,7 @@ interface MainMonitorProps {
 
 const ecgConfig = {
     color: "00FF00",
-    WINDOW_POINTS: 250,
+    WINDOW_POINTS: 1250,
     scanBarLength: 40,
     INTERVAL: 20,
     type: "ecg",
@@ -83,7 +80,6 @@ const MainMonitor: FC<MainMonitorProps> = ({
     patient_id,
     Promise,
   ]) as SocketData;
-  const [isHover, setIsHover] = useState(false);
   const { onDelMonitorId } = useContext(
     ActiveMonitorsApiContext
   ) as ActiveMonitorsApiContextType;
@@ -97,6 +93,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
   const Spo2Chart = useMemo(() => {
     return <Chart data={socket} config={spo2Config} />;
   }, [socket]);
+
   const MainMonitorParam = useMemo(() => {
     if (currentParam) {
       return (
@@ -145,34 +142,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
               },
             ]}
           />
-          <VitalMonitorBlock
-            Icon={<MdiHumanHandsdown className="h-5 w-5" />}
-            type="nibp"
-            status={currentParam.nibpSt}
-            childrenProps={[
-              {
-                maxRange: follower.patient_detail.nibp_range.high_pressure.max,
-                minRange: follower.patient_detail.nibp_range.high_pressure.min,
-                maxRange2: follower.patient_detail.nibp_range.low_pressure.max,
-                minRange2: follower.patient_detail.nibp_range.low_pressure.min,
-                value: currentParam.sys,
-                value2: currentParam.dia,
-                sub: "nibp",
-                title: "sys/dia",
-              },
-
-              {
-                className: "flex flex-col items-end",
-                maxRange: undefined,
-                minRange: undefined,
-                value: currentParam.map,
-                direction: "left",
-                showRange: false,
-                sub: "mmHg",
-                title: "map",
-              },
-            ]}
-          />
+          {/* <MainNibpParam follower={follower} currentParam={currentParam} /> */}
           <VitalMonitorBlock
             Icon={<FluentTemperature16Filled className="h-5 w-5" />}
             type="temp"
@@ -181,9 +151,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
               {
                 maxRange: follower.patient_detail.temp_range.max,
                 minRange: follower.patient_detail.temp_range.min,
-                value: Number(
-                  currentParam.temp?.toFixed(1) ?? currentParam.temp
-                ),
+                value: currentParam.temp,
                 sub: "°C",
                 title: "Temp 1",
               },
@@ -191,11 +159,14 @@ const MainMonitor: FC<MainMonitorProps> = ({
           />
         </>
       );
+    } else {
+      return <div>loading</div>;
     }
   }, [currentParam, follower]);
 
-  if (isCurrentParamLoading) return <div>current param loading</div>;
-  if (currentParamError || !currentParam) return <div>socket error</div>;
+  if (isCurrentParamLoading || !socket) return <div>current param loading</div>;
+  if (currentParamError || !currentParam || !socket)
+    return <div>socket error</div>;
   return (
     <m.div
       initial={{ opacity: 0, scale: "0%" }}
@@ -211,8 +182,6 @@ const MainMonitor: FC<MainMonitorProps> = ({
         "relative h-full w-1/2 min-w-[50%] origin-bottom-left rounded-lg border border-neutral-200 ",
         className
       )}
-      onMouseEnter={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
     >
       <div className="flex items-center justify-between py-2 pl-2.5 pr-1.5">
         <div className="flex items-center gap-x-3">
@@ -315,6 +284,11 @@ const MainMonitor: FC<MainMonitorProps> = ({
         </div>
         <div id="main-monitor__param" className="col-span-2 grid grid-rows-4">
           {MainMonitorParam}
+          {/* <MainTempParam
+            follower={follower}
+            temps={socket.param.temp_param.temp}
+            currentParam={currentParam}
+          /> */}
         </div>
       </div>
     </m.div>
