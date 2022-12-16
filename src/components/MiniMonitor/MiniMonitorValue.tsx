@@ -22,12 +22,13 @@ interface MiniMonitorValueProps {
   /**
    * chỉ có kiểu đo sys/dia mới có giá trị thứ 2
    */
-  value2?: number;
+  value2?: number | null;
   /**
    * thích thì show đơn vị
    */
   showUnit?: boolean;
   className?: string;
+  isLoading: boolean;
 }
 
 const MiniMonitorValue: FC<MiniMonitorValueProps> = ({
@@ -37,7 +38,8 @@ const MiniMonitorValue: FC<MiniMonitorValueProps> = ({
   unit,
   showUnit,
   value,
-  value2,
+  value2 = undefined,
+  isLoading,
 }) => {
   return (
     <div className={className}>
@@ -47,12 +49,13 @@ const MiniMonitorValue: FC<MiniMonitorValueProps> = ({
       {showUnit && <span className="text-sm text-neutral-200">{unit}</span>}
       <p
         className={clsx(
-          varTxtBase(type),
-          "text-start font-inter text-base font-semibold"
+          !isLoading ? varTxtBase(type) : "text-neutral-200",
+          "text-start font-inter text-base font-semibold",
+          isLoading && "animate-pulse"
         )}
       >
         {value || "--"}
-        {!!value2 && ` / ${value2 || "--"}`}
+        {value2 !== undefined && ` / ${value2 || "--"}`}
       </p>
     </div>
   );

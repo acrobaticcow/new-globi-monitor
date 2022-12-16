@@ -119,15 +119,16 @@ export const VitalMonitorContent: FunctionComponent<
   className,
   showRange = true,
   value,
-  value2,
+  value2 = undefined,
 }) => {
   const rangeClsx = clsx(
     "text-xs",
     varTxtLight(variant),
     direction === "right" ? "text-end" : "text-start"
   );
+
   return (
-    <div className={className}>
+    <div className={clsx(className)}>
       {!!title ? (
         <h3 className={clsx("mb-1 text-start text-xs font-semibold uppercase")}>
           {title ?? ""}
@@ -142,8 +143,8 @@ export const VitalMonitorContent: FunctionComponent<
       ) : (
         <></>
       )}
-      <div className={clsx(!!value2 && "flex justify-between")}>
-        <div id="item" className="ml-auto flex gap-x-2">
+      <div className={clsx(value2 !== undefined && "flex ")}>
+        <div id="item" className="flex gap-x-2">
           {showRange && (
             <div
               className={clsx(
@@ -155,32 +156,32 @@ export const VitalMonitorContent: FunctionComponent<
               <p className={rangeClsx}>{minRange ?? "--"}</p>
             </div>
           )}
-          <span
+          <div
             className={clsx(
               "font-inter text-4xl font-semibold leading-none",
               varTxtBase(variant)
             )}
           >
             {value ?? "--"}
-          </span>
+          </div>
         </div>
-        {!!value2 && (
-          <div id="item2" className="ml-auto flex gap-x-2">
-            {showRange && (
-              <div className="order-last mb-1.5 self-end">
-                <p className={rangeClsx}>{maxRange2 ?? "--"}</p>
-                <p className={rangeClsx}>{minRange2 ?? "--"}</p>
-              </div>
-            )}
-            <span
+        {value2 !== undefined && (
+          <div id="item2" className="flex gap-x-2">
+            <div
               className={clsx(
                 "font-inter text-4xl font-semibold leading-none",
                 varTxtBase(variant)
               )}
             >
               <span className={clsx(varTxtBase(variant))}>/</span>
-              {value2 ?? "--"}
-            </span>
+              <span>{value2 ?? "--"}</span>
+            </div>
+            {showRange && (
+              <div className="">
+                <p className={rangeClsx}>{maxRange2 ?? "--"}</p>
+                <p className={rangeClsx}>{minRange2 ?? "--"}</p>
+              </div>
+            )}
           </div>
         )}
       </div>

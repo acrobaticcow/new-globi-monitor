@@ -48,7 +48,7 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
           maxRange2: follower.patient_detail.nibp_range.low_pressure.max,
           minRange2: follower.patient_detail.nibp_range.low_pressure.min,
           value: nibpParam.sys[index],
-          value2: nibpParam.dia[index],
+          value2: nibpParam.dia[index] ?? null,
           sub: "nibp",
           title: "sys/dia",
         },
@@ -58,13 +58,13 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
           maxRange: undefined,
           minRange: undefined,
           value:
-            nibpParam.status[index] === 5
+            nibpParam.status[index] !== 1
               ? nibpParam.map[index]
               : nibpParam.cuff[index],
           direction: "left",
           showRange: false,
           sub: "mmHg",
-          title: nibpParam.status[index] === 5 ? "map" : "cuff",
+          title: nibpParam.status[index] !== 1 ? "map" : "cuff",
         },
       ]}
     />

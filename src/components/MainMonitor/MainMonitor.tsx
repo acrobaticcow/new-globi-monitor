@@ -21,6 +21,8 @@ import { ArrayElement } from "../../models/utils.models";
 import { Followers } from "../../models/followers.models";
 import { m, AnimatePresence } from "framer-motion";
 import { CheckIcon, ArchiveBoxArrowDownIcon } from "@heroicons/react/20/solid";
+import { MainNibpParam } from "./MainNibpParam";
+import { modeIconTranslatorForNibp } from "../../utils/paramTranslator";
 /**
  * Chuyển từ độc c sang độ f
  */
@@ -38,7 +40,7 @@ interface MainMonitorProps {
 
 const ecgConfig = {
     color: "00FF00",
-    WINDOW_POINTS: 1250,
+    WINDOW_POINTS: 250,
     scanBarLength: 40,
     INTERVAL: 20,
     type: "ecg",
@@ -142,7 +144,37 @@ const MainMonitor: FC<MainMonitorProps> = ({
               },
             ]}
           />
-          {/* <MainNibpParam follower={follower} currentParam={currentParam} /> */}
+          {/* <VitalMonitorBlock
+            Icon={modeIconTranslatorForNibp(currentParam.nibpMode)}
+            type="nibp"
+            status={currentParam.nibpSt}
+            childrenProps={[
+              {
+                maxRange: follower.patient_detail.nibp_range.high_pressure.max,
+                minRange: follower.patient_detail.nibp_range.high_pressure.min,
+                maxRange2: follower.patient_detail.nibp_range.low_pressure.max,
+                minRange2: follower.patient_detail.nibp_range.low_pressure.min,
+                value: currentParam.sys,
+                value2: currentParam.dia,
+                sub: "nibp",
+                title: "sys/dia",
+              },
+
+              {
+                className: "flex flex-col items-end",
+                maxRange: undefined,
+                minRange: undefined,
+                value:
+                  currentParam.nibpSt === 5
+                    ? currentParam.map
+                    : currentParam.cuff,
+                direction: "left",
+                showRange: false,
+                sub: "mmHg",
+                title: currentParam.nibpSt === 5 ? "map" : "cuff",
+              },
+            ]}
+          /> */}
           <VitalMonitorBlock
             Icon={<FluentTemperature16Filled className="h-5 w-5" />}
             type="temp"
@@ -179,7 +211,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
       }}
       id="main-monitor"
       className={clsx(
-        "relative h-full w-1/2 min-w-[50%] origin-bottom-left rounded-lg border border-neutral-200 ",
+        "relative h-full w-1/2 min-w-[50%] origin-bottom-left rounded-sm border border-neutral-400 ",
         className
       )}
     >
@@ -263,12 +295,12 @@ const MainMonitor: FC<MainMonitorProps> = ({
               e.stopPropagation();
               onDelMonitorId(patient_id);
             }}
-            className="group relative flex w-52 items-center justify-between rounded-md border border-neutral-300 bg-neutral-500 px-2 py-1 text-sm leading-none transition-colors duration-200 hover:border-neutral-200/75"
+            className="group relative flex w-52 items-center justify-between rounded-md border-2 border-danger-900/75 bg-danger-900/20 px-2 py-1 text-sm leading-none shadow-md shadow-danger-900/25 transition-all duration-200 ease-in-out hover:border-danger-900 hover:shadow-lg hover:shadow-danger-900/30 active:scale-95 active:outline-1 active:outline-offset-2 active:outline-danger-900 active:outline"
           >
-            <span className="relative font-thin text-neutral-100">
+            <span className="relative font-thin text-danger-50 group-hover:text-neutral-100">
               Gỡ theo dõi chi tiết
             </span>
-            <ArchiveBoxArrowDownIcon className="relative h-5 w-5 fill-neutral-200 stroke-transparent stroke-0 text-neutral-200 transition-colors duration-200 group-hover:fill-neutral-100/95 " />
+            <ArchiveBoxArrowDownIcon className="relative h-5 w-5 fill-neutral-100/60 stroke-transparent stroke-0 transition-colors duration-200 group-hover:fill-danger-100 " />
             {/* <XMarkIcon className="h-5 w-5 fill-neutral-300 stroke-transparent stroke-0 text-neutral-200 " /> */}
           </button>
         }
@@ -284,11 +316,10 @@ const MainMonitor: FC<MainMonitorProps> = ({
         </div>
         <div id="main-monitor__param" className="col-span-2 grid grid-rows-4">
           {MainMonitorParam}
-          {/* <MainTempParam
+          <MainNibpParam
             follower={follower}
-            temps={socket.param.temp_param.temp}
-            currentParam={currentParam}
-          /> */}
+            nibpParam={socket.param.nibp_param}
+          />
         </div>
       </div>
     </m.div>

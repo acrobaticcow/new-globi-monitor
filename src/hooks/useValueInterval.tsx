@@ -44,6 +44,9 @@ export const useSocketValueInterval = (patientId: string) => {
 
   const paramEntries = useMemo(() => {
     if (!data) return;
+    /**
+     * Hàm này sẽ format package, sẽ thống nhất sẽ hiển thị với interval mà data được gửi trong 5s môt. Nên
+     */
     const extractedParam = {
       hr: data.param.ecg_param.hr,
       resp: data.param.ecg_param.resp,
@@ -51,7 +54,9 @@ export const useSocketValueInterval = (patientId: string) => {
       spo2: data.param.spo2_param.spo2,
       cuff: data.param.nibp_param.cuff,
       dia: data.param.nibp_param.dia,
-      map: data.param.nibp_param.map,
+      map: data.param.nibp_param.map.filter(
+        (_, index) => index === 0 || index % 2 === 0
+      ),
       sys: data.param.nibp_param.sys,
       temp: data.param.temp_param.temp
         .filter((_, i) => [9, 19, 29, 39, 49].includes(i))
@@ -61,7 +66,9 @@ export const useSocketValueInterval = (patientId: string) => {
       tempSt: data.param.temp_param.status.filter((_, i) =>
         [9, 19, 29, 39, 49].includes(i)
       ),
-      nibpSt: data.param.nibp_param.status,
+      nibpSt: data.param.nibp_param.status.filter(
+        (_, index) => index === 0 || index % 2 === 0
+      ),
       warning: data.warning.warning,
       nibpMode: data.param.nibp_param.patient_mode,
     } as ExtractedParam;

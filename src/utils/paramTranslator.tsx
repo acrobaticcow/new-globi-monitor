@@ -81,11 +81,13 @@ export const generalStTranslator = ({
   type,
 }: generalTranslatorProps) => {
   switch (type) {
-    case "ecg" || "spo2":
+    case "spo2":
       return stTranslatorForSpo2(status);
     case "nibp":
       return stTranslatorForNibp(status);
     case "temp":
       return stTranslatorForTemp(status);
+    default:
+      return stTranslatorForSpo2(status);
   }
 };

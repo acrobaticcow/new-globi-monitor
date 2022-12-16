@@ -20,7 +20,7 @@ const MiniMonitorsContainer: FC<MiniMonitorsProps> = () => {
       <div className="col-span-3 flex h-full items-center justify-center bg-biloba-flower-500">
         Thông tin
       </div>
-      <div className="col-span-9 grid h-full auto-cols-[25%] grid-flow-col grid-rows-2 overflow-scroll px-2">
+      <div className="col-span-9 grid h-full auto-cols-[25%]  grid-rows-2 gap-1 overflow-scroll px-2 pt-2 pb-0">
         {data?.map(
           ({ patient_detail: { patient_name, dob, image, patient_id } }) => (
             <MiniMonitor

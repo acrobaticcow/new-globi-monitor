@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { FC, useContext } from "react";
-import { useLayoutEffect, useRef, useState } from "react";
-import { UserCircle, WarningTriangleIcon, XMarkIcon } from "../Icons";
+import { useLayoutEffect, useRef } from "react";
+import { UserCircle } from "../Icons";
 import MiniMonitorValue from "./MiniMonitorValue";
 import {
   ActiveMonitorsApiContext,
@@ -11,6 +11,7 @@ import {
 } from "../../hooks/useActiveMonitorProvider";
 import { useSocketValueInterval } from "../../hooks/useValueInterval";
 import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
+import { ExclamationTriangleIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
 export interface MiniMonitorProps {
   img?: string;
@@ -32,18 +33,12 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
   className,
   patientId,
 }) => {
-  // const { data, isLoading, error } = useSocketSubscription(patientId);
   const { onAddMonitorIds, onDelMiniMonitorId, onDelMonitorId } = useContext(
     ActiveMonitorsApiContext
   ) as ActiveMonitorsApiContextType;
   const { activeMonitorIds } = useContext(MonitorContext) as MonitorContextType;
-  const {
-    currentParam: value,
-    isLoading,
-    error,
-  } = useSocketValueInterval(patientId);
+  const { currentParam: value, isLoading } = useSocketValueInterval(patientId);
   const { turnOffSocket } = useSocketQuery(patientId);
-  const [isHover, setIsHover] = useState(false);
 
   const nameRef = useRef<HTMLParagraphElement>(null);
   const nameWrapperRef = useRef<HTMLDivElement>(null);
@@ -53,15 +48,13 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
       nameRef.current.classList.add("animation-right-to-left");
     }
   }, [nameRef, nameWrapperRef]);
-  if (isLoading) return <div>loading</div>;
-  if (error) return <div>error</div>;
   return (
     <div
       className={clsx(
-        "row-span-1 h-full w-full max-w-sm rounded-md border border-neutral-300 bg-neutral-500 bg-grad-3 py-1.5 px-4 ",
+        "relative row-span-1 h-full w-full max-w-sm cursor-pointer rounded-md border border-neutral-300 bg-neutral-500/50 bg-grad-3 py-2 px-3 shadow-md  transition-colors ",
         className,
         activeMonitorIds.includes(patientId) &&
-          "border-spacing-1 border-2 border-red-900"
+          "border-primary-900/80 shadow-primary-900/25"
       )}
       onClick={() => {
         onAddMonitorIds(patientId);
@@ -69,10 +62,8 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
           onDelMonitorId(patientId);
         }
       }}
-      onMouseEnter={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
     >
-      <div className="mb-1 flex items-center gap-x-2">
+      <div className="mb-1 flex items-center gap-x-5">
         {img ? (
           <img
             className="aspect-square w-8 rounded-full border border-neutral-200"
@@ -82,56 +73,74 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
         ) : (
           <UserCircle className="h-8 w-8 text-neutral-200/75" />
         )}
-        <div className="flex w-full items-center justify-between">
-          <div>
-            <div ref={nameWrapperRef} className="w-[22ch] overflow-hidden">
-              <p ref={nameRef} className="w-fit truncate text-sm">
-                {name}
-              </p>
-            </div>
-            <p className="text-xs text-neutral-200">{dob}</p>
+
+        <div>
+          <div
+            ref={nameWrapperRef}
+            className="flex w-[22ch] items-center gap-x-2 overflow-hidden"
+          >
+            <span ref={nameRef} className="w-fit truncate text-sm">
+              {name}
+            </span>
+            {value?.warning && (
+              <ExclamationTriangleIcon className="inline-block h-4 w-4 fill-transparent stroke-yellow-600" />
+            )}
           </div>
-          {isHover ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelMiniMonitorId(patientId);
-                turnOffSocket();
-              }}
-            >
-              <XMarkIcon className="h-5 w-5 fill-neutral-300 stroke-transparent stroke-0 text-neutral-200 " />
-            </button>
-          ) : (
-            <WarningTriangleIcon className="h-6 w-6 stroke-danger-600" />
-          )}
+          <p className="text-xs text-neutral-200">{dob}</p>
         </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelMiniMonitorId(patientId);
+            turnOffSocket();
+          }}
+          className="group absolute top-1 right-1 flex items-center justify-center rounded-full p-[1px] transition-all"
+        >
+          <XMarkIcon className="h-5 w-5 rounded-full fill-neutral-200/75 transition-all duration-200 active:scale-90 group-hover:fill-danger-700" />
+        </button>
       </div>
-      <div className="mb-1 grid grid-cols-4 justify-between">
+      <div className="mb-1 grid grid-cols-4 justify-between px-1">
         <MiniMonitorValue
+          isLoading={isLoading}
           name="resp"
           unit="brpm"
           value={value?.resp}
           type="ecg"
         />
-        <MiniMonitorValue name="hr" unit="bpm" value={value?.hr} type="ecg" />
         <MiniMonitorValue
+          isLoading={isLoading}
+          name="hr"
+          unit="bpm"
+          value={value?.hr}
+          type="ecg"
+        />
+        <MiniMonitorValue
+          isLoading={isLoading}
           name="sys / dia"
           unit="mmHg"
           value={value?.sys}
-          value2={value?.dia}
+          value2={value?.dia ?? null}
           type="nibp"
           className="col-span-2"
         />
       </div>
-      <div className="grid grid-cols-4">
+      <div className="grid grid-cols-4 px-1">
         <MiniMonitorValue
+          isLoading={isLoading}
           name="spo2"
           unit="%"
           value={value?.spo2}
           type="spo2"
         />
-        <MiniMonitorValue name="pr" unit="bpm" value={value?.pr} type="spo2" />
         <MiniMonitorValue
+          isLoading={isLoading}
+          name="pr"
+          unit="bpm"
+          value={value?.pr}
+          type="spo2"
+        />
+        <MiniMonitorValue
+          isLoading={isLoading}
           className="col-span-2"
           name="temp"
           unit="°C"
