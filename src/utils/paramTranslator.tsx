@@ -87,7 +87,7 @@ export const generalStTranslator = ({
       return stTranslatorForNibp(status);
     case "temp":
       return stTranslatorForTemp(status);
-    default:
+    case "ecg":
       return stTranslatorForSpo2(status);
   }
 };
