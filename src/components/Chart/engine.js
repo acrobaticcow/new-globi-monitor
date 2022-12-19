@@ -356,7 +356,7 @@ export class IndicatorRenderer {
   context;
   scanBarPos = 0;
   drawingData = [];
-  dataSrc;
+  dataSrc = [];
   minVal;
   maxVal;
   containerId;
@@ -389,9 +389,6 @@ export class IndicatorRenderer {
     var gl_canvas = document.createElement("canvas");
     // gl_canvas.setAttribute("id", divId + "_canvas");
     gl_canvas.style.backgroundColor = "#" + this.context.color;
-    //canvas.style.position = 'absolute';
-    // gl_canvas.style.width = '100%';
-    // gl_canvas.style.height = '100%';
     gl_canvas.width = parent.offsetWidth;
     gl_canvas.height = parent.offsetHeight;
     gl_canvas.style.zIndex = "2";
@@ -477,9 +474,7 @@ export class IndicatorRenderer {
         ctx.stroke();
       }
     });
-    // todo nhớ bật lại cái này
-    // parent.addEventListener("mouseover", (e) => {
-    //   e.preventDefault();
+    // parent.addEventListener("mouseover", (e) => { e.preventDefault();
     //   let button_div = document.getElementById(divId + "_control_div");
     //   button_div.style.display = "block";
     // });
@@ -508,14 +503,33 @@ export class IndicatorRenderer {
 
   drawScene() {
     var self = this;
-    let elem = this.dataSrc.splice(0, 1)[0];
-    if (self.drawingData.length <= this.context.WINDOW_POINTS - 1) {
-      self.drawingData.push(elem);
+    // let STEP = this.context.STEP? this.context.STEP:1;
+    // let points = this.dataSrc.splice(0, STEP);
+    // for (let p of points) {
+    //     if (self.drawingData.length <= this.context.WINDOW_POINTS - STEP) {
+    //         self.drawingData.push(p);
+    //     }
+    //     else {
+    //         self.drawingData[this.scanBarPos] = p;
+    //     }
+    //     this.scanBarPos = (this.scanBarPos  + 1) % this.context.WINDOW_POINTS;
+    // }
+    let STEP = 5;
+    let points = this.dataSrc.splice(0, STEP);
+    if (self.drawingData.length <= this.context.WINDOW_POINTS - STEP) {
+      for (let p of points) {
+        self.drawingData.push(p);
+        this.scanBarPos = (this.scanBarPos + 1) % this.context.WINDOW_POINTS;
+      }
     } else {
-      self.drawingData[this.scanBarPos] = elem;
+      for (let p of points) {
+        self.drawingData[this.scanBarPos] = p;
+        this.scanBarPos = (this.scanBarPos + 1) % this.context.WINDOW_POINTS;
+      }
     }
-    this.scanBarPos = (this.scanBarPos + 1) % this.context.WINDOW_POINTS;
-    let barPos = this.scanBarPos > 1 ? this.scanBarPos - 1 : this.scanBarPos;
+
+    let barPos =
+      this.scanBarPos > STEP ? this.scanBarPos - STEP : this.scanBarPos;
     let posNorm = Util.scaleValue(barPos, 0, this.context.WINDOW_POINTS);
     this.gl.draw(
       self.drawingData,
@@ -612,15 +626,84 @@ export class ZoomHandler {
             gl_FragColor = vec4(0.0, 0.0,0.0,1.0);               
         }`;
 
+  // for drawing dashed lines
+  vsDashedSrc = `
+        precision mediump float;
+
+        attribute vec2 a_position;
+        attribute vec2 a_posStart;
+        attribute float a_lineSofar;
+
+        uniform float maxVal;
+        uniform float minVal;  
+
+        uniform vec2 u_resolution;
+
+        const vec4 dashArray = vec4(10.0, 10.0, 10.0, 10.0);
+
+        varying vec2 v_start;
+        varying vec4 v_gaps;
+        varying float v_gapLen;
+        varying float v_lineSofar;
+
+        void main() {             
+            float x = 2.0 * a_position[0] / u_resolution[0] - 1.0; 
+            float y = 2.0 * (a_position[1] - minVal) / (maxVal - minVal) - 1.0; 
+            gl_Position = vec4(x,y, 0, 1);
+            v_start = a_posStart;
+            v_lineSofar = a_lineSofar;
+            v_gapLen = dashArray.x+dashArray.y+dashArray.z+dashArray.w;
+            v_gaps = vec4(dashArray.x+1.0,dashArray.x+dashArray.y,dashArray.x+dashArray.y+dashArray.z+1.0,v_gapLen);
+        }
+    `;
+
+  fsDashedSrc = `   
+        precision mediump float;
+
+        uniform vec4 u_color;
+
+        varying vec2 v_start;
+        varying vec4 v_gaps;
+        varying float v_gapLen;
+        varying float v_lineSofar;
+
+        float line( in vec2 a, in vec2 b, in vec2 p )
+        {
+            vec2 pa = p - a;
+            vec2 ba = b - a;
+            float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+            return length( pa - ba*h );
+        }
+
+        void main(){
+            vec2 uv = gl_FragCoord.xy;
+            float lineSofar = v_lineSofar+length(uv-v_start);
+            float dist = mod(lineSofar,v_gapLen);
+            if((dist>=v_gaps.x&&dist<=v_gaps.y)||(dist>=v_gaps.z&&dist<=v_gaps.w)){
+                discard;
+            }
+            gl_FragColor = u_color;
+        }
+    `;
+
   constructor(parent, data) {
     this.data = data;
     // let parent = document.getElementById(divId);
     // if (!parent) {
     //   throw "container not found!";
     // }
-    //create canvas
-    this.width = parent.offsetWidth;
-    this.height = parent.offsetHeight - 80;
+    //y axis canvas
+    let ycanvas = document.createElement("canvas");
+    ycanvas.setAttribute("id", "zoom-canvas-yaxis");
+    ycanvas.width = this.yAxisWidth;
+    ycanvas.height = parent.offsetHeight;
+    ycanvas.style.float = "left";
+    ycanvas.style.backgroundColor = "lightgray";
+    parent.appendChild(ycanvas);
+
+    //main canvas
+    this.width = parent.offsetWidth - this.yAxisWidth;
+    this.height = parent.offsetHeight - this.detailHeight;
     let canvas = document.createElement("canvas");
     canvas.setAttribute("id", "zoom-canvas");
     canvas.width = this.width;

@@ -40,7 +40,7 @@ interface MainMonitorProps {
 
 const ecgConfig = {
     color: "00FF00",
-    WINDOW_POINTS: 250,
+    WINDOW_POINTS: 1250,
     scanBarLength: 40,
     INTERVAL: 20,
     type: "ecg",

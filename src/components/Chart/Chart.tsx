@@ -86,10 +86,14 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
 
   useEffect(() => {
     const render = renderRef.current;
-    if (!render || !data) return;
+    if (!render || !data || !render.dataSrc) return;
 
-    render.dataSrc = data.wave[`${config.type}_wave`];
+    render.dataSrc = [...render.dataSrc, ...data.wave[`${config.type}_wave`]];
     render.render();
+
+    return () => {
+      render.dataSrc = [];
+    };
   }, [data, config]);
 
   const maximize = useCallback(() => {
