@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { FC, useMemo } from "react";
 import { useEffect, useRef, useCallback } from "react";
 // @ts-ignore
 import {
@@ -17,7 +17,9 @@ import {
 export type ConfigType = {
   color: string;
   WINDOW_POINTS: number;
-  // STEP: number;
+  minVal?: number;
+  maxVal?: number;
+  STEP?: number;
   scanBarLength: number;
   INTERVAL: number;
   type: "ecg" | "spo2" | "resp";
@@ -38,7 +40,7 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
   const overlayRef = useRef<HTMLDivElement>(null);
   const zoomHandlerRef = useRef<any>(null);
   const zoomModalRef = useRef<HTMLDivElement>(null);
-  // const [isShowZoomModal, setIsShowZoomModal] = useState(false);
+  const dataPool = useRef<number[]>([]);
 
   // init
   useEffect(() => {
@@ -49,8 +51,8 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
     const chart = chartRef.current;
     if (!parent || !modalContent || !chartWrapper || !chart || !zoomModal)
       return;
-    LayoutUtil.enableDrag(modalContentRef.current);
     const render = (renderRef.current = new IndicatorRenderer(chart, config));
+    LayoutUtil.enableDrag(modalContentRef.current);
 
     const zoom = (
       data: unknown,
@@ -60,7 +62,6 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
       startIdx: number,
       endIdx: number
     ) => {
-      console.log("anything");
       zoomModal.style.display = "block";
       const zoomHandler = (zoomHandlerRef.current = new ZoomHandler(
         modalContent,
@@ -75,21 +76,26 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
     };
 
     render.registerZoomFn(zoom);
+    render.render(dataPool.current);
 
     return () => {
       if (!chart.lastChild) return;
       while (chart.firstChild) {
         chart.removeChild(chart.lastChild);
       }
+      render.stop();
+      render.render([]);
     };
   }, [config]);
 
+  // push data whenever new data come in
   useEffect(() => {
     const render = renderRef.current;
     if (!render || !data) return;
-
-    render.dataSrc = data.wave[`${config.type}_wave`];
-    render.render();
+    if (config.type === "ecg") {
+      console.log(dataPool.current);
+    }
+    dataPool.current.push(...data.wave[`${config.type}_wave`]);
   }, [data, config]);
 
   const maximize = useCallback(() => {
@@ -105,12 +111,13 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
       canvas.style.height = `${overlay.clientHeight}px`;
       overlayChartWrapper.appendChild(canvas);
     }
-  }, []);
+  }, [chartRef, overlayRef]);
 
   const minimize = useCallback(() => {
     const chart = chartRef.current;
     const overlay = overlayRef.current;
-    if (!overlay || !chart) return;
+    const render = renderRef.current;
+    if (!overlay || !chart || !render) return;
     overlay.style.display = "none";
     const overlayChartWrapper = overlay.firstChild!;
     if (!overlayChartWrapper.lastChild) return;
@@ -121,8 +128,9 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
       canvasOfOverlayChartWrapper.style.width = `${chart.clientWidth}px`;
       canvasOfOverlayChartWrapper.style.height = `${chart.clientHeight}px`;
       chart.appendChild(canvasOfOverlayChartWrapper);
+      render.isDown = false;
     }
-  }, []);
+  }, [chartRef, overlayRef, renderRef]);
 
   const unzoom = () => {
     const zoomModal = zoomModalRef.current;

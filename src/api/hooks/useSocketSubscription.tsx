@@ -16,8 +16,6 @@ export const useSocketQuery = (
   const { data: user } = useFetchUser();
   const queryClient = useQueryClient();
   const socketRef = useRef<Socket | null>(null);
-  const isFirstRenderRef = useRef(true);
-  const nRender = useRef(0);
 
   const onError = (err: any) => {
     console.log(err);
@@ -42,11 +40,6 @@ export const useSocketQuery = (
   const onNewRecords = useCallback(
     (res: SocketData) => {
       if (!user) return;
-      if (nRender.current === 5) {
-        console.log(res);
-        console.log(patientId);
-      }
-      nRender.current++;
 
       queryClient.setQueryData([user.user_id, patientId, Promise], res);
     },
@@ -80,6 +73,10 @@ export const useSocketQuery = (
     socket.on("join-status", onJoinStatus);
     socket.on("new-records", onNewRecords);
     socket.emit("join", {
+      token: user.user_api_key,
+      topic,
+    });
+    console.log({
       token: user.user_api_key,
       topic,
     });

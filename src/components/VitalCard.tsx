@@ -18,7 +18,7 @@ interface VitalContentMonitorProps {
   sub?: string;
   title?: string;
   value?: number;
-  value2?: number;
+  value2?: number | null;
   className?: string;
   showRange?: boolean;
 }
@@ -27,7 +27,7 @@ interface VitalMonitorBlockProps {
    * type of VitalMonitorContent
    */
   type: Variant;
-  status: number;
+  status: number | undefined;
   Icon?: any;
   isPing?: boolean;
   childrenProps: VitalContentMonitorProps[];
@@ -97,8 +97,13 @@ export const VitalMonitorBlock: FunctionComponent<VitalMonitorBlockProps> = ({
         </div>
         <div className="flex  items-center">
           <WarningIcon className="inline-block h-5 w-5 stroke-neutral-200" />
-          <span className="mx-4 text-xs font-semibold">
-            {generalStTranslator({ status, type })}
+          <span
+            className={clsx(
+              "mx-4 text-xs font-semibold",
+              !status && "animate-pulse"
+            )}
+          >
+            {status ? generalStTranslator({ status, type }) : ""}
           </span>
         </div>
       </div>

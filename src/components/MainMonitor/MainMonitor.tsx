@@ -22,7 +22,6 @@ import { Followers } from "../../models/followers.models";
 import { m, AnimatePresence } from "framer-motion";
 import { CheckIcon, ArchiveBoxArrowDownIcon } from "@heroicons/react/20/solid";
 import { MainNibpParam } from "./MainNibpParam";
-import { modeIconTranslatorForNibp } from "../../utils/paramTranslator";
 /**
  * Chuyển từ độc c sang độ f
  */
@@ -40,23 +39,32 @@ interface MainMonitorProps {
 
 const ecgConfig = {
     color: "00FF00",
-    WINDOW_POINTS: 250,
+    WINDOW_POINTS: 1250,
     scanBarLength: 40,
-    INTERVAL: 20,
+    minVal: -5,
+    maxVal: 255,
+    INTERVAL: 52,
+    STEP: 20,
     type: "ecg",
   } as ConfigType,
   spo2Config = {
     color: "FFFF00",
-    WINDOW_POINTS: 50,
+    WINDOW_POINTS: 250,
     scanBarLength: 40,
-    INTERVAL: 150,
+    minVal: -5,
+    maxVal: 105,
+    STEP: 4,
+    INTERVAL: 80,
     type: "spo2",
   } as ConfigType,
   respConfig = {
     color: "00FFFF",
-    WINDOW_POINTS: 50,
+    WINDOW_POINTS: 250,
     scanBarLength: 40,
-    INTERVAL: 100,
+    minVal: -5,
+    maxVal: 255,
+    STEP: 4,
+    INTERVAL: 80,
     type: "resp",
   } as ConfigType;
 
@@ -81,7 +89,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
     user.user_id,
     patient_id,
     Promise,
-  ]) as SocketData;
+  ]) as SocketData | undefined;
   const { onDelMonitorId } = useContext(
     ActiveMonitorsApiContext
   ) as ActiveMonitorsApiContextType;
@@ -97,108 +105,73 @@ const MainMonitor: FC<MainMonitorProps> = ({
   }, [socket]);
 
   const MainMonitorParam = useMemo(() => {
-    if (currentParam) {
-      return (
-        <>
-          <VitalMonitorBlock
-            Icon={<HeartIcon className="ml-auto h-5 w-5 " />}
-            type="ecg"
-            isPing
-            status={currentParam.ecgSt}
-            childrenProps={[
-              {
-                maxRange: follower.patient_detail.resp_range.max,
-                minRange: follower.patient_detail.resp_range.min,
-                sub: "bpm",
-                title: "resp",
-                value: currentParam.resp,
-              },
-              {
-                maxRange: follower.patient_detail.hr_range.max,
-                minRange: follower.patient_detail.hr_range.min,
-                sub: "bpm",
-                title: "hr",
-                value: currentParam.hr,
-              },
-            ]}
-          />
-          <VitalMonitorBlock
-            Icon={<HeartIcon className="ml-auto h-5 w-5" />}
-            type="spo2"
-            isPing
-            status={currentParam.spo2St}
-            childrenProps={[
-              {
-                maxRange: follower.patient_detail.spo2_range.max,
-                minRange: follower.patient_detail.spo2_range.min,
-                sub: "%",
-                title: "spo2",
-                value: currentParam.spo2,
-              },
-              {
-                maxRange: follower.patient_detail.pr_range.max,
-                minRange: follower.patient_detail.pr_range.min,
-                sub: "bpm",
-                title: "pr",
-                value: currentParam.pr,
-              },
-            ]}
-          />
-          {/* <VitalMonitorBlock
-            Icon={modeIconTranslatorForNibp(currentParam.nibpMode)}
-            type="nibp"
-            status={currentParam.nibpSt}
-            childrenProps={[
-              {
-                maxRange: follower.patient_detail.nibp_range.high_pressure.max,
-                minRange: follower.patient_detail.nibp_range.high_pressure.min,
-                maxRange2: follower.patient_detail.nibp_range.low_pressure.max,
-                minRange2: follower.patient_detail.nibp_range.low_pressure.min,
-                value: currentParam.sys,
-                value2: currentParam.dia,
-                sub: "nibp",
-                title: "sys/dia",
-              },
-
-              {
-                className: "flex flex-col items-end",
-                maxRange: undefined,
-                minRange: undefined,
-                value:
-                  currentParam.nibpSt === 5
-                    ? currentParam.map
-                    : currentParam.cuff,
-                direction: "left",
-                showRange: false,
-                sub: "mmHg",
-                title: currentParam.nibpSt === 5 ? "map" : "cuff",
-              },
-            ]}
-          /> */}
-          <VitalMonitorBlock
-            Icon={<FluentTemperature16Filled className="h-5 w-5" />}
-            type="temp"
-            status={currentParam.tempSt}
-            childrenProps={[
-              {
-                maxRange: follower.patient_detail.temp_range.max,
-                minRange: follower.patient_detail.temp_range.min,
-                value: currentParam.temp,
-                sub: "°C",
-                title: "Temp 1",
-              },
-            ]}
-          />
-        </>
-      );
-    } else {
-      return <div>loading</div>;
-    }
+    return (
+      <>
+        <VitalMonitorBlock
+          Icon={<HeartIcon className="ml-auto h-5 w-5 " />}
+          type="ecg"
+          isPing
+          status={currentParam?.ecgSt}
+          childrenProps={[
+            {
+              maxRange: follower.patient_detail.resp_range.max,
+              minRange: follower.patient_detail.resp_range.min,
+              sub: "bpm",
+              title: "resp",
+              value: currentParam?.resp,
+            },
+            {
+              maxRange: follower.patient_detail.hr_range.max,
+              minRange: follower.patient_detail.hr_range.min,
+              sub: "bpm",
+              title: "hr",
+              value: currentParam?.hr,
+            },
+          ]}
+        />
+        <VitalMonitorBlock
+          Icon={<HeartIcon className="ml-auto h-5 w-5" />}
+          type="spo2"
+          isPing
+          status={currentParam?.spo2St}
+          childrenProps={[
+            {
+              maxRange: follower.patient_detail.spo2_range.max,
+              minRange: follower.patient_detail.spo2_range.min,
+              sub: "%",
+              title: "spo2",
+              value: currentParam?.spo2,
+            },
+            {
+              maxRange: follower.patient_detail.pr_range.max,
+              minRange: follower.patient_detail.pr_range.min,
+              sub: "bpm",
+              title: "pr",
+              value: currentParam?.pr,
+            },
+          ]}
+        />
+        <VitalMonitorBlock
+          Icon={<FluentTemperature16Filled className="h-5 w-5" />}
+          type="temp"
+          status={currentParam?.tempSt}
+          childrenProps={[
+            {
+              maxRange: follower.patient_detail.temp_range.max,
+              minRange: follower.patient_detail.temp_range.min,
+              value: currentParam?.temp,
+              sub: "°C",
+              title: "Temp 1",
+            },
+          ]}
+        />
+      </>
+    );
   }, [currentParam, follower]);
 
-  if (isCurrentParamLoading || !socket) return <div>current param loading</div>;
-  if (currentParamError || !currentParam || !socket)
-    return <div>socket error</div>;
+  // if (isCurrentParamLoading || !socket) return <div>current param loading</div>;
+  // if (currentParamError || !currentParam || !socket)
+  //   return <div>socket error</div>;
   return (
     <m.div
       initial={{ opacity: 0, scale: "0%" }}
@@ -248,7 +221,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
           </div>
         </div>
         <AnimatePresence>
-          {!!currentParam.warning && (
+          {!!currentParam?.warning && (
             <m.div
               initial={{
                 opacity: 0,
@@ -318,7 +291,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
           {MainMonitorParam}
           <MainNibpParam
             follower={follower}
-            nibpParam={socket.param.nibp_param}
+            nibpParam={socket?.param.nibp_param}
           />
         </div>
       </div>

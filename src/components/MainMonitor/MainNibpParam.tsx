@@ -34,21 +34,21 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
     };
   }, [nibpParam]);
 
-  if (!nibpParam) return <div>loading</div>;
-
   return (
     <VitalMonitorBlock
-      Icon={modeIconTranslatorForNibp(nibpParam.patient_mode[index])}
+      Icon={
+        nibpParam && modeIconTranslatorForNibp(nibpParam?.patient_mode[index])
+      }
       type="nibp"
-      status={nibpParam.status[index]}
+      status={nibpParam?.status[index]}
       childrenProps={[
         {
           maxRange: follower.patient_detail.nibp_range.high_pressure.max,
           minRange: follower.patient_detail.nibp_range.high_pressure.min,
           maxRange2: follower.patient_detail.nibp_range.low_pressure.max,
           minRange2: follower.patient_detail.nibp_range.low_pressure.min,
-          value: nibpParam.sys[index],
-          value2: nibpParam.dia[index] ?? null,
+          value: nibpParam?.sys[index],
+          value2: nibpParam?.dia[index] ?? null,
           sub: "nibp",
           title: "sys/dia",
         },
@@ -58,13 +58,13 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
           maxRange: undefined,
           minRange: undefined,
           value:
-            nibpParam.status[index] !== 1
-              ? nibpParam.map[index]
-              : nibpParam.cuff[index],
+            nibpParam?.status[index] !== 1
+              ? nibpParam?.map[index]
+              : nibpParam?.cuff[index],
           direction: "left",
           showRange: false,
           sub: "mmHg",
-          title: nibpParam.status[index] !== 1 ? "map" : "cuff",
+          title: nibpParam?.status[index] !== 1 ? "map" : "cuff",
         },
       ]}
     />
