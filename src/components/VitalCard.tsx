@@ -167,7 +167,7 @@ export const VitalMonitorContent: FunctionComponent<
               varTxtBase(variant)
             )}
           >
-            {value ?? "--"}
+            {value || "--"}
           </div>
         </div>
         {value2 !== undefined && (
@@ -179,7 +179,7 @@ export const VitalMonitorContent: FunctionComponent<
               )}
             >
               <span className={clsx(varTxtBase(variant))}>/</span>
-              <span>{value2 ?? "--"}</span>
+              <span>{value2 || "--"}</span>
             </div>
             {showRange && (
               <div className="">

@@ -37,7 +37,7 @@ interface MainMonitorProps {
   follower: ArrayElement<Followers["data"]>;
 }
 
-const ecgConfig = {
+const ecgConfig: ConfigType = {
     color: "00FF00",
     WINDOW_POINTS: 1250,
     scanBarLength: 40,
@@ -46,27 +46,28 @@ const ecgConfig = {
     INTERVAL: 52,
     STEP: 20,
     type: "ecg",
-  } as ConfigType,
-  spo2Config = {
+    duration: 4960,
+  },
+  spo2Config: ConfigType = {
     color: "FFFF00",
     WINDOW_POINTS: 250,
     scanBarLength: 40,
     minVal: -5,
     maxVal: 105,
-    STEP: 4,
-    INTERVAL: 80,
+    STEP: 1,
     type: "spo2",
-  } as ConfigType,
-  respConfig = {
+    duration: 5000,
+  },
+  respConfig: ConfigType = {
     color: "00FFFF",
     WINDOW_POINTS: 250,
     scanBarLength: 40,
     minVal: -5,
     maxVal: 255,
-    STEP: 4,
-    INTERVAL: 80,
+    STEP: 1,
+    duration: 5000,
     type: "resp",
-  } as ConfigType;
+  };
 
 const MainMonitor: FC<MainMonitorProps> = ({
   className,
