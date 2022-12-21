@@ -21,8 +21,9 @@ export type ConfigType = {
   maxVal?: number;
   STEP?: number;
   scanBarLength: number;
-  INTERVAL: number;
+  INTERVAL?: number;
   type: "ecg" | "spo2" | "resp";
+  duration: number;
   soundPlayer?: () => void;
 };
 interface ChartProps {
@@ -84,7 +85,7 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         chart.removeChild(chart.lastChild);
       }
       render.stop();
-      render.render([]);
+      dataPool.current = [];
     };
   }, [config]);
 
@@ -92,9 +93,6 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
   useEffect(() => {
     const render = renderRef.current;
     if (!render || !data) return;
-    if (config.type === "ecg") {
-      console.log(dataPool.current);
-    }
     dataPool.current.push(...data.wave[`${config.type}_wave`]);
   }, [data, config]);
 

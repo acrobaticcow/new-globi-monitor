@@ -102,7 +102,7 @@ export const useSocketValueInterval = (patientId: string) => {
     }, 1000);
     return () => {
       clearInterval(intervalId);
-      setIndex(0);
+      // setIndex(0);
     };
   }, [data]);
 

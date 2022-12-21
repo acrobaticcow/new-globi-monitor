@@ -1,4 +1,11 @@
-import { FC, useEffect, useState } from "react";
+import {
+  FC,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Followers } from "../../models/followers.models";
 import { SocketData } from "../../models/realtime.models";
 import { ArrayElement } from "../../models/utils.models";
@@ -15,15 +22,16 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
   nibpParam,
 }) => {
   const [index, setIndex] = useState(0);
+  const deferredIndex = useDeferredValue(index);
 
   useEffect(() => {
     if (!nibpParam) return;
     const intervalId = setInterval(() => {
       setIndex((prev) => {
         const current = prev + 1;
-        if (current > nibpParam.cuff.length) {
+        if (current >= nibpParam.cuff.length) {
           clearInterval(intervalId);
-          return prev;
+          return 0;
         }
         return current;
       });
@@ -31,8 +39,15 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
 
     return () => {
       setIndex(0);
+      clearInterval(intervalId);
     };
   }, [nibpParam]);
+
+  if (nibpParam?.cuff[0] !== 0) {
+    console.log(nibpParam?.cuff[index], nibpParam?.cuff, index);
+  } else {
+    console.log(nibpParam?.map[index], nibpParam?.map, index);
+  }
 
   return (
     <VitalMonitorBlock
@@ -47,8 +62,8 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
           minRange: follower.patient_detail.nibp_range.high_pressure.min,
           maxRange2: follower.patient_detail.nibp_range.low_pressure.max,
           minRange2: follower.patient_detail.nibp_range.low_pressure.min,
-          value: nibpParam?.sys[index],
-          value2: nibpParam?.dia[index] ?? null,
+          value: nibpParam?.sys[deferredIndex],
+          value2: nibpParam?.dia[deferredIndex] ?? null,
           sub: "nibp",
           title: "sys/dia",
         },
@@ -58,13 +73,13 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
           maxRange: undefined,
           minRange: undefined,
           value:
-            nibpParam?.status[index] !== 1
-              ? nibpParam?.map[index]
-              : nibpParam?.cuff[index],
+            nibpParam?.status[deferredIndex] !== 1
+              ? nibpParam?.map[deferredIndex]
+              : nibpParam?.cuff[deferredIndex],
           direction: "left",
           showRange: false,
           sub: "mmHg",
-          title: nibpParam?.status[index] !== 1 ? "map" : "cuff",
+          title: nibpParam?.status[deferredIndex] !== 1 ? "map" : "cuff",
         },
       ]}
     />

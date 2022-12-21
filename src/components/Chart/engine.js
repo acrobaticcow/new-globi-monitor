@@ -330,10 +330,10 @@ export class IndicatorRenderer {
   //states
   START = false;
   STOP = false;
+  prevTimeFr; // previous time frame
+  driftTimeDraw;
   startTimeDraw;
-  driftTimeDraw = 0; // sự chênh lệch giữa những lần timeout , xem setTimeout ở draw()
   timeoutId;
-  startCycle;
 
   constructor(parentDiv, visualParam) {
     // let parentDiv = document.getElementById(divId);
@@ -516,9 +516,6 @@ export class IndicatorRenderer {
         -1,
         1
       );
-      // if (barPos === this.WINDOW_POINTS - this.context.STEP) {
-      //   this.context.STEP = Math.ceil((buffer.length * 13) / 5000);
-      // }
       this.gl.draw(
         self.drawingData,
         posNorm + this.context.WINDOW_POINTS + 1.1,
@@ -535,22 +532,31 @@ export class IndicatorRenderer {
       //   self.driftTimeDraw = elapsed % self.context.INTERVAL;
       //   self.draw(buffer);
       // }, self.context.INTERVAL - self.driftTimeDraw);
-      this.timeoutId = requestAnimationFrame((timestamp) => {
-        if (!self.startTimeDraw) self.startTimeDraw = timestamp;
-        const elapsed = timestamp - self.startTimeDraw;
-        self.startTimeDraw = timestamp;
-        self.driftTimeDraw = elapsed % self.context.INTERVAL;
-        self.context.STEP = Math.round(
-          (elapsed * (buffer.length >= 1250 ? buffer.length : 1250)) / 5000
+      self.timeoutId = requestAnimationFrame((timestamp) => {
+        if (!self.prevTimeFr) self.prevTimeFr = timestamp;
+        const elapsed = timestamp - self.prevTimeFr;
+        const fpsInterval = Math.round(
+          self.context.duration / self.context.WINDOW_POINTS
         );
+        if (elapsed >= fpsInterval) {
+          self.prevTimeFr = timestamp - (elapsed % fpsInterval);
+          self.context.STEP = Math.floor(
+            (elapsed *
+              (buffer.length >= self.context.WINDOW_POINTS
+                ? buffer.length
+                : self.context.WINDOW_POINTS)) /
+              self.context.duration
+          );
+        } else {
+          self.context.STEP = 0;
+        }
         self.draw(buffer);
       });
     } else {
       if (this.STOP) {
         console.log("Finished drawing this buffer:", this.id);
-        clearTimeout(self.timeoutId);
-        cancelAnimationFrame(this.timeoutId);
       }
+      cancelAnimationFrame(self.timeoutId);
     }
   }
 }

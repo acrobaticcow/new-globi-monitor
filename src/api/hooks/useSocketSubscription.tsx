@@ -40,7 +40,7 @@ export const useSocketQuery = (
   const onNewRecords = useCallback(
     (res: SocketData) => {
       if (!user) return;
-
+      // todo check this,maybe queyrData get set too many times
       queryClient.setQueryData([user.user_id, patientId, Promise], res);
     },
     [patientId, queryClient, user]
@@ -73,10 +73,6 @@ export const useSocketQuery = (
     socket.on("join-status", onJoinStatus);
     socket.on("new-records", onNewRecords);
     socket.emit("join", {
-      token: user.user_api_key,
-      topic,
-    });
-    console.log({
       token: user.user_api_key,
       topic,
     });
