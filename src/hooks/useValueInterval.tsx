@@ -61,7 +61,7 @@ export const useSocketValueInterval = (patientId: string) => {
       temp: data.param.temp_param.temp
         .filter((_, i) => [9, 19, 29, 39, 49].includes(i))
         .map((value) => Number(value.toFixed(1))),
-      ecgSt: data.param.ecg_param.st,
+      ecgSt: data.param.ecg_param.status,
       spo2St: data.param.spo2_param.status,
       tempSt: data.param.temp_param.status.filter((_, i) =>
         [9, 19, 29, 39, 49].includes(i)
