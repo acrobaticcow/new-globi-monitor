@@ -18,6 +18,7 @@ export interface SocketData {
       resp: Array<number>;
       hr: Array<number>;
       st: Array<number>;
+      status: number[];
     };
     nibp_param: {
       patient_mode: Array<number>;
