@@ -42,22 +42,32 @@ const MiniMonitorValue: FC<MiniMonitorValueProps> = ({
   isLoading,
 }) => {
   return (
-    <div className={className}>
-      <span className="mr-2 h-fit text-xs font-medium uppercase text-neutral-100/75">
-        {name}
-      </span>
-      {showUnit && <span className="text-sm text-neutral-200">{unit}</span>}
-      <p
-        className={clsx(
-          !isLoading ? varTxtBase(type) : "text-neutral-200",
-          "text-start font-inter text-base font-semibold",
-          isLoading && "animate-pulse"
-        )}
-      >
-        {value || "--"}
-        {value2 !== undefined && ` / ${value2 || "--"}`}
-      </p>
-    </div>
+      <div className={className}>
+          <p
+              className={clsx(
+                  !isLoading
+                      ? "mr-2 h-fit text-xs font-medium uppercase text-neutral-100/75"
+                      : "h-2 w-8 animate-pulse rounded-md bg-neutral-200/50"
+              )}
+          >
+              {!isLoading && name}
+          </p>
+          {showUnit && (
+              <span className="text-sm text-neutral-200">{unit}</span>
+          )}
+          <p
+              className={clsx(
+                  !isLoading
+                      ? varTxtBase(type)
+                      : "text-neutral-200/75",
+                  "text-start font-inter text-base font-semibold",
+                  isLoading && "animate-pulse"
+              )}
+          >
+              {value || "--"}
+              {value2 !== undefined && ` / ${value2 || "--"}`}
+          </p>
+      </div>
   );
 };
 export default MiniMonitorValue;
