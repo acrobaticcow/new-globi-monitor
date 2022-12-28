@@ -5,6 +5,7 @@ module.exports = {
         require("@tailwindcss/forms"),
         require("@tailwindcss/line-clamp"),
         require("daisyui"),
+        require("tailwindcss-inner-border"),
     ],
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     theme: {

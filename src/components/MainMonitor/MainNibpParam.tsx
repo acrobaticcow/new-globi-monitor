@@ -1,9 +1,10 @@
-import { FC, useDeferredValue, useEffect, useState } from "react";
+import type { FC } from "react";
 import { Followers } from "../../models/followers.models";
 import { SocketData } from "../../models/realtime.models";
 import { ArrayElement } from "../../models/utils.models";
 import { modeIconTranslatorForNibp } from "../../utils/paramTranslator";
 import { VitalMonitorBlock } from "../VitalCard";
+import { useCustomizeValueInterval } from "../../hooks/useCustomizeValueInteral";
 
 interface MainNibpParamProps {
     follower: ArrayElement<Followers["data"]>;
@@ -14,44 +15,20 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
     follower,
     nibpParam,
 }) => {
-    const [index, setIndex] = useState(0);
-    const deferredIndex = useDeferredValue(index);
-
-    useEffect(() => {
-        if (!nibpParam) return;
-        const intervalId = setInterval(() => {
-            setIndex((prev) => {
-                const current = prev + 1;
-                if (current >= nibpParam.cuff.length) {
-                    clearInterval(intervalId);
-                    return 0;
-                }
-                return current;
-            });
-        }, 500);
-
-        return () => {
-            setIndex(0);
-            clearInterval(intervalId);
-        };
-    }, [nibpParam]);
-
-    // if (nibpParam?.cuff[0] !== 0) {
-    //     console.log(nibpParam?.cuff[index], nibpParam?.cuff, index);
-    // } else {
-    //     console.log(nibpParam?.map[index], nibpParam?.map, index);
-    // }
+    const { currentData, index } =
+        useCustomizeValueInterval(nibpParam);
+    console.log("parent rerender");
 
     return (
         <VitalMonitorBlock
             Icon={
-                nibpParam &&
+                currentData &&
                 modeIconTranslatorForNibp(
-                    nibpParam?.patient_mode[index]
+                    currentData?.patient_mode[index]
                 )
             }
             type="nibp"
-            status={nibpParam?.status[index]}
+            status={currentData?.status[index]}
             childrenProps={[
                 {
                     maxRange:
@@ -66,8 +43,8 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
                     minRange2:
                         follower.patient_detail.nibp_range
                             .low_pressure.min,
-                    value: nibpParam?.sys[deferredIndex],
-                    value2: nibpParam?.dia[deferredIndex] ?? null,
+                    value: currentData?.sys[index],
+                    value2: currentData?.dia[index] ?? null,
                     sub: "nibp",
                     title: "sys/dia",
                 },
@@ -77,14 +54,14 @@ export const MainNibpParam: FC<MainNibpParamProps> = ({
                     maxRange: undefined,
                     minRange: undefined,
                     value:
-                        nibpParam?.status[deferredIndex] !== 1
-                            ? nibpParam?.map[deferredIndex]
-                            : nibpParam?.cuff[deferredIndex],
+                        currentData?.status[index] !== 1
+                            ? currentData?.map[index]
+                            : currentData?.cuff[index],
                     direction: "left",
                     showRange: false,
                     sub: "mmHg",
                     title:
-                        nibpParam?.status[deferredIndex] !== 1
+                        currentData?.status[index] !== 1
                             ? "map"
                             : "cuff",
                 },

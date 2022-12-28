@@ -583,7 +583,6 @@ export class IndicatorRenderer {
         var self = this;
 
         let points = buffer.splice(0, this.context.STEP);
-        // console.log('buffer size:', buffer.length, ', chunk:', points.length, ',pos:', this.scanBarPos,', drawing size:', this.drawingData.length);
         if (points.length > 0) {
             if (
                 self.drawingData.length <=

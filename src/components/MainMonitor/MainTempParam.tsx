@@ -1,67 +1,39 @@
-import { useEffect, useMemo, useState } from "react";
 import type { FC } from "react";
-import { CurrentParam } from "../../hooks/useValueInterval";
 import { Followers } from "../../models/followers.models";
 import { ArrayElement } from "../../models/utils.models";
 import { FluentTemperature16Filled } from "../Icons";
 import { VitalMonitorBlock } from "../VitalCard";
+import { SocketData } from "../../models/realtime.models";
+import { useCustomizeValueInterval } from "../../hooks/useCustomizeValueInteral";
 
 interface MainTempParamProps {
-  follower: ArrayElement<Followers["data"]>;
-  currentParam: CurrentParam;
-  temps: number[];
+    follower: ArrayElement<Followers["data"]>;
+    tempsParam: SocketData["param"]["temp_param"] | undefined;
 }
 
 const MainTempParam: FC<MainTempParamProps> = ({
-  follower,
-  currentParam,
-  temps,
+    follower,
+    tempsParam,
 }) => {
-  const [index, setIndex] = useState(0);
-  const transformedTemps = useMemo(
-    () =>
-      temps
-        .filter((_, i) => [9, 19, 29, 39, 49].includes(i))
-        .map((value) => Number(value.toFixed(1))),
-    [temps]
-  );
+    const { currentData, index } =
+        useCustomizeValueInterval(tempsParam);
 
-  useEffect(() => {
-    const timeoutIds = [] as number[];
-
-    for (let i = 0; i < transformedTemps.length; i++) {
-      const timeoutId = setTimeout(() => {
-        setIndex((prev) =>
-          prev + 1 > transformedTemps.length ? prev : prev + 1
-        );
-      }, 1000 * i);
-      timeoutIds.push(timeoutId);
-    }
-
-    return () => {
-      timeoutIds.forEach((id) => {
-        clearTimeout(id);
-      });
-      setIndex(0);
-    };
-  }, [transformedTemps]);
-
-  return (
-    <VitalMonitorBlock
-      Icon={<FluentTemperature16Filled className="h-5 w-5" />}
-      type="temp"
-      status={currentParam.tempSt}
-      childrenProps={[
-        {
-          maxRange: follower.patient_detail.temp_range.max,
-          minRange: follower.patient_detail.temp_range.min,
-          value: transformedTemps[index] ?? transformedTemps[index - 1],
-          sub: "°C",
-          title: "Temp 1",
-        },
-      ]}
-    />
-  );
+    return (
+        <VitalMonitorBlock
+            Icon={<FluentTemperature16Filled className="h-5 w-5" />}
+            type="temp"
+            status={currentData?.status[index]}
+            childrenProps={[
+                {
+                    maxRange: follower.patient_detail.temp_range.max,
+                    minRange: follower.patient_detail.temp_range.min,
+                    value: currentData?.temp[index],
+                    sub: "°C",
+                    title: "Temp 1",
+                },
+            ]}
+        />
+    );
 };
 
 export default MainTempParam;
