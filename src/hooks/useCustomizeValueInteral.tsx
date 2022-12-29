@@ -1,5 +1,6 @@
-import { useState, useEffect, useDebugValue } from "react";
+import { useState, useEffect, useRef } from "react";
 import { produce, current as currentImmer } from "immer";
+import type { WritableDraft } from "immer/dist/internal";
 
 const calMaxLengthOfObjArr = (objArr: { [key: string]: any[] }) => {
     return Object.values<number[]>(objArr).reduce((accu, current) => {
@@ -22,8 +23,11 @@ export const useCustomizeValueInterval = <
     const [dataPool, setDataPool] = useState<
         { [key: string]: number[] }[]
     >([]);
-    useDebugValue(index);
-    useDebugValue(dataPool);
+    const [isReady, setIsReady] = useState(true);
+    const intervalIdRef = useRef(0);
+    const currentDataRef =
+        useRef<WritableDraft<{ [key: string]: number[] }>>();
+    const currentIndexRef = useRef(0);
     /**
      * transform param and put it into dataPool
      */
@@ -55,49 +59,80 @@ export const useCustomizeValueInterval = <
                 );
             }
         }
+
         setDataPool(
             produce((draft) => {
                 draft.push(filteredParam);
             })
         );
-    }, [param]);
+        return () => {};
+    }, [param, duration]);
 
     /**
      * start interval when dataPool changes
      */
     useEffect(() => {
-        if (!dataPool.length) return;
-        /**
-         * all array of currentData have common length
-         */
-        // console.log("rerender");
-        const currentData = dataPool[0];
-        const anyKey = Object.keys(currentData)[0];
-        const commonLength = currentData[anyKey].length;
+        if (dataPool.length === 0 || isReady === false) {
+            return;
+        } else {
+            /**
+             * all array of currentData have common length
+             */
+            const currentData = dataPool[0];
+            const anyKey = Object.keys(currentData)[0];
+            const commonLength = currentData[anyKey].length;
+            const intervalFn = (commonLength: number) => {
+                setIndex((prev) => {
+                    const current = prev + 1;
+                    if (current >= commonLength) {
+                        clearTimeout(intervalIdRef.current);
+                        setDataPool(
+                            produce((draft) => {
+                                /**
+                                 * take a snapshot when dataPool have 1 el left, to use as a fallback when dataPool is empty
+                                 */
+                                if (draft.length === 1) {
+                                    currentDataRef.current =
+                                        currentImmer(draft[0]);
+                                    currentIndexRef.current = prev;
+                                }
+                                draft.shift();
+                                setIsReady(true);
+                            })
+                        );
+                        return 0;
+                    } else {
+                        intervalIdRef.current = setTimeout(
+                            intervalFn,
+                            duration / commonLength,
+                            commonLength
+                        );
+                        return current;
+                    }
+                });
+            };
 
-        const intervalId = setInterval(() => {
-            setIndex((prev) => {
-                const current = prev + 1;
-                console.log(current);
-                console.log(commonLength);
-                if (current >= commonLength) {
-                    setDataPool(
-                        produce((draft) => {
-                            draft.shift();
-                        })
-                    );
-                    clearInterval(intervalId);
-                    return 0;
-                }
-                return current;
-            });
-        }, duration / commonLength);
+            intervalIdRef.current = setTimeout(
+                intervalFn,
+                duration / commonLength,
+                commonLength
+            );
+            setIsReady(false);
+        }
+        return () => {};
+    }, [dataPool, duration, isReady]);
 
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [dataPool, duration]);
-    // console.log(index);
-    // console.log(dataPool);
-    return { currentData: dataPool[0] as paramType, index };
+    useEffect(
+        () => () => {
+            clearInterval(intervalIdRef.current);
+        },
+        []
+    );
+
+    return {
+        currentData: (dataPool[0] ?? currentDataRef.current) as
+            | paramType
+            | undefined,
+        index: dataPool[0] ? index : currentIndexRef.current,
+    };
 };

@@ -1,21 +1,19 @@
 import clsx from "clsx";
-import { FC, useContext } from "react";
-import { useLayoutEffect, useRef } from "react";
+import { FC, useContext, useEffect } from "react";
+import { useRef } from "react";
 import { UserCircle } from "../Icons";
-import MiniMonitorValue from "./MiniMonitorValue";
 import {
     ActiveMonitorsApiContext,
     ActiveMonitorsApiContextType,
     MonitorContext,
     MonitorContextType,
 } from "../../hooks/useActiveMonitorProvider";
-import { useSocketValueInterval } from "../../hooks/useValueInterval";
-import {
-    ExclamationTriangleIcon,
-    XMarkIcon,
-} from "@heroicons/react/20/solid";
-import { useQuery } from "@tanstack/react-query";
+import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
+import { MiniMonitorValueEcg } from "./Variants/MiniMonitorValueEcg";
+import { MiniMonitorValueNibp } from "./Variants/MiniMonitorValueNibp";
+import { MiniMonitorValueSpo2 } from "./Variants/MiniMonitorValueSpo2";
+import { MiniMonitorValuetemp } from "./Variants/MiniMonitorValueTemp";
 
 export interface MiniMonitorProps {
     img?: string;
@@ -44,14 +42,11 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
     const { activeMonitorIds } = useContext(
         MonitorContext
     ) as MonitorContextType;
-    // to connect to socket
-    useSocketQuery(patientId);
-    const { currentParam: value, isLoading } =
-        useSocketValueInterval(patientId);
-
+    const { data: socket, isLoading } = useSocketQuery(patientId);
+    const duration = socket ? (socket.to - socket.from) * 1000 : 5000;
     const nameRef = useRef<HTMLParagraphElement>(null);
     const nameWrapperRef = useRef<HTMLDivElement>(null);
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (!nameRef.current || !nameWrapperRef.current) return;
         if (
             isEllipsisActive(nameRef.current, nameWrapperRef.current)
@@ -96,9 +91,9 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
                         >
                             {name}
                         </span>
-                        {value?.warning && (
+                        {/* {value?.warning && (
                             <ExclamationTriangleIcon className="inline-block h-4 w-4 fill-transparent stroke-yellow-600" />
-                        )}
+                        )} */}
                     </div>
                     <p className="text-xs text-neutral-200">{dob}</p>
                 </div>
@@ -113,52 +108,27 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
                 </button>
             </div>
             <div className="mb-1 mt-4 grid grid-cols-4 justify-between px-1">
-                <MiniMonitorValue
+                <MiniMonitorValueEcg
                     isLoading={isLoading}
-                    name="resp"
-                    unit="brpm"
-                    value={value?.resp}
-                    type="ecg"
+                    duration={duration}
+                    ecgParam={socket?.param.ecg_param}
                 />
-                <MiniMonitorValue
+                <MiniMonitorValueNibp
                     isLoading={isLoading}
-                    name="hr"
-                    unit="bpm"
-                    value={value?.hr}
-                    type="ecg"
-                />
-                <MiniMonitorValue
-                    isLoading={isLoading}
-                    name="sys / dia"
-                    unit="mmHg"
-                    value={value?.sys}
-                    value2={value?.dia ?? null}
-                    type="nibp"
-                    className="col-span-2"
+                    duration={duration}
+                    nibpParam={socket?.param.nibp_param}
                 />
             </div>
             <div className="grid grid-cols-4 px-1">
-                <MiniMonitorValue
+                <MiniMonitorValueSpo2
                     isLoading={isLoading}
-                    name="spo2"
-                    unit="%"
-                    value={value?.spo2}
-                    type="spo2"
+                    duration={duration}
+                    spo2Param={socket?.param.spo2_param}
                 />
-                <MiniMonitorValue
+                <MiniMonitorValuetemp
                     isLoading={isLoading}
-                    name="pr"
-                    unit="bpm"
-                    value={value?.pr}
-                    type="spo2"
-                />
-                <MiniMonitorValue
-                    isLoading={isLoading}
-                    className="col-span-2"
-                    name="temp"
-                    unit="°C"
-                    value={value?.temp}
-                    type="temp"
+                    duration={duration}
+                    tempParam={socket?.param.temp_param}
                 />
             </div>
         </div>

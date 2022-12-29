@@ -3,33 +3,33 @@ import {
     UserGroupIcon,
     CheckCircleIcon,
     ExclamationCircleIcon,
-} from "@heroicons/react/24/outline";
+} from "@heroicons/react/20/solid";
 
 interface GeneralInfoProps {}
 
 export const GeneralInfo: FC<GeneralInfoProps> = () => {
     return (
-        <div className="h-full w-full rounded-md bg-neutral-400/50 p-4 inner-border-2 inner-border-neutral-300">
-            <div className="mb-8 space-y-2">
+        <div className="flex h-full w-full flex-col justify-between rounded-md bg-neutral-400/50 px-4 py-3 inner-border-2 inner-border-neutral-300">
+            <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                    <p>
-                        <UserGroupIcon className="mr-2 inline-block h-6 w-6 align-middle text-neutral-100/50" />
+                    <p className="">
+                        <UserGroupIcon className="mr-2 inline-block h-5 w-5 align-middle text-neutral-100/50" />
                         <span className="align-middle leading-none text-neutral-100/90">
                             Số bệnh nhân theo dõi :{" "}
                         </span>
                     </p>
-                    <p className="text-lg font-semibold leading-none">
+                    <p className="text-base font-semibold leading-none">
                         230
                     </p>
                 </div>
                 <div className="flex items-center justify-between">
                     <p>
-                        <CheckCircleIcon className="mr-2 inline-block h-6 w-6 align-middle text-success-400/50" />
+                        <CheckCircleIcon className="mr-2 inline-block h-5 w-5 align-middle text-success-400/50" />
                         <span className="align-middle leading-none text-success-100">
                             Số bệnh nhân trực tuyến :
                         </span>
                     </p>
-                    <p className="align-baseline text-lg font-semibold leading-none text-success-400">
+                    <p className="align-baseline text-base font-semibold leading-none text-success-400">
                         50 /{" "}
                         <span className="align-baseline text-sm leading-none text-success-400/75">
                             230
@@ -38,12 +38,12 @@ export const GeneralInfo: FC<GeneralInfoProps> = () => {
                 </div>
                 <div className="flex items-center justify-between">
                     <p>
-                        <ExclamationCircleIcon className="mr-2 inline-block h-6 w-6 align-middle text-danger-400/50" />
+                        <ExclamationCircleIcon className="mr-2 inline-block h-5 w-5 align-middle text-danger-400/50" />
                         <span className="align-middle leading-none text-danger-100">
                             Số bệnh nhân cảnh báo :
                         </span>
                     </p>
-                    <p className="align-baseline text-lg font-semibold leading-none text-danger-400">
+                    <p className="align-baseline text-base font-semibold leading-none text-danger-400">
                         4 /{" "}
                         <span className="align-baseline text-sm leading-none text-danger-400/75">
                             230
@@ -51,8 +51,8 @@ export const GeneralInfo: FC<GeneralInfoProps> = () => {
                     </p>
                 </div>
             </div>
-            <div className="px-2">
-                <div className="border-b border-neutral-100/95 pb-4">
+            <div>
+                <div className="border-b border-neutral-100/95 pb-3">
                     <h4 className="mb-1 font-bold leading-none">
                         Thông tin bệnh viện
                     </h4>
@@ -64,7 +64,7 @@ export const GeneralInfo: FC<GeneralInfoProps> = () => {
                     </p>
                 </div>
                 <div className="mt-2 flex items-center gap-x-2 text-sm">
-                    <div className="basis-3/5">
+                    <div className="basis-9/12">
                         <a
                             className="group block"
                             href="mailto:prm@vijases.com"
@@ -87,15 +87,15 @@ export const GeneralInfo: FC<GeneralInfoProps> = () => {
                                 +84 942 798 468
                             </span>
                         </a>
-                        {/* <p>
+                        <p>
                             Một sản phẩm của công ty TNHH thiết bị
                             Khoa học và Dịch vụ Việt Nhật
-                        </p> */}
+                        </p>
                     </div>
-                    <div className="basis-2/5">
+                    <div className="basis-4/12 pl-12">
                         <img
                             className="h-full w-full object-cover object-center"
-                            src="/img/logo_globicare_mono.png"
+                            src="/img/logo-Globicare-goc-doc-trang.svg"
                             alt="logo Globicare"
                         />
                     </div>
