@@ -1,23 +1,26 @@
 import type { FC } from "react";
-import { Followers } from "../../models/followers.models";
-import { SocketData } from "../../models/realtime.models";
-import { ArrayElement } from "../../models/utils.models";
-import { modeIconTranslatorForNibp } from "../../utils/paramTranslator";
-import { VitalMonitorBlock } from "../VitalCard";
-import { useCustomizeValueInterval } from "../../hooks/useCustomizeValueInteral";
+import { Followers } from "../../../models/followers.models";
+import { SocketData } from "../../../models/realtime.models";
+import { ArrayElement } from "../../../models/utils.models";
+import { VitalMonitorBlock } from "../../VitalCard";
+import { useCustomizeValueInterval } from "../../../hooks/useCustomizeValueInteral";
+import { modeIconTranslatorForNibp } from "../../../utils/paramTranslator";
 
 interface MainNibpParamProps {
     follower: ArrayElement<Followers["data"]>;
     nibpParam: SocketData["param"]["nibp_param"] | undefined;
+    duration: number;
 }
 
 export const MainNibpParam: FC<MainNibpParamProps> = ({
     follower,
     nibpParam,
+    duration = 5000,
 }) => {
-    const { currentData, index } =
-        useCustomizeValueInterval(nibpParam);
-    console.log("parent rerender");
+    const { currentData, index } = useCustomizeValueInterval(
+        nibpParam,
+        duration
+    );
 
     return (
         <VitalMonitorBlock

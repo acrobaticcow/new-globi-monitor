@@ -1,22 +1,26 @@
 import type { FC } from "react";
-import { Followers } from "../../models/followers.models";
-import { ArrayElement } from "../../models/utils.models";
-import { FluentTemperature16Filled } from "../Icons";
-import { VitalMonitorBlock } from "../VitalCard";
-import { SocketData } from "../../models/realtime.models";
-import { useCustomizeValueInterval } from "../../hooks/useCustomizeValueInteral";
+import { Followers } from "../../../models/followers.models";
+import { SocketData } from "../../../models/realtime.models";
+import { ArrayElement } from "../../../models/utils.models";
+import { VitalMonitorBlock } from "../../VitalCard";
+import { useCustomizeValueInterval } from "../../../hooks/useCustomizeValueInteral";
+import { FluentTemperature16Filled } from "../../Icons";
 
 interface MainTempParamProps {
     follower: ArrayElement<Followers["data"]>;
     tempsParam: SocketData["param"]["temp_param"] | undefined;
+    duration: number;
 }
 
-const MainTempParam: FC<MainTempParamProps> = ({
+export const MainTempParam: FC<MainTempParamProps> = ({
     follower,
     tempsParam,
+    duration = 5000,
 }) => {
-    const { currentData, index } =
-        useCustomizeValueInterval(tempsParam);
+    const { currentData, index } = useCustomizeValueInterval(
+        tempsParam,
+        duration
+    );
 
     return (
         <VitalMonitorBlock
@@ -35,5 +39,3 @@ const MainTempParam: FC<MainTempParamProps> = ({
         />
     );
 };
-
-export default MainTempParam;

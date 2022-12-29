@@ -1,13 +1,7 @@
-import { useMemo, useContext } from "react";
+import { useContext } from "react";
 import type { FC } from "react";
-import {
-    HalfBatteryIcon,
-    HeartIcon,
-    WarningTriangleIcon,
-} from "../Icons";
-import { VitalMonitorBlock } from "../VitalCard";
+import { HalfBatteryIcon } from "../Icons";
 import clsx from "clsx";
-import { useSocketValueInterval } from "../../hooks/useValueInterval";
 import Chart, { ConfigType } from "../Chart/Chart";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -17,13 +11,12 @@ import {
 import { SocketData } from "../../models/realtime.models";
 import { ArrayElement } from "../../models/utils.models";
 import { Followers } from "../../models/followers.models";
-import {
-    CheckIcon,
-    ArchiveBoxArrowDownIcon,
-} from "@heroicons/react/20/solid";
-import { MainNibpParam } from "./MainNibpParam";
+import { ArchiveBoxArrowDownIcon } from "@heroicons/react/20/solid";
+import { MainNibpParam } from "./Variants/MainNibpParam";
 import { useFetchUser } from "../../api/hooks/useFetchUser";
-import MainTempParam from "./MainTempParam";
+import { MainTempParam } from "./Variants/MainTempParam";
+import { MainEcgParam } from "./Variants/MainEcgParam";
+import { MainSpo2Param } from "./Variants/MainSpo2Param";
 /**
  * Chuyển từ độc c sang độ f
  */
@@ -81,7 +74,6 @@ const MainMonitor: FC<MainMonitorProps> = ({
     patient_id,
     follower,
 }) => {
-    const { currentParam } = useSocketValueInterval(patient_id);
     const { data: user } = useFetchUser();
     const { data: socket } = useQuery<SocketData>({
         queryKey: [user?.user_id, patient_id, Promise],
@@ -92,115 +84,6 @@ const MainMonitor: FC<MainMonitorProps> = ({
         ActiveMonitorsApiContext
     ) as ActiveMonitorsApiContextType;
 
-    const AllChart = useMemo(() => {
-        return (
-            <>
-                <Chart
-                    data={socket}
-                    config={ecgConfig}
-                />
-                <Chart
-                    data={socket}
-                    config={respConfig}
-                />
-                <Chart
-                    data={socket}
-                    config={spo2Config}
-                />
-            </>
-        );
-    }, [socket]);
-    const ExpMainMonitor = useMemo(() => {
-        return (
-            <>
-                <MainTempParam
-                    follower={follower}
-                    tempsParam={socket?.param.temp_param}
-                />
-                <MainNibpParam
-                    follower={follower}
-                    nibpParam={socket?.param.nibp_param}
-                />
-            </>
-        );
-    }, [socket, follower]);
-
-    const MainMonitorParam = useMemo(() => {
-        if (currentParam) {
-            return (
-                <>
-                    <VitalMonitorBlock
-                        Icon={
-                            <HeartIcon className="ml-auto h-5 w-5 " />
-                        }
-                        type="ecg"
-                        isPing
-                        status={currentParam.ecgSt}
-                        childrenProps={[
-                            {
-                                maxRange:
-                                    follower.patient_detail.resp_range
-                                        .max,
-                                minRange:
-                                    follower.patient_detail.resp_range
-                                        .min,
-                                sub: "bpm",
-                                title: "resp",
-                                value: currentParam.resp,
-                            },
-                            {
-                                maxRange:
-                                    follower.patient_detail.hr_range
-                                        .max,
-                                minRange:
-                                    follower.patient_detail.hr_range
-                                        .min,
-                                sub: "bpm",
-                                title: "hr",
-                                value: currentParam.hr,
-                            },
-                        ]}
-                    />
-                    <VitalMonitorBlock
-                        Icon={
-                            <HeartIcon className="ml-auto h-5 w-5" />
-                        }
-                        type="spo2"
-                        isPing
-                        status={currentParam.spo2St}
-                        childrenProps={[
-                            {
-                                maxRange:
-                                    follower.patient_detail.spo2_range
-                                        .max,
-                                minRange:
-                                    follower.patient_detail.spo2_range
-                                        .min,
-                                sub: "%",
-                                title: "spo2",
-                                value: currentParam.spo2,
-                            },
-                            {
-                                maxRange:
-                                    follower.patient_detail.pr_range
-                                        .max,
-                                minRange:
-                                    follower.patient_detail.pr_range
-                                        .min,
-                                sub: "bpm",
-                                title: "pr",
-                                value: currentParam.pr,
-                            },
-                        ]}
-                    />
-                </>
-            );
-        } else {
-            return <div>loading</div>;
-        }
-    }, [currentParam, follower]);
-
-    // if (isLoading) return <div>current param loading</div>;
     return (
         <div
             id="main-monitor"
@@ -242,7 +125,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
                     </div>
                 </div>
 
-                {!!currentParam?.warning && (
+                {/* {!!socket?.warning.warning && (
                     <div
                         className={clsx(
                             "absolute left-1/2 top-4 z-50 flex w-80 -translate-x-1/2  items-center justify-between rounded-md border px-2 py-1 text-sm shadow-neutral-400 backdrop-blur-md shadow-lg",
@@ -265,10 +148,10 @@ const MainMonitor: FC<MainMonitorProps> = ({
                                     : "text-success-50"
                             )}
                         >
-                            {currentParam.warning}
+                            {socket.warning.warning[0]}
                         </span>
                     </div>
-                )}
+                )} */}
 
                 {/* isHover && */}
                 {
@@ -292,14 +175,59 @@ const MainMonitor: FC<MainMonitorProps> = ({
                     id="main-monitor__wave"
                     className="col-span-3 grid h-full grid-cols-1 grid-rows-3"
                 >
-                    {AllChart}
+                    <Chart
+                        data={socket}
+                        config={ecgConfig}
+                    />
+                    <Chart
+                        data={socket}
+                        config={respConfig}
+                    />
+                    <Chart
+                        data={socket}
+                        config={spo2Config}
+                    />
                 </div>
                 <div
                     id="main-monitor__param"
                     className="col-span-2 grid grid-rows-4"
                 >
-                    {MainMonitorParam}
-                    {ExpMainMonitor}
+                    <MainEcgParam
+                        follower={follower}
+                        ecgParam={socket?.param.ecg_param}
+                        duration={
+                            socket
+                                ? (socket?.to - socket?.from) * 1000
+                                : 5000
+                        }
+                    />
+                    <MainSpo2Param
+                        follower={follower}
+                        spo2Param={socket?.param.spo2_param}
+                        duration={
+                            socket
+                                ? (socket?.to - socket?.from) * 1000
+                                : 5000
+                        }
+                    />
+                    <MainTempParam
+                        follower={follower}
+                        tempsParam={socket?.param.temp_param}
+                        duration={
+                            socket
+                                ? (socket?.to - socket?.from) * 1000
+                                : 5000
+                        }
+                    />
+                    <MainNibpParam
+                        follower={follower}
+                        nibpParam={socket?.param.nibp_param}
+                        duration={
+                            socket
+                                ? (socket?.to - socket?.from) * 1000
+                                : 5000
+                        }
+                    />
                 </div>
             </div>
         </div>
