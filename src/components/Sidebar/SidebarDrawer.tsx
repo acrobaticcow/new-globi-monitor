@@ -21,7 +21,6 @@ const SideBarDrawer: FC<SideBarDrawerProps> = ({
     handleSetActiveId,
 }) => {
     const isActive = activeId === id;
-
     /**
      * Click vào mask thì đóng drawer
      */
