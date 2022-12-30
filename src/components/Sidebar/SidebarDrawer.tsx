@@ -64,7 +64,7 @@ const SideBarDrawer: FC<SideBarDrawerProps> = ({
                 >
                     <div className="absolute inset-0 h-full w-full brightness-110 contrast-125 filter backdrop-blur-[1px] backdrop-filter"></div>
                     <div className="absolute inset-0 h-full  w-full bg-noise mix-blend-multiply"></div>
-                    <div className="absolute inset-0 h-full w-full bg-neutral-400/10"></div>
+                    <div className="absolute inset-0 h-full w-full bg-neutral-400/20"></div>
                 </div>
                 <div
                     className={clsx(
