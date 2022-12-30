@@ -49,14 +49,21 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         if (!overlay || !chart) return;
         overlay.style.display = "block";
         const overlayChartWrapper = overlay.firstChild!;
-        if (!chart.lastChild) return;
+
+        /**
+         * remove all element of chart and put it in overlay
+         */
         while (chart.firstChild) {
-            const canvas = chart.removeChild(
-                chart.lastChild
-            ) as HTMLCanvasElement;
-            canvas.style.width = `${overlay.clientWidth}px`;
-            canvas.style.height = `${overlay.clientHeight}px`;
-            overlayChartWrapper.appendChild(canvas);
+            const canvas =
+                !!chart.lastChild &&
+                (chart.removeChild(
+                    chart.lastChild
+                ) as HTMLCanvasElement);
+            if (canvas) {
+                canvas.style.width = `${overlay.clientWidth}px`;
+                canvas.style.height = `${overlay.clientHeight}px`;
+                overlayChartWrapper.appendChild(canvas);
+            }
         }
     }, [chartRef, overlayRef]);
     // init
@@ -92,11 +99,16 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
             zoomModal.style.display = "block";
             const zoomHandler = (zoomHandlerRef.current =
                 new ZoomHandler(modalContent, data));
-            zoomHandler.numPoints = numPoints;
-            zoomHandler.minVal = minVal;
-            zoomHandler.maxVal = maxVal;
-            zoomHandler.startIdx = startIdx;
-            zoomHandler.endIdx = endIdx;
+            zoomHandler.numPoints = zoomHandlerRef.current.numPoints =
+                numPoints;
+            zoomHandler.minVal = zoomHandlerRef.current.minVal =
+                minVal;
+            zoomHandler.maxVal = zoomHandlerRef.current.maxVal =
+                maxVal;
+            zoomHandler.startIdx = zoomHandlerRef.current.startIdx =
+                startIdx;
+            zoomHandler.endIdx = zoomHandlerRef.current.endIdx =
+                endIdx;
             zoomHandler.render();
         };
 
@@ -127,16 +139,21 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
         if (!overlay || !chart || !render) return;
         overlay.style.display = "none";
         const overlayChartWrapper = overlay.firstChild!;
-        if (!overlayChartWrapper.lastChild) return;
         while (overlayChartWrapper.firstChild) {
             const canvasOfOverlayChartWrapper =
-                overlayChartWrapper.removeChild(
+                !!overlayChartWrapper.lastChild &&
+                (overlayChartWrapper.removeChild(
                     overlayChartWrapper.lastChild
-                ) as HTMLCanvasElement;
-            canvasOfOverlayChartWrapper.style.width = `${chart.clientWidth}px`;
-            canvasOfOverlayChartWrapper.style.height = `${chart.clientHeight}px`;
-            chart.appendChild(canvasOfOverlayChartWrapper);
-            render.isDown = false;
+                ) as HTMLCanvasElement);
+            if (canvasOfOverlayChartWrapper) {
+                canvasOfOverlayChartWrapper.style.width = `${chart.clientWidth}px`;
+                canvasOfOverlayChartWrapper.style.height = `${chart.clientHeight}px`;
+                canvasOfOverlayChartWrapper.width = chart.clientWidth;
+                canvasOfOverlayChartWrapper.height =
+                    chart.clientHeight;
+                chart.appendChild(canvasOfOverlayChartWrapper);
+                render.isDown = false;
+            }
         }
     }, []);
 
@@ -175,29 +192,6 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
                 id="main-div"
             >
                 <div
-                    ref={zoomModalRef}
-                    id="zoomModal"
-                    className="fixed inset-0 z-50 hidden h-full w-full cursor-move overflow-auto bg-neutral-600/40 pt-24"
-                >
-                    <div
-                        ref={modalContentRef}
-                        className="absolute m-auto flex aspect-video w-2/5 max-w-3xl flex-col justify-between rounded-md border border-neutral-300 bg-neutral-400 px-4 py-2 pb-4 shadow-xl shadow-neutral-500"
-                        id="model-content"
-                    >
-                        <div className="inset-0 mb-2 flex items-center justify-between">
-                            <p className="text-lg font-bold leading-none tracking-wide transition-colors duration-200 ease-in">
-                                Zoom in
-                            </p>
-                            <button
-                                className="group rounded-full shadow-neutral-100"
-                                onClick={unzoom}
-                            >
-                                <XMarkIcon className="order-last h-6 w-6 text-neutral-200 shadow-neutral-300 transition-colors duration-200 ease-in group-hover:text-neutral-100/80 group-hover:shadow-md" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div
                     ref={overlayRef}
                     className="fixed inset-0 z-50 hidden h-screen w-screen bg-black"
                     id="overlay"
@@ -212,6 +206,29 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
                     >
                         <ExitFullScreenMiniIcon className="h-5 w-5" />
                     </button>
+                </div>
+                <div
+                    ref={zoomModalRef}
+                    id="zoomModal"
+                    className="fixed inset-0 z-50 hidden h-full w-full cursor-move overflow-auto bg-neutral-600/40 pt-24"
+                >
+                    <div
+                        ref={modalContentRef}
+                        className="absolute m-auto flex aspect-video w-2/5 max-w-3xl flex-col justify-between rounded-md border border-neutral-300 bg-neutral-400 px-4 py-2 pb-4 shadow-neutral-500 shadow-xl"
+                        id="model-content"
+                    >
+                        <div className="inset-0 mb-2 flex items-center justify-between">
+                            <p className="text-lg font-bold leading-none tracking-wide transition-colors duration-200 ease-in">
+                                Zoom in
+                            </p>
+                            <button
+                                className="group rounded-full shadow-neutral-100"
+                                onClick={unzoom}
+                            >
+                                <XMarkIcon className="order-last h-6 w-6 text-neutral-200 shadow-neutral-300 transition-colors duration-200 ease-in group-hover:text-neutral-100/80 group-hover:shadow-md" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div
                     id="container"

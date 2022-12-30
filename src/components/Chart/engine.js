@@ -1,3 +1,4 @@
+import { endOfMinute } from "date-fns";
 import { setAutoFreeze } from "immer";
 
 export class LayoutUtil {
@@ -965,18 +966,20 @@ export class ZoomHandler {
             .getElementById("zoom-canvas-yaxis")
             .getContext("2d");
         ctx.font = "20px Arial";
-        ctx.strokeStyle = "blue";
-        ctx.strokeText(
-            "Max",
-            5,
-            Math.round(this.height - maxPosRel) + this.headerHeight
-        );
-        ctx.strokeStyle = "yellow";
-        ctx.strokeText(
-            "Min",
-            5,
-            Math.round(this.height - minPosRel) + this.headerHeight
-        );
+        ctx.fillStyle = "#1a475f";
+        const upperTextPosY =
+            Math.round(this.height - maxPosRel) + this.headerHeight;
+        const lowerTextPosY =
+            Math.round(this.height - minPosRel) + this.headerHeight;
+        ctx.fillText("Max:", 5, upperTextPosY - 24);
+        ctx.fillText(`${this.maxVal}`, 5, upperTextPosY);
+        ctx.fillStyle = "#825711";
+        ctx.fillText("Min:", 5, lowerTextPosY - 24);
+        if (upperTextPosY === lowerTextPosY) {
+            ctx.fillText(`${this.minVal}`, 5, lowerTextPosY + 48);
+        } else {
+            ctx.fillText(`${this.minVal}`, 5, lowerTextPosY);
+        }
     }
 
     drawGrids() {
