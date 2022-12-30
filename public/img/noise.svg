@@ -8,7 +8,7 @@
   <filter id='noiseFilter'>
     <feTurbulence 
       type='fractalNoise' 
-      baseFrequency='2.5' 
+      baseFrequency='3.0' 
       numOctaves='3' 
       stitchTiles='stitch' />
       <feBlend mode='screen'/>
