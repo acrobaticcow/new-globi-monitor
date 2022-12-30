@@ -22,6 +22,9 @@ module.exports = {
             screens: {
                 xl: "1920px",
             },
+            backgroundImage: {
+                noise: "url('/img/noise.svg')",
+            },
             fontFamily: {
                 sans: ["Roboto", ...defaultTheme.fontFamily.sans],
                 inter: [

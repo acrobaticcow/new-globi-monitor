@@ -67,13 +67,10 @@
         animation: right-to-left 15s linear infinite;
         @apply translate-x-1/3;
     }
-    .noise {
-        background: linear-gradient(
+}
+
+/* linear-gradient(
                 140deg,
                 rgba(18, 20, 23, 0.3),
                 transparent
-            ),
-            url(/img/noise.svg);
-        filter: contrast(105%) brightness(115%);
-    }
-}
+            ), */

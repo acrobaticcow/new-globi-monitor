@@ -59,7 +59,7 @@ export const VitalMonitorBlock: FunctionComponent<
 
     return (
         <div className="relative w-full max-w-[573px] px-2">
-            <div className="rounded border border-b-0 border-neutral-400 bg-neutral-500/75 px-5 shadow-inner shadow-neutral-300/5">
+            <div className="rounded border border-b-0 border-neutral-400 bg-neutral-500/75 px-5 shadow-neutral-300/5 shadow-inner">
                 <div className="mb-0.5 flex items-center justify-between">
                     <h1
                         className={clsx(
@@ -111,7 +111,7 @@ export const VitalMonitorBlock: FunctionComponent<
                     <WarningIcon className="inline-block h-5 w-5 stroke-neutral-200" />
                     <span
                         className={clsx(
-                            "mx-4 text-xs font-semibold",
+                            "mx-4 text-xs font-semibold will-change-contents",
                             !status && "animate-pulse"
                         )}
                     >
