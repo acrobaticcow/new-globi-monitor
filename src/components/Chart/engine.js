@@ -631,7 +631,7 @@ export class IndicatorRenderer {
             self.timeoutId = requestAnimationFrame((timestamp) => {
                 if (!self.prevTimeFr) self.prevTimeFr = timestamp;
                 const elapsed = timestamp - self.prevTimeFr;
-                const fpsInterval = Math.round(
+                const fpsInterval = Math.floor(
                     self.context.duration / self.context.WINDOW_POINTS
                 );
                 if (elapsed >= fpsInterval) {
@@ -974,10 +974,11 @@ export class ZoomHandler {
         ctx.fillText("Max:", 5, upperTextPosY - 24);
         ctx.fillText(`${this.maxVal}`, 5, upperTextPosY);
         ctx.fillStyle = "#825711";
-        ctx.fillText("Min:", 5, lowerTextPosY - 24);
         if (upperTextPosY === lowerTextPosY) {
+            ctx.fillText("Min:", 5, lowerTextPosY + 24);
             ctx.fillText(`${this.minVal}`, 5, lowerTextPosY + 48);
         } else {
+            ctx.fillText("Min:", 5, lowerTextPosY - 24);
             ctx.fillText(`${this.minVal}`, 5, lowerTextPosY);
         }
     }
