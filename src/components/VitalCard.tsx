@@ -41,7 +41,7 @@ export const VitalMonitorBlock: FunctionComponent<
     VitalMonitorBlockProps
 > = ({ type, Icon, isPing, childrenProps, status }) => {
     return (
-        <div className="flex flex-col justify-between py-2 px-3 first:rounded-t last:rounded-b odd:bg-neutral-500/5 even:bg-neutral-500">
+        <div className="flex flex-col justify-between gap-1 py-2 px-3 first:rounded-t last:rounded-b even:bg-neutral-400/50">
             <div className="flex gap-x-4">
                 <div
                     id="main-content"
@@ -79,7 +79,8 @@ export const VitalMonitorBlock: FunctionComponent<
                 <span
                     className={clsx(
                         "mx-4 text-xs font-semibold will-change-contents",
-                        !status && "animate-pulse"
+                        !status &&
+                            "h-4 w-2/5 animate-pulse stroke-neutral-100/50"
                     )}
                 >
                     {status

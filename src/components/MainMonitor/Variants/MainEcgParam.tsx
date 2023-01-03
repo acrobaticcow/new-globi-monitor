@@ -12,7 +12,7 @@ interface MainNibpParamProps {
     duration: number;
 }
 
-export const MainEcgParam: FC<MainNibpParamProps> = ({
+const MainEcgParam: FC<MainNibpParamProps> = ({
     follower,
     ecgParam,
     duration = 5000,
@@ -47,3 +47,5 @@ export const MainEcgParam: FC<MainNibpParamProps> = ({
         />
     );
 };
+
+export default MainEcgParam;
