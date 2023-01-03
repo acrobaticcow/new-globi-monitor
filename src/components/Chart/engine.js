@@ -1,6 +1,3 @@
-import { endOfMinute } from "date-fns";
-import { setAutoFreeze } from "immer";
-
 export class LayoutUtil {
     static createGLContainer(
         parent_div_id,
@@ -201,8 +198,8 @@ class Util {
 
     static createShader(gl, shaderType, shaderSrc) {
         if (
-            !(shaderType == gl.VERTEX_SHADER) &&
-            !(shaderType == gl.FRAGMENT_SHADER)
+            !(shaderType === gl.VERTEX_SHADER) &&
+            !(shaderType === gl.FRAGMENT_SHADER)
         ) {
             console.log("Shader type:", shaderType, " not supported");
             return false;

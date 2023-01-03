@@ -24,7 +24,7 @@ export const MainSpo2Param: FC<MainNibpParamProps> = ({
 
     return (
         <VitalMonitorBlock
-            Icon={<HeartIcon className="ml-auto h-5 w-5" />}
+            Icon={<HeartIcon className="h-5 w-5" />}
             type="spo2"
             isPing
             status={currentData?.status[index]}

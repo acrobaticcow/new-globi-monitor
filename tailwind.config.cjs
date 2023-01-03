@@ -22,9 +22,6 @@ module.exports = {
             screens: {
                 xl: "1920px",
             },
-            backgroundImage: {
-                noise: "url('/img/noise.svg')",
-            },
             fontFamily: {
                 sans: ["Roboto", ...defaultTheme.fontFamily.sans],
                 inter: [
@@ -135,16 +132,17 @@ module.exports = {
             animation: {
                 "ping-once": "ping 1s cubic-bezier(0, 0, 0.2, 1)",
             },
-        },
-        backgroundImage: {
-            "grad-1":
-                "linear-gradient(180deg, #121417 0%, #171A20 100%)",
-            "grad-2":
-                "radial-gradient(100% 180.71% at 0% -80.71%, #181818 0%, rgba(57, 57, 57, 0) 60.46%, rgba(95, 62, 62, 0.01) 100%)",
-            "grad-3":
-                "radial-gradient(100% 180.71% at 0% -80.71%, #181818 0%, rgba(41, 41, 41, 0) 60.46%, rgba(95, 62, 62, 0.01) 100%)",
-            "grad-4":
-                "radial-gradient(79.14% 41.08% at 16.06% -9.96%, rgba(255, 255, 255,0.135) 21.28%, rgba(255, 255, 255, 0) 100%)",
+            backgroundImage: {
+                "grad-1":
+                    "linear-gradient(180deg, #121417 0%, #171A20 100%)",
+                "grad-2":
+                    "radial-gradient(100% 180.71% at 0% -80.71%, #181818 0%, rgba(57, 57, 57, 0) 60.46%, rgba(95, 62, 62, 0.01) 100%)",
+                "grad-3":
+                    "radial-gradient(100% 180.71% at 0% -80.71%, #181818 0%, rgba(41, 41, 41, 0) 60.46%, rgba(95, 62, 62, 0.01) 100%)",
+                "grad-4":
+                    "radial-gradient(79.14% 41.08% at 16.06% -9.96%, rgba(255, 255, 255,0.135) 21.28%, rgba(255, 255, 255, 0) 100%)",
+                noise: "url('/img/noise.svg')",
+            },
         },
     },
 };

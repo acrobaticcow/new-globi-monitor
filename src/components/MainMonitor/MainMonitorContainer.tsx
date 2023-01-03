@@ -98,7 +98,7 @@ const MainMonitorsContainer: FC<MainMonitorsContainerProps> = () => {
     const { data } = useSelectFollowers(activeMonitorIds);
 
     return (
-        <div className="flex h-3/5 w-full gap-6 overflow-x-scroll">
+        <div className="flex h-3/5 w-full gap-6 overflow-x-scroll px-2 pt-2">
             {data?.map((follower) => {
                 const {
                     patient_detail: {

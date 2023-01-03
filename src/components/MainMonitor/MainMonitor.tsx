@@ -15,7 +15,7 @@ import { ArchiveBoxArrowDownIcon } from "@heroicons/react/20/solid";
 import { MainNibpParam } from "./Variants/MainNibpParam";
 import { useFetchUser } from "../../api/hooks/useFetchUser";
 import { MainTempParam } from "./Variants/MainTempParam";
-import { MainEcgParam } from "./Variants/MainEcgParam";
+import MainEcgParam from "./Variants/MainEcgParam";
 import { MainSpo2Param } from "./Variants/MainSpo2Param";
 /**
  * Chuyển từ độc c sang độ f
@@ -84,11 +84,11 @@ const MainMonitor: FC<MainMonitorProps> = ({
         <div
             id="main-monitor"
             className={clsx(
-                "relative h-full w-1/2 min-w-[50%] origin-bottom-left rounded-sm border border-neutral-400 ",
+                "relative h-fit w-1/2 min-w-[50%] origin-bottom-left rounded-b  rounded-t-xl border border-neutral-300 p-2",
                 className
             )}
         >
-            <div className="flex items-center justify-between py-2 pl-2.5 pr-1.5">
+            <div className="flex items-center justify-between border-b border-b-neutral-300/50 pb-2">
                 <div className="flex items-center gap-x-3">
                     <img
                         className="aspect-square w-9 rounded-full border border-neutral-200 object-cover object-center"
@@ -150,26 +150,24 @@ const MainMonitor: FC<MainMonitorProps> = ({
                 )} */}
 
                 {/* isHover && */}
-                {
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onDelMonitorId(patient_id);
-                        }}
-                        className="group relative flex w-52 items-center justify-between rounded-md border-2 border-danger-900/75 bg-danger-900/20 px-2 py-1 text-sm leading-none shadow-danger-900/25 transition-all duration-200 ease-in-out shadow-md hover:border-danger-900 hover:shadow-danger-900/30 hover:shadow-lg active:scale-95 active:outline-1 active:outline-offset-2 active:outline-danger-900 active:outline"
-                    >
-                        <span className="relative font-thin text-danger-50 group-hover:text-neutral-100">
-                            Gỡ theo dõi chi tiết
-                        </span>
-                        <ArchiveBoxArrowDownIcon className="relative h-5 w-5 fill-neutral-100/60 stroke-transparent stroke-0 transition-colors duration-200 group-hover:fill-danger-100 " />
-                        {/* <XMarkIcon className="h-5 w-5 fill-neutral-300 stroke-transparent stroke-0 text-neutral-200 " /> */}
-                    </button>
-                }
+
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelMonitorId(patient_id);
+                    }}
+                    className="group relative flex w-52 items-center justify-between rounded-md border-2 border-danger-900/75 bg-danger-900/20 px-2 py-1 text-sm leading-none shadow-danger-900/25 transition-all duration-200 ease-in-out inner-border-transparent shadow-md hover:border-danger-900 hover:shadow-danger-900/30 hover:shadow-lg active:scale-95 active:outline-1 active:outline-offset-2 active:outline-danger-900 active:outline"
+                >
+                    <span className="relative font-thin text-danger-50 group-hover:text-neutral-100">
+                        Gỡ theo dõi chi tiết
+                    </span>
+                    <ArchiveBoxArrowDownIcon className="relative h-5 w-5 fill-neutral-100/60 stroke-transparent stroke-0 transition-colors duration-200 group-hover:fill-danger-100 " />
+                </button>
             </div>
             <div className="grid grid-cols-5">
                 <div
                     id="main-monitor__wave"
-                    className="col-span-3 grid h-full grid-cols-1 grid-rows-3"
+                    className="col-span-3 grid h-full grid-cols-1 grid-rows-3 pt-2"
                 >
                     <Chart
                         data={socket}
@@ -186,7 +184,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
                 </div>
                 <div
                     id="main-monitor__param"
-                    className="col-span-2 grid grid-rows-4"
+                    className="col-span-2 ml-2 grid grid-rows-4"
                 >
                     <MainEcgParam
                         follower={follower}

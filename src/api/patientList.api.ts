@@ -4,12 +4,12 @@ export const fetchFollowers = async (
   token: string = ""
 ): Promise<Followers> => {
   const res = await fetch(
-    "https://covi-life-djgdyxgtha-el.a.run.app/followers/request_details?accepted=true&type=FOLLOW_REQUEST'",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+      "https://globicare-prod-djgdyxgtha-el.a.run.app/followers/request_details?accepted=true&type=FOLLOW_REQUEST'",
+      {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      }
   );
   if (!res.ok) {
     console.log(`Error happen: status ${res.status}`);
