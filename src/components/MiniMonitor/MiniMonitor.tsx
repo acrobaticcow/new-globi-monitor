@@ -57,10 +57,10 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
     return (
         <div
             className={clsx(
-                "relative row-span-1 h-full w-full max-w-sm cursor-pointer rounded-md bg-neutral-400/50 py-2 px-3 transition-colors inner-border-2 inner-border-neutral-300 shadow",
+                "relative row-span-1 h-full w-full max-w-sm cursor-pointer rounded-md bg-neutral-500 py-2 px-3 transition-colors inner-border inner-border-neutral-300 shadow",
                 className,
                 activeMonitorIds.includes(patientId) &&
-                    "border-0 border-transparent shadow-neutral-200/25 inner-border inner-border-success-600"
+                    "shadow-neutral-200/25 inner-border inner-border-success-600"
             )}
             onClick={() => {
                 onAddMonitorIds(patientId);
