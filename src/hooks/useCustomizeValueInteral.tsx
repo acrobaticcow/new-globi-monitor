@@ -27,7 +27,7 @@ export const useCustomizeValueInterval = <
     const intervalIdRef = useRef(0);
     const currentDataRef =
         useRef<WritableDraft<{ [key: string]: number[] }>>();
-    const currentIndexRef = useRef(0);
+    const currentIndexRef = useRef<number>(0);
     /**
      * transform param and put it into dataPool
      */
