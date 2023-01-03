@@ -186,7 +186,7 @@ const MainMonitor: FC<MainMonitorProps> = ({
                 </div>
                 <div
                     id="main-monitor__param"
-                    className="col-span-2 grid grid-rows-4"
+                    className="col-span-2 grid grid-rows-4 px-2"
                 >
                     <MainEcgParam
                         follower={follower}

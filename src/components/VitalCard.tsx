@@ -8,6 +8,7 @@ import {
     Variant,
 } from "../utils/textColorClass";
 import { generalStTranslator } from "../utils/paramTranslator";
+import { HeartIcon } from "./Icons";
 
 type NumberOrUndefined = number | null | undefined;
 
@@ -39,63 +40,12 @@ interface VitalMonitorBlockProps {
 export const VitalMonitorBlock: FunctionComponent<
     VitalMonitorBlockProps
 > = ({ type, Icon, isPing, childrenProps, status }) => {
-    // const [ping, setPing] = useState(false);
-    // useEffect(() => {
-    //   if (!isPing) return;
-    //   setPing(true);
-    //   const timeoutId = setTimeout(() => {
-    //     setPing(false);
-    //   }, 500);
-    //   return () => {
-    //     setPing(false);
-    //     clearTimeout(timeoutId);
-    //   };
-    // }, [childrenProps, isPing]);
-
-    // if (type === "ecg") {
-    //   console.log(status);
-    //   !!status && console.log(generalStTranslator({ status, type }));
-    // }
-
     return (
-        <div className="relative w-full max-w-[573px] px-2">
-            <div className="rounded border border-b-0 border-neutral-400 bg-neutral-500/75 px-5 shadow-neutral-300/5 shadow-inner">
-                <div className="mb-0.5 flex items-center justify-between">
-                    <h1
-                        className={clsx(
-                            "text-sm font-medium uppercase",
-                            varTxtLight(type)
-                        )}
-                    >
-                        {type}
-                    </h1>
-                    {Icon && (
-                        <div className="flex">
-                            {/* {isPing && cloneChild({
-                  children: Icon,
-                  props: {
-                    className: clsx(
-                      "absolute inline-flex opacity-75 ",
-                      Icon?.props.className,
-                      varTxtBase(type),
-                      ping && "animate-ping"
-                    ),
-                  },
-                })} */}
-                            {cloneChild({
-                                children: Icon,
-                                props: {
-                                    className: `${
-                                        Icon?.props.className
-                                    } ${varTxtBase(type)} `,
-                                },
-                            })}
-                        </div>
-                    )}
-                </div>
+        <div className="flex flex-col justify-between py-2 px-3 first:rounded-t last:rounded-b odd:bg-neutral-500/5 even:bg-neutral-500">
+            <div className="flex gap-x-4">
                 <div
                     id="main-content"
-                    className="mb-1 grid grid-cols-2"
+                    className="flex basis-full justify-between"
                 >
                     {childrenProps.map((prop, index) => (
                         <VitalMonitorContent
@@ -107,19 +57,35 @@ export const VitalMonitorBlock: FunctionComponent<
                         />
                     ))}
                 </div>
-                <div className="flex  items-center">
-                    <WarningIcon className="inline-block h-5 w-5 stroke-neutral-200" />
-                    <span
-                        className={clsx(
-                            "mx-4 text-xs font-semibold will-change-contents",
-                            !status && "animate-pulse"
-                        )}
-                    >
-                        {status
-                            ? generalStTranslator({ status, type })
-                            : ""}
-                    </span>
+                <div>
+                    {Icon ? (
+                        cloneChild({
+                            children: Icon,
+                            props: {
+                                className: `${
+                                    Icon?.props.className
+                                } ${varTxtBase(type)}`,
+                            },
+                        })
+                    ) : (
+                        // to be use as a placeholder, so width can be the same
+                        <HeartIcon className="h-5 w-5 fill-transparent text-transparent" />
+                    )}
                 </div>
+            </div>
+
+            <div className="flex items-center">
+                <WarningIcon className="inline-block h-5 w-5 stroke-neutral-200" />
+                <span
+                    className={clsx(
+                        "mx-4 text-xs font-semibold will-change-contents",
+                        !status && "animate-pulse"
+                    )}
+                >
+                    {status
+                        ? generalStTranslator({ status, type })
+                        : ""}
+                </span>
             </div>
         </div>
     );
@@ -151,13 +117,13 @@ export const VitalMonitorContent: FunctionComponent<
             {!!title && (
                 <h3
                     className={clsx(
-                        "mb-1 text-start text-xs font-semibold uppercase"
+                        "mb-1.5 text-start text-sm font-semibold uppercase"
                     )}
                 >
                     {title ?? ""}
                     <span
                         className={clsx(
-                            "ml-1.5 font-sans text-[9px] font-normal normal-case not-italic text-neutral-200"
+                            "ml-1.5 font-sans text-xs font-normal normal-case not-italic text-neutral-100/60"
                         )}
                     >
                         {sub ?? ""}

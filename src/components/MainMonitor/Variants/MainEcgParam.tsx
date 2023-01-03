@@ -24,7 +24,7 @@ export const MainEcgParam: FC<MainNibpParamProps> = ({
 
     return (
         <VitalMonitorBlock
-            Icon={<HeartIcon className="ml-auto h-5 w-5 " />}
+            Icon={<HeartIcon className=" h-5 w-5 " />}
             type="ecg"
             isPing
             status={currentData?.status[index]}
