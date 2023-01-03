@@ -9,7 +9,7 @@ interface GeneralInfoProps {}
 
 export const GeneralInfo: FC<GeneralInfoProps> = () => {
     return (
-        <div className="flex h-full w-full flex-col justify-between rounded-md bg-neutral-400/50 px-4 py-3 inner-border-2 inner-border-neutral-300">
+        <div className="flex h-full w-full flex-col justify-between rounded-md bg-neutral-500 px-4 py-3 inner-border inner-border-neutral-300">
             <div className="space-y-1">
                 <div className="flex items-center justify-between">
                     <p className="">

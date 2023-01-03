@@ -41,7 +41,7 @@ export const VitalMonitorBlock: FunctionComponent<
     VitalMonitorBlockProps
 > = ({ type, Icon, isPing, childrenProps, status }) => {
     return (
-        <div className="flex flex-col justify-between gap-1 py-2 px-3 first:rounded-t last:rounded-b even:bg-neutral-400/50">
+        <div className="flex flex-col justify-between gap-1 py-2 px-3 first:rounded-t even:rounded even:border even:border-neutral-400 even:bg-neutral-500">
             <div className="flex gap-x-4">
                 <div
                     id="main-content"

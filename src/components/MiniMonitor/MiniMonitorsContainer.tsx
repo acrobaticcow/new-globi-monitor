@@ -17,7 +17,7 @@ const MiniMonitorsContainer: FC<MiniMonitorsProps> = () => {
     const { data } = useSelectFollowers(activeMiniMonitorIds);
 
     return (
-        <div className="grid h-2/5 w-full grid-cols-12 border-t-2 border-neutral-400 bg-neutral-500/50 shadow-neutral-600/30 shadow-inner">
+        <div className="grid h-2/5 w-full grid-cols-12 border-t-2 border-neutral-400 bg-neutral-600 shadow-neutral-600/30 shadow-inner">
             <div className="col-span-3 overflow-x-scroll pl-2 pt-2">
                 <GeneralInfo />
             </div>

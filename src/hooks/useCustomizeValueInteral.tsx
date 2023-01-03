@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { produce, current as currentImmer } from "immer";
 import type { WritableDraft } from "immer/dist/internal";
 
-const calMaxLengthOfObjArr = (objArr: { [key: string]: any[] }) => {
-    return Object.values<number[]>(objArr).reduce((accu, current) => {
-        if (current.length > accu) {
-            return current.length;
-        } else return accu;
-    }, 0);
+const calMaxLengthOfObjArr = (objArr: {
+    [key: string]: number[];
+}) => {
+    return Object.values<number[]>(objArr).reduce(
+        (a, b) => Math.max(a, b.length),
+        -Infinity
+    );
 };
 
 type ObjArr<T> = { [K in keyof T]: number[] };

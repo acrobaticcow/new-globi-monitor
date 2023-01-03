@@ -12,7 +12,7 @@ interface MainMonitorsContainerProps {}
 const MainMonitorLoadingPlaceholder = () => {
     return (
         <div className="relative w-full max-w-[573px] px-2">
-            <div className="rounded border border-b-0 border-neutral-400 bg-neutral-500/75 px-5 shadow-inner shadow-neutral-300/5">
+            <div className="rounded border border-b-0 border-neutral-400 bg-neutral-500/75 px-5 shadow-neutral-300/5 shadow-inner">
                 <div className="mb-0.5 flex items-center justify-between">
                     <h1
                         className={clsx(
@@ -27,19 +27,18 @@ const MainMonitorLoadingPlaceholder = () => {
                     className="mb-1 grid grid-cols-2"
                 >
                     <div className="">
-                          (
-                            <h3
+                        (
+                        <h3
+                            className={clsx(
+                                "mb-1 text-start text-xs font-semibold uppercase"
+                            )}
+                        >
+                            <span
                                 className={clsx(
-                                    "mb-1 text-start text-xs font-semibold uppercase"
+                                    "ml-1.5 font-sans text-[9px] font-normal normal-case not-italic text-neutral-200"
                                 )}
-                            >
-                                <span
-                                    className={clsx(
-                                        "ml-1.5 font-sans text-[9px] font-normal normal-case not-italic text-neutral-200"
-                                    )}
-                                >
-                                </span>
-                            </h3>
+                            ></span>
+                        </h3>
                         )
                         <div className="flex">
                             <div
@@ -99,28 +98,12 @@ const MainMonitorsContainer: FC<MainMonitorsContainerProps> = () => {
 
     return (
         <div className="flex h-3/5 w-full gap-6 overflow-x-scroll px-2 pt-2">
-            {data?.map((follower) => {
-                const {
-                    patient_detail: {
-                        dob,
-                        phone,
-                        patient_name,
-                        gender,
-                        patient_id,
-                    },
-                } = follower;
-                return (
-                    <MainMonitor
-                        dob={dob}
-                        phone={phone}
-                        gender={gender}
-                        name={patient_name}
-                        key={patient_id}
-                        patient_id={patient_id}
-                        follower={follower}
-                    />
-                );
-            })}
+            {data?.map((follower) => (
+                <MainMonitor
+                    key={follower.patient_detail.patient_id}
+                    follower={follower}
+                />
+            ))}
         </div>
     );
 };
