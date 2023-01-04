@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 // @ts-ignore
 import { draw, init, indicators_data } from "./engine2";
-import { SocketData } from "../../models/realtime.models.js";
+import { SocketData } from "../../models/realtime.models";
 
 export type ConfigType = {
     color: string;
