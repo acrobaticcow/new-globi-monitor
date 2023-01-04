@@ -189,17 +189,17 @@ export function init(parentDiv, ROWS, COLS) {
                 height: baseHeight,
             };
             // data source
-            let idx =
-                Math.round(Math.random() * 10) % visualContext.length;
+            // let idx =
+            //     Math.round(Math.random() * 10) % visualContext.length;
             indicators_data["grid-" + i + "-" + j] = [].concat(
-                visualContext[idx].src
+                visualContext[i].src
             );
             let viewElem = new ViewElement(
                 "grid-" + i + "-" + j,
                 rect
             );
-            viewElem.WINDOW_POINTS = visualContext[idx].WINDOW_POINTS;
-            viewElem.rgb = hex_2_rgb(visualContext[idx].color);
+            viewElem.WINDOW_POINTS = visualContext[i].WINDOW_POINTS;
+            viewElem.rgb = hex_2_rgb(visualContext[i].color);
             // let maxVal = visualContext[idx].src.reduce(
             //     (a, b) => Math.max(a, b),
             //     -Infinity
@@ -324,34 +324,34 @@ export function draw() {
         gl.drawArrays(gl.POINTS, current.drawingData.length + 6, 1);
         // console.log(current);
     }
-    if (!isFinished()) {
-        drawHandler = setTimeout(function () {
-            draw();
-        }, 100);
-        // drawHandler = requestAnimationFrame((timestamp) => {
-        //     if (!prevTimeFr) prevTimeFr = timestamp;
-        //     const elapsed = timestamp - prevTimeFr;
-        //     for (const key in view_elements) {
-        //         const current = view_elements[key];
-        //         const fpsInterval = Math.floor(
-        //             duration / current.WINDOW_POINTS
-        //         );
-        //         if (elapsed >= fpsInterval) {
-        //             prevTimeFr = timestamp - (elapsed % fpsInterval);
-        //             current.STEP = Math.floor(
-        //                 (elapsed *
-        //                     (current.drawingData.length >=
-        //                     current.WINDOW_POINTS
-        //                         ? current.drawingData.length
-        //                         : current.WINDOW_POINTS)) /
-        //                     duration
-        //             );
-        //         } else {
-        //             current.STEP = 0;
-        //         }
-        //     }
+    if (true) {
+        // drawHandler = setTimeout(function () {
         //     draw();
-        // });
+        // }, 100);
+        drawHandler = requestAnimationFrame((timestamp) => {
+            if (!prevTimeFr) prevTimeFr = timestamp;
+            const elapsed = timestamp - prevTimeFr;
+            for (const key in view_elements) {
+                const current = view_elements[key];
+                const fpsInterval = Math.floor(
+                    duration / current.WINDOW_POINTS
+                );
+                if (elapsed >= fpsInterval) {
+                    prevTimeFr = timestamp - (elapsed % fpsInterval);
+                    current.STEP = Math.floor(
+                        (elapsed *
+                            (current.drawingData.length >=
+                            current.WINDOW_POINTS
+                                ? current.drawingData.length
+                                : current.WINDOW_POINTS)) /
+                            duration
+                    );
+                } else {
+                    current.STEP = 0;
+                }
+            }
+            draw();
+        });
     } else {
         console.log("Finished drawing");
         cancelAnimationFrame(drawHandler);

@@ -55,10 +55,8 @@ const SideBarDrawer: FC<SideBarDrawerProps> = ({
                 <div
                     id={`${id}__mask`}
                     className={clsx(
-                        "fixed inset-0 z-40 h-full w-full transition-opacity duration-200 ease-out",
-                        activeId.length
-                            ? "opacity-100"
-                            : "-z-10 opacity-0"
+                        "fixed inset-0 -z-10 h-full  w-full opacity-0 transition-opacity duration-200 ease-out",
+                        activeId.length && "!z-40 !opacity-100"
                     )}
                 >
                     <div className="absolute inset-0 h-full w-full brightness-110 contrast-125 filter backdrop-blur-[1px] backdrop-filter"></div>
@@ -67,11 +65,10 @@ const SideBarDrawer: FC<SideBarDrawerProps> = ({
                 </div>
                 <div
                     className={clsx(
-                        "fixed inset-y-0 -left-0 z-50 h-full w-80 transform rounded-r-md shadow-neutral-400 transition-all duration-200 ease-in-out will-change-transform shadow-lg",
+                        "fixed inset-y-0 -left-0 z-50 h-full w-80 -translate-x-full transform rounded-r-md opacity-75 shadow-neutral-400 transition-all duration-200 ease-in-out will-change-transform shadow-lg",
                         className,
-                        isActive
-                            ? "block translate-x-14 opacity-100"
-                            : "-translate-x-full opacity-0"
+                        isActive &&
+                            "!translate-x-14 !opacity-100 !ease-in"
                     )}
                 >
                     {children}
