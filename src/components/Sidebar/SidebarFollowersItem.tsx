@@ -50,9 +50,9 @@ const SidebarFollowersItem: FC<SidebarFollowersItemProps> = ({
             key={id}
             id={id}
             className={clsx(
-                "flex w-full cursor-pointer items-center gap-x-4 px-3 py-3 transition-colors duration-200 ease-in-out hover:bg-neutral-200/10 active:ring-neutral-200 active:ring-1",
+                "flex w-full cursor-pointer items-center gap-x-4 border-y border-transparent px-3 py-3 ring-transparent transition-colors duration-200 ease-in-out shadow ring-1 hover:bg-neutral-200/10 active:ring-neutral-300",
                 activeMiniMonitorIds.includes(id) &&
-                    "border-y border-success-500/20 bg-success-500/5 shadow-neutral-400 shadow hover:border-red-300/20 hover:bg-red-300/5",
+                    "border-success-500/20 bg-success-500/5 shadow-neutral-400 hover:border-red-300/20 hover:bg-red-300/5",
                 className
             )}
             onClick={() => {
