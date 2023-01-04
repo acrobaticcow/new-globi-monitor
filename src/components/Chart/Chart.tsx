@@ -1,18 +1,7 @@
-import { FC } from "react";
-import { useEffect, useRef, useCallback } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 // @ts-ignore
-import {
-    LayoutUtil,
-    // BeepWrapper,
-    IndicatorRenderer,
-    ZoomHandler,
-} from "./engine.js";
-import { SocketData } from "../../models/realtime.models.js";
-import {
-    ExitFullScreenMiniIcon,
-    FullScreenMiniIcon,
-    XMarkIcon,
-} from "../Icons.js";
+import { draw, init, indicators_data } from "./engine2";
+import { SocketData } from "../../models/realtime.models";
 
 export type ConfigType = {
     color: string;
@@ -28,233 +17,92 @@ export type ConfigType = {
 };
 interface ChartProps {
     data: SocketData | undefined;
-    config: ConfigType;
 }
 // const soundPlayer = new BeepWrapper();
 
-const Chart: FC<ChartProps> = ({ data, config }) => {
-    const parentRef = useRef<HTMLDivElement>(null);
-    const modalContentRef = useRef<HTMLDivElement>(null);
-    const chartWrapperRef = useRef<HTMLDivElement>(null);
-    const renderRef = useRef<any>(null);
-    const chartRef = useRef<HTMLDivElement>(null);
-    const overlayRef = useRef<HTMLDivElement>(null);
-    const zoomHandlerRef = useRef<any>(null);
-    const zoomModalRef = useRef<HTMLDivElement>(null);
-    const dataPool = useRef<number[]>([]);
+const Chart: FC<ChartProps> = ({ data }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [isFirstData, setIsFirstData] = useState(false);
 
-    const maximize = useCallback(() => {
-        const chart = chartRef.current;
-        const overlay = overlayRef.current;
-        if (!overlay || !chart) return;
-        overlay.style.display = "block";
-        const overlayChartWrapper = overlay.firstChild!;
-
-        /**
-         * remove all element of chart and put it in overlay
-         */
-        while (chart.firstChild) {
-            const canvas =
-                !!chart.lastChild &&
-                (chart.removeChild(
-                    chart.lastChild
-                ) as HTMLCanvasElement);
-            if (canvas) {
-                canvas.style.width = `${overlay.clientWidth}px`;
-                canvas.style.height = `${overlay.clientHeight}px`;
-                overlayChartWrapper.appendChild(canvas);
-            }
-        }
-    }, [chartRef, overlayRef]);
     // init
     useEffect(() => {
-        const parent = parentRef.current;
-        const modalContent = modalContentRef.current;
-        const chartWrapper = chartWrapperRef.current;
-        const zoomModal = zoomModalRef.current;
-        const chart = chartRef.current;
-        if (
-            !parent ||
-            !modalContent ||
-            !chartWrapper ||
-            !chart ||
-            !zoomModal
-        )
-            return;
-        const render = (renderRef.current = new IndicatorRenderer(
-            chart,
-            config
-        ));
-        LayoutUtil.enableDrag(modalContent);
-        LayoutUtil.createGLContainer(chart, maximize);
-
-        const zoom = (
-            data: unknown,
-            numPoints: number,
-            minVal: number,
-            maxVal: number,
-            startIdx: number,
-            endIdx: number
-        ) => {
-            zoomModal.style.display = "block";
-            const zoomHandler = (zoomHandlerRef.current =
-                new ZoomHandler(modalContent, data));
-            zoomHandler.numPoints = zoomHandlerRef.current.numPoints =
-                numPoints;
-            zoomHandler.minVal = zoomHandlerRef.current.minVal =
-                minVal;
-            zoomHandler.maxVal = zoomHandlerRef.current.maxVal =
-                maxVal;
-            zoomHandler.startIdx = zoomHandlerRef.current.startIdx =
-                startIdx;
-            zoomHandler.endIdx = zoomHandlerRef.current.endIdx =
-                endIdx;
-            zoomHandler.render();
-        };
-
-        render.registerZoomFn(zoom);
-        render.render(dataPool.current);
+        if (canvasRef.current) {
+            init(canvasRef.current, 3, 1);
+        }
+        return () => {};
+    }, []);
+    // push new data whenever available
+    useEffect(() => {
+        if (data) {
+            let index = 0;
+            for (const key in indicators_data) {
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        indicators_data,
+                        key
+                    )
+                ) {
+                    //@ts-ignore
+                    const element: number[] = indicators_data[key];
+                    switch (index) {
+                        case 0:
+                            element.push(...data.wave.ecg_wave);
+                            break;
+                        case 1:
+                            element.push(...data.wave.resp_wave);
+                            break;
+                        case 2:
+                            element.push(...data.wave.spo2_wave);
+                            break;
+                        default:
+                            console.log("can not find dataPool");
+                    }
+                    index++;
+                }
+                setIsFirstData((prev) => (!prev ? true : prev));
+            }
+        }
 
         return () => {
-            if (!chart.lastChild) return;
-            while (chart.firstChild) {
-                chart.removeChild(chart.lastChild);
+            for (const key in indicators_data) {
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        indicators_data,
+                        key
+                    )
+                ) {
+                    //@ts-ignore
+                    const element: number[] = indicators_data[key];
+                    element.splice(0, element.length);
+                }
             }
-            render.stop();
-            dataPool.current = [];
         };
-    }, [config, maximize]);
+    }, [data]);
 
-    // push data whenever new data come in
     useEffect(() => {
-        const render = renderRef.current;
-        if (!render || !data) return;
-        dataPool.current.push(...data.wave[`${config.type}_wave`]);
-    }, [data, config]);
-
-    const minimize = useCallback(() => {
-        const chart = chartRef.current;
-        const overlay = overlayRef.current;
-        const render = renderRef.current;
-        if (!overlay || !chart || !render) return;
-        overlay.style.display = "none";
-        const overlayChartWrapper = overlay.firstChild!;
-        while (overlayChartWrapper.firstChild) {
-            const canvasOfOverlayChartWrapper =
-                !!overlayChartWrapper.lastChild &&
-                (overlayChartWrapper.removeChild(
-                    overlayChartWrapper.lastChild
-                ) as HTMLCanvasElement);
-            if (canvasOfOverlayChartWrapper) {
-                canvasOfOverlayChartWrapper.style.width = `${chart.clientWidth}px`;
-                canvasOfOverlayChartWrapper.style.height = `${chart.clientHeight}px`;
-                canvasOfOverlayChartWrapper.width = chart.clientWidth;
-                canvasOfOverlayChartWrapper.height =
-                    chart.clientHeight;
-                chart.appendChild(canvasOfOverlayChartWrapper);
-                render.isDown = false;
-            }
+        if (isFirstData) {
+            draw();
         }
-    }, []);
-
-    const unzoom = useCallback(() => {
-        const zoomModal = zoomModalRef.current;
-        const zoomHandler = zoomHandlerRef.current;
-        const modalContent = modalContentRef.current;
-        if (!zoomModal || !zoomHandler || !modalContent) return;
-
-        zoomModal.style.display = "none";
-        zoomHandler.cleanup();
-        const zoomCanvasContainer = document.getElementById(
-            "zoomCanvasContainer"
-        );
-        if (!zoomCanvasContainer) {
-            console.log("cant find zoomCanvasContainer");
-            return;
-        }
-        modalContent.removeChild(zoomCanvasContainer);
-    }, []);
+    }, [isFirstData]);
 
     return (
         <div
-            ref={parentRef}
-            className="relative h-full w-full"
+            id="container"
+            ref={containerRef}
+            className="relative m-auto h-[476px] w-[540px] overflow-auto"
         >
-            {/* <div className="sound-request">
-        <p>This webpage would like to play sounds</p>
-        <p className="buttons">
-          <button value="0">Block</button>
-          <button value="1">Allow</button>
-        </p>
-      </div> */}
+            <canvas
+                ref={canvasRef}
+                id="canvas"
+                width={540}
+                height={476}
+                className=""
+            ></canvas>
             <div
-                className="h-full w-full"
-                id="main-div"
-            >
-                <div
-                    ref={overlayRef}
-                    className="fixed inset-0 z-50 hidden h-screen w-screen bg-black"
-                    id="overlay"
-                >
-                    <div
-                        id="maximize-canvas-container"
-                        className="absolute inset-0 z-50 bg-inherit"
-                    ></div>
-                    <button
-                        className="absolute top-2 right-2 z-50 text-neutral-200 transition-all hover:text-neutral-100  active:scale-90 active:text-neutral-100"
-                        onClick={minimize}
-                    >
-                        <ExitFullScreenMiniIcon className="h-5 w-5" />
-                    </button>
-                </div>
-                <div
-                    ref={zoomModalRef}
-                    id="zoomModal"
-                    className="fixed inset-0 z-50 hidden h-full w-full cursor-move overflow-auto bg-neutral-600/40 pt-24"
-                >
-                    <div
-                        ref={modalContentRef}
-                        className="absolute m-auto flex aspect-video w-2/5 max-w-3xl flex-col justify-between rounded-md border border-neutral-300 bg-neutral-400 px-4 py-2 pb-4 shadow-neutral-500 shadow-xl"
-                        id="model-content"
-                    >
-                        <div className="inset-0 mb-2 flex items-center justify-between">
-                            <p className="text-lg font-bold leading-none tracking-wide transition-colors duration-200 ease-in">
-                                Zoom in
-                            </p>
-                            <button
-                                className="group rounded-full shadow-neutral-100"
-                                onClick={unzoom}
-                            >
-                                <XMarkIcon className="order-last h-6 w-6 text-neutral-200 shadow-neutral-300 transition-colors duration-200 ease-in group-hover:text-neutral-100/80 group-hover:shadow-md" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    id="container"
-                    className="relative h-full w-full"
-                >
-                    <div
-                        ref={chartWrapperRef}
-                        className="relative h-full w-full overflow-hidden"
-                        id="left-pane"
-                    >
-                        <div className="absolute left-2 top-2 z-20 text-lg font-semibold uppercase leading-none text-neutral-100">
-                            {config.type}
-                        </div>
-                        <button
-                            className="absolute top-2 right-2 z-20 text-neutral-200 transition-all hover:text-neutral-100  active:scale-90 active:text-neutral-100"
-                            onClick={maximize}
-                        >
-                            <FullScreenMiniIcon className="h-5 w-5" />
-                        </button>
-                        <div
-                            ref={chartRef}
-                            className="relative h-full w-full"
-                        ></div>
-                    </div>
-                </div>
-            </div>
+                id="overlay"
+                className="absolute inset-0 z-10 bg-transparent"
+            ></div>
         </div>
     );
 };
