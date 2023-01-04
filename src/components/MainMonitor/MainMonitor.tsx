@@ -159,20 +159,9 @@ const MainMonitor: FC<MainMonitorProps> = ({
             <div className="grid grid-cols-5 px-2 pb-2">
                 <div
                     id="main-monitor__wave"
-                    className="col-span-3 grid h-full grid-cols-1 grid-rows-3 gap-0.5 pt-2"
+                    className="col-span-3 pt-2"
                 >
-                    <Chart
-                        data={socket}
-                        config={ecgConfig}
-                    />
-                    <Chart
-                        data={socket}
-                        config={respConfig}
-                    />
-                    <Chart
-                        data={socket}
-                        config={spo2Config}
-                    />
+                    <Chart data={socket} />
                 </div>
                 <div
                     id="main-monitor__param"
