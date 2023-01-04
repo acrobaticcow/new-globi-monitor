@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useEffect } from "react";
 import type { FC } from "react";
 import { createPortal } from "react-dom";
+import { Mask } from "../Mask";
 interface SideBarDrawerProps {
     className?: string;
     children: any;
@@ -52,19 +53,10 @@ const SideBarDrawer: FC<SideBarDrawerProps> = ({
                 id={id}
                 key={id}
             >
-                <div
-                    id={`${id}__mask`}
-                    className={clsx(
-                        "fixed inset-0 z-40 h-full w-full transition-opacity duration-200 ease-out",
-                        activeId.length
-                            ? "opacity-100"
-                            : "-z-10 opacity-0"
-                    )}
-                >
-                    <div className="absolute inset-0 h-full w-full brightness-110 contrast-125 filter backdrop-blur-[1px] backdrop-filter"></div>
-                    <div className="absolute inset-0 h-full  w-full bg-noise mix-blend-multiply"></div>
-                    <div className="absolute inset-0 h-full w-full bg-neutral-400/20"></div>
-                </div>
+                <Mask
+                    id={id}
+                    isActive={!!activeId.length}
+                />
                 <div
                     className={clsx(
                         "fixed inset-y-0 -left-0 z-50 h-full w-80 transform rounded-r-md shadow-neutral-400 transition-all duration-200 ease-in-out will-change-transform shadow-lg",

@@ -13,6 +13,7 @@ import { SocketData } from "../../models/realtime.models";
 import { ArrayElement } from "../../models/utils.models";
 import Chart, { ConfigType } from "../Chart/Chart";
 import { HalfBatteryIcon } from "../Icons";
+import { Mask } from "../Mask";
 import MainEcgParam from "./Variants/MainEcgParam";
 import { MainNibpParam } from "./Variants/MainNibpParam";
 import { MainSpo2Param } from "./Variants/MainSpo2Param";
@@ -77,6 +78,10 @@ const MainMonitor: FC<MainMonitorProps> = ({
                 className
             )}
         >
+            <Mask
+                isActive={true}
+                className="absolute inset-0 !z-0"
+            />
             <div className="flex items-center justify-between rounded-t-xl border-b border-b-neutral-300/50 bg-neutral-500 p-2">
                 <div className="flex items-center gap-x-3">
                     <img
