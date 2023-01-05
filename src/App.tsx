@@ -3,6 +3,7 @@ import MiniMonitorsContainer from "./components/MiniMonitor/MiniMonitorsContaine
 import { ActiveMonitorsProvider } from "./hooks/useActiveMonitorProvider";
 import MainMonitorsContainer from "./components/MainMonitor/MainMonitorContainer";
 import { useFetchUser } from "./api/hooks/useFetchUser";
+import { useSocketQuery } from "./api/hooks/useSocketSubscription";
 
 function App() {
     useFetchUser();

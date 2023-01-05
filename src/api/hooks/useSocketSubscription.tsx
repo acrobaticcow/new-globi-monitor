@@ -16,7 +16,7 @@ import { useFetchUser } from "./useFetchUser";
  * * only call it once, and if you want to access the cache else where then use useQuery with the correct key and empty queryFn just like below.
  */
 export const useSocketQuery = (
-    patientId: string,
+    patientId: string | undefined,
     options: UseQueryOptions<
         SocketData,
         Error,
@@ -29,7 +29,7 @@ export const useSocketQuery = (
 
     useEffect(() => {
         if (!user) return;
-        const topic = [user.user_id, patientId].join(".");
+        const topic = user.user_id;
         const socket = io(
             "https://globicare-monitor-dot-glassy-totality-324307.uc.r.appspot.com",
             {

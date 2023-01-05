@@ -10,7 +10,7 @@ export const fetchFollowers = async (
     { index, size }: Options = { index: 1, size: 20 }
 ): Promise<Followers> => {
     const res = await fetch(
-        `${host}/users?page_size=${size}&page_id=${index}'`,
+        `${host}/users?page_size=${size}&page_id=${index}`,
         {
             headers: {
                 Authorization: `Bearer ${token}`,

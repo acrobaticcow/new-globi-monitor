@@ -3,7 +3,7 @@ import { host } from "./host.api";
 export const fetchAuth = async (): Promise<UserData> => {
     const res = await fetch(`${host}/auth/login`, {
         headers: {
-            Authorization: "Basic Kzg0OTczOTgxMjA0OjEyMzQ1Ng==",
+            Authorization: "Basic Kzg0ODM2NjUwMzc0OjEyMzQ1Ng==",
         },
     });
     if (!res.ok) {
