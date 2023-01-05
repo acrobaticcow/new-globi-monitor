@@ -59,7 +59,7 @@ const SideBarDrawer: FC<SideBarDrawerProps> = ({
                 />
                 <div
                     className={clsx(
-                        "fixed inset-y-0 -left-0 z-50 h-full w-80 transform rounded-r-md shadow-neutral-400 transition-all duration-200 ease-in-out will-change-transform shadow-lg",
+                        "fixed inset-y-0 -left-0 z-50 h-full w-80 transform rounded-r-md shadow-neutral-400 transition-all duration-200 ease-out will-change-transform shadow-lg",
                         className,
                         isActive
                             ? "block translate-x-14 opacity-100"

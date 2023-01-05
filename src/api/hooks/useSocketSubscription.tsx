@@ -29,42 +29,47 @@ export const useSocketQuery = (
 
     useEffect(() => {
         if (!user) return;
-        const socket = io(
-            "https://glassy-totality-324307.uc.r.appspot.com/"
-        );
-        const onDisconnect = (reason: Socket.DisconnectReason) => {
-            console.log("disconnect reason", reason);
-            if (reason === "io server disconnect" && socket) {
-                // the disconnection was initiated by the server, you need to reconnect manually
-                socket.connect();
-            }
-        };
-        const onError = (error: any) => {
-            console.log(error);
-        };
-        const onConnect = () => {
-            console.log("connected");
-        };
-        const onJoinStatus = (status: string) => {
-            console.log(`join-status: ${status}`);
-        };
-        const onNewRecords = (res: SocketData) => {
-            queryClient.setQueryData(
-                [user.user_id, patientId, Promise],
-                res
-            );
-        };
-
         const topic = [user.user_id, patientId].join(".");
+        const socket = io(
+            "https://globicare-monitor-dot-glassy-totality-324307.uc.r.appspot.com",
+            {
+                extraHeaders: {
+                    Authorization: `Bearer ${user.user_api_key}`,
+                },
+            }
+        );
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
         socket.on("error", onError);
         socket.on("join-status", onJoinStatus);
         socket.on("new-records", onNewRecords);
         socket.emit("join", {
-            token: user.user_api_key,
+            // token: user.user_api_key,
             topic,
         });
+        function onDisconnect(reason: Socket.DisconnectReason) {
+            console.log("disconnect reason", reason);
+            if (reason === "io server disconnect" && socket) {
+                // the disconnection was initiated by the server, you need to reconnect manually
+                socket.connect();
+            }
+        }
+        function onError(error: any) {
+            console.log(error);
+        }
+        function onConnect() {
+            console.log("connected");
+        }
+        function onJoinStatus(status: string) {
+            console.log(`join-status: ${status}`);
+        }
+        function onNewRecords(res: SocketData) {
+            if (user)
+                queryClient.setQueryData(
+                    [user.user_id, patientId, Promise],
+                    res
+                );
+        }
         return () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
