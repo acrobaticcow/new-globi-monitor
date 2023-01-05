@@ -26,6 +26,7 @@ interface MainMonitorProps {
     className?: string;
     isError?: boolean;
     follower: ArrayElement<Followers["data"]>;
+    itemId: string;
 }
 
 const ecgConfig: ConfigType = {
@@ -74,9 +75,10 @@ const MainMonitor: FC<MainMonitorProps> = ({
         <div
             id="main-monitor"
             className={clsx(
-                "relative h-fit w-1/2 min-w-[50%] origin-bottom-left rounded-b rounded-t-xl border border-neutral-300 ",
+                "relative h-fit rounded-b rounded-t-xl border border-neutral-300 ",
                 className
             )}
+            tabIndex={0}
         >
             <Mask
                 isActive={true}
