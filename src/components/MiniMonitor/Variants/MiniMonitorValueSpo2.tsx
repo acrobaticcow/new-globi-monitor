@@ -4,9 +4,13 @@ import { SocketData } from "../../../models/realtime.models";
 import MiniMonitorValue from "../MiniMonitorValue";
 
 type Props = {
-    spo2Param: SocketData["param"]["spo2_param"] | undefined;
+    spo2Param: SocketData["spo2_data"] | undefined;
     isLoading: boolean;
-    duration: number;
+    duration: number | undefined;
+};
+type CustomizeValueInteral = {
+    spo2: SocketData["spo2_data"]["spo2_point"]["values"];
+    pr: SocketData["spo2_data"]["pr"]["values"];
 };
 
 export const MiniMonitorValueSpo2: FC<Props> = ({
@@ -14,9 +18,16 @@ export const MiniMonitorValueSpo2: FC<Props> = ({
     spo2Param,
     isLoading,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval<
-        Props["spo2Param"]
-    >(spo2Param, duration);
+    const { currentData, index } =
+        useCustomizeValueInterval<CustomizeValueInteral>(
+            spo2Param
+                ? {
+                      spo2: spo2Param?.spo2_point.values,
+                      pr: spo2Param?.pr.values,
+                  }
+                : undefined,
+            duration
+        );
 
     return (
         <>

@@ -4,9 +4,12 @@ import { SocketData } from "../../../models/realtime.models";
 import MiniMonitorValue from "../MiniMonitorValue";
 
 type Props = {
-    tempParam: SocketData["param"]["temp_param"] | undefined;
+    tempParam: SocketData["temp_data"] | undefined;
     isLoading: boolean;
-    duration: number;
+    duration: number | undefined;
+};
+type CustomizeValueInteral = {
+    temp: SocketData["temp_data"]["temp"];
 };
 
 export const MiniMonitorValuetemp: FC<Props> = ({
@@ -14,9 +17,11 @@ export const MiniMonitorValuetemp: FC<Props> = ({
     tempParam,
     isLoading,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval<
-        Props["tempParam"]
-    >(tempParam, duration);
+    const { currentData, index } =
+        useCustomizeValueInterval<CustomizeValueInteral>(
+            tempParam ? { temp: tempParam?.temp } : undefined,
+            duration
+        );
 
     return (
         <MiniMonitorValue

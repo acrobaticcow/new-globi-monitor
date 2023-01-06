@@ -4,19 +4,29 @@ import { SocketData } from "../../../models/realtime.models";
 import MiniMonitorValue from "../MiniMonitorValue";
 
 type Props = {
-    ecgParam: SocketData["param"]["ecg_param"] | undefined;
+    ecgParam: SocketData["ecg_data"] | undefined;
     isLoading: boolean;
-    duration: number;
+    duration?: number;
 };
-
+type CustomizeValueInteral = {
+    rr: SocketData["ecg_data"]["rr"]["values"];
+    hr: SocketData["ecg_data"]["hr"]["values"];
+};
 export const MiniMonitorValueEcg: FC<Props> = ({
     duration = 5000,
     ecgParam,
     isLoading,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval<
-        Props["ecgParam"]
-    >(ecgParam, duration);
+    const { currentData, index } =
+        useCustomizeValueInterval<CustomizeValueInteral>(
+            ecgParam
+                ? {
+                      rr: ecgParam?.rr.values,
+                      hr: ecgParam?.hr.values,
+                  }
+                : undefined,
+            duration
+        );
 
     return (
         <>
@@ -24,7 +34,7 @@ export const MiniMonitorValueEcg: FC<Props> = ({
                 isLoading={isLoading}
                 name="resp"
                 unit="brpm"
-                value={currentData?.resp[index]}
+                value={currentData?.rr[index]}
                 type="ecg"
             />
             <MiniMonitorValue

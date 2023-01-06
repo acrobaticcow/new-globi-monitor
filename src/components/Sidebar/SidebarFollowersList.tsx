@@ -16,27 +16,18 @@ const SidebarFollowersList: FC<UserInfoSideBarListProps> = ({
     if (error) return <div>error</div>;
     return (
         <ul className={clsx("space-y-1", className)}>
-            {data?.data.map(
-                ({
-                    patient_detail: {
-                        dob,
-                        patient_id,
-                        patient_name,
-                        image,
-                    },
-                }) => {
-                    return (
-                        <SidebarFollowersItem
-                            key={patient_id}
-                            dob={dob}
-                            name={patient_name}
-                            id={patient_id}
-                            img={image}
-                            status={undefined}
-                        />
-                    );
-                }
-            ) ?? "error"}
+            {data?.data.map(({ user_name, user_id, image, dob }) => {
+                return (
+                    <SidebarFollowersItem
+                        key={user_id}
+                        dob={dob}
+                        name={user_name}
+                        id={user_id}
+                        img={image}
+                        status={undefined}
+                    />
+                );
+            }) ?? "error"}
         </ul>
     );
 };

@@ -10,7 +10,7 @@ import {
     MiniMonitorContextType,
 } from "../../hooks/useActiveMonitorProvider";
 export interface SidebarFollowersItemProps {
-    img?: string;
+    img?: string | null;
     /**
      * Tên bệnh nhân
      */
@@ -20,7 +20,7 @@ export interface SidebarFollowersItemProps {
      * trạng thái onl hay off
      */
     status?: boolean;
-    dob: string; // date of birth, ngày tháng năm sinh
+    dob: string | null; // date of birth, ngày tháng năm sinh
     /**
      * thay đổi style theo tên class , chỉ có thay đổi wrapper, yêu tiên dùng class của tw để thay đổi style
      */

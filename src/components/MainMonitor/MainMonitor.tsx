@@ -54,14 +54,14 @@ const ecgConfig: ConfigType = {
         minVal: -5,
         maxVal: 255,
         duration: 5000,
-        type: "resp",
+        type: "rr",
     };
 
 const MainMonitor: FC<MainMonitorProps> = ({
     className,
     follower,
 }) => {
-    const patient_id = follower.patient_detail.patient_id;
+    const patient_id = follower.user_id;
     const { data: user } = useFetchUser();
     const { data: socket } = useQuery<SocketData>({
         queryKey: [user?.user_id, patient_id, Promise],
@@ -71,6 +71,9 @@ const MainMonitor: FC<MainMonitorProps> = ({
     const { onDelMonitorId } = useContext(
         ActiveMonitorsApiContext
     ) as ActiveMonitorsApiContextType;
+    const duration = socket
+        ? socket.to_ts - socket.from_ts
+        : undefined;
     return (
         <div
             id="main-monitor"
@@ -98,22 +101,19 @@ const MainMonitor: FC<MainMonitorProps> = ({
                                 data-tip="Nguyễn Vũ Anh sdfsdfsdfsdfsdfsdfsdf"
                             >
                                 <p className="w-fit text-ellipsis font-inter text-sm leading-tight line-clamp-1">
-                                    {
-                                        follower.patient_detail
-                                            .patient_name
-                                    }
+                                    {follower.user_name}
                                 </p>
                             </div>
                             <p className="mr-1 text-xs leading-tight text-neutral-200">
-                                {follower.patient_detail.dob}
+                                {follower.dob}
                             </p>
                         </div>
                         <div>
                             <p className="mr-1 text-sm leading-tight text-neutral-200">
-                                {follower.patient_detail.gender}
+                                {follower.gender}
                             </p>
                             <p className="mr-1 text-xs leading-tight text-neutral-200">
-                                {follower.patient_detail.phone}
+                                {follower.phone}
                             </p>
                         </div>
                         <HalfBatteryIcon className="h-5 w-5 fill-neutral-200 stroke-neutral-200 stroke-0" />
@@ -187,39 +187,23 @@ const MainMonitor: FC<MainMonitorProps> = ({
                 >
                     <MainEcgParam
                         follower={follower}
-                        ecgParam={socket?.param.ecg_param}
-                        duration={
-                            socket
-                                ? (socket?.to - socket?.from) * 1000
-                                : 5000
-                        }
+                        ecgParam={socket?.ecg_data}
+                        duration={duration}
                     />
                     <MainSpo2Param
                         follower={follower}
-                        spo2Param={socket?.param.spo2_param}
-                        duration={
-                            socket
-                                ? (socket?.to - socket?.from) * 1000
-                                : 5000
-                        }
+                        spo2Param={socket?.spo2_data}
+                        duration={duration}
                     />
                     <MainTempParam
                         follower={follower}
-                        tempsParam={socket?.param.temp_param}
-                        duration={
-                            socket
-                                ? (socket?.to - socket?.from) * 1000
-                                : 5000
-                        }
+                        tempsParam={socket?.temp_data}
+                        duration={duration}
                     />
                     <MainNibpParam
                         follower={follower}
-                        nibpParam={socket?.param.nibp_param}
-                        duration={
-                            socket
-                                ? (socket?.to - socket?.from) * 1000
-                                : 5000
-                        }
+                        nibpParam={socket?.nibp_data}
+                        duration={duration}
                     />
                 </div>
             </div>

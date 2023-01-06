@@ -29,7 +29,7 @@ export const useSocketQuery = (
 
     useEffect(() => {
         if (!user) return;
-        const topic = user.user_id;
+        const topic = patientId;
         const socket = io(
             "https://globicare-monitor-dot-glassy-totality-324307.uc.r.appspot.com",
             {
@@ -64,6 +64,8 @@ export const useSocketQuery = (
             console.log(`join-status: ${status}`);
         }
         function onNewRecords(res: SocketData) {
+            
+
             if (user)
                 queryClient.setQueryData(
                     [user.user_id, patientId, Promise],

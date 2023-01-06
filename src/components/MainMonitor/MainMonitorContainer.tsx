@@ -45,7 +45,7 @@ const MainMonitorsContainer: FC<MainMonitorsContainerProps> = () => {
             data.length > prevData.current.length
         ) {
             const newlyAdded = apiRef.current.getItemElementById(
-                data[data.length - 1].patient_detail.patient_id
+                data[data.length - 1].user_id
             );
             newlyAdded && apiRef.current.scrollToItem(newlyAdded);
         }
@@ -69,8 +69,8 @@ const MainMonitorsContainer: FC<MainMonitorsContainerProps> = () => {
         >
             {data?.map((follower) => (
                 <MainMonitor
-                    itemId={follower.patient_detail.patient_id}
-                    key={follower.patient_detail.patient_id}
+                    itemId={follower.user_id}
+                    key={follower.user_id}
                     follower={follower}
                 />
             )) ?? []}

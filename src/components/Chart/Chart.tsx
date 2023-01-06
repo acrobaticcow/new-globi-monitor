@@ -22,8 +22,8 @@ export type ConfigType = {
     STEP?: number;
     scanBarLength: number;
     INTERVAL?: number;
-    type: "ecg" | "spo2" | "resp";
-    duration: number;
+    type: "ecg" | "spo2" | "rr";
+    duration: number | undefined;
     soundPlayer?: () => void;
 };
 interface ChartProps {
@@ -129,7 +129,19 @@ const Chart: FC<ChartProps> = ({ data, config }) => {
     useEffect(() => {
         const render = renderRef.current;
         if (!render || !data) return;
-        dataPool.current.push(...data.wave[`${config.type}_wave`]);
+        let wave;
+        switch (config.type) {
+            case "ecg":
+                wave = data.ecg_data.ecg_wave.Lead_I;
+                break;
+            case "rr":
+                wave = data.ecg_data.rr_wave.values;
+                break;
+            case "spo2":
+                wave = data.spo2_data.spo2_wave.values;
+                break;
+        }
+        dataPool.current.push(...wave);
     }, [data, config]);
 
     const minimize = useCallback(() => {

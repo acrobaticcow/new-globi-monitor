@@ -8,19 +8,28 @@ import { FluentTemperature16Filled } from "../../Icons";
 
 interface MainTempParamProps {
     follower: ArrayElement<Followers["data"]>;
-    tempsParam: SocketData["param"]["temp_param"] | undefined;
-    duration: number;
+    tempsParam: SocketData["temp_data"] | undefined;
+    duration: number | undefined;
 }
-
+type CustomizeValueInteral = {
+    temps: SocketData["temp_data"]["temp"];
+    status: SocketData["temp_data"]["status"];
+};
 export const MainTempParam: FC<MainTempParamProps> = ({
     follower,
     tempsParam,
     duration = 5000,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        tempsParam,
-        duration
-    );
+    const { currentData, index } =
+        useCustomizeValueInterval<CustomizeValueInteral>(
+            tempsParam
+                ? {
+                      temps: tempsParam?.temp,
+                      status: tempsParam.status,
+                  }
+                : undefined,
+            duration
+        );
 
     return (
         <VitalMonitorBlock
@@ -29,9 +38,9 @@ export const MainTempParam: FC<MainTempParamProps> = ({
             status={currentData?.status[index]}
             childrenProps={[
                 {
-                    maxRange: follower.patient_detail.temp_range.max,
-                    minRange: follower.patient_detail.temp_range.min,
-                    value: currentData?.temp[index],
+                    maxRange: follower.temp_range.max,
+                    minRange: follower.temp_range.min,
+                    value: currentData?.temps[index],
                     sub: "°C",
                     title: "Temp 1",
                 },

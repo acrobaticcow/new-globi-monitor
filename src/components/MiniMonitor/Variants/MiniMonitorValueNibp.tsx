@@ -4,9 +4,13 @@ import { SocketData } from "../../../models/realtime.models";
 import MiniMonitorValue from "../MiniMonitorValue";
 
 type Props = {
-    nibpParam: SocketData["param"]["nibp_param"] | undefined;
+    nibpParam: SocketData["nibp_data"] | undefined;
     isLoading: boolean;
-    duration: number;
+    duration: number | undefined;
+};
+type CustomizeValueInteral = {
+    sys: SocketData["nibp_data"]["sys"];
+    dia: SocketData["nibp_data"]["dia"];
 };
 
 export const MiniMonitorValueNibp: FC<Props> = ({
@@ -14,9 +18,16 @@ export const MiniMonitorValueNibp: FC<Props> = ({
     isLoading,
     nibpParam,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval<
-        Props["nibpParam"]
-    >(nibpParam, duration);
+    const { currentData, index } =
+        useCustomizeValueInterval<CustomizeValueInteral>(
+            nibpParam
+                ? {
+                      sys: nibpParam?.sys,
+                      dia: nibpParam?.dia,
+                  }
+                : undefined,
+            duration
+        );
 
     return (
         <MiniMonitorValue

@@ -8,19 +8,30 @@ import { HeartIcon } from "../../Icons";
 
 interface MainNibpParamProps {
     follower: ArrayElement<Followers["data"]>;
-    ecgParam: SocketData["param"]["ecg_param"] | undefined;
-    duration: number;
+    ecgParam: SocketData["ecg_data"] | undefined;
+    duration: number | undefined;
 }
-
+type CustomizeValueInteral = {
+    rr: SocketData["ecg_data"]["rr"]["values"];
+    hr: SocketData["ecg_data"]["hr"]["values"];
+    status: SocketData["ecg_data"]["status"]["values"];
+};
 const MainEcgParam: FC<MainNibpParamProps> = ({
     follower,
     ecgParam,
     duration = 5000,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        ecgParam,
-        duration
-    );
+    const { currentData, index } =
+        useCustomizeValueInterval<CustomizeValueInteral>(
+            ecgParam
+                ? {
+                      rr: ecgParam.rr.values,
+                      hr: ecgParam.hr.values,
+                      status: ecgParam.status.values,
+                  }
+                : undefined,
+            duration
+        );
 
     return (
         <VitalMonitorBlock
@@ -30,15 +41,15 @@ const MainEcgParam: FC<MainNibpParamProps> = ({
             status={currentData?.status[index]}
             childrenProps={[
                 {
-                    maxRange: follower.patient_detail.resp_range.max,
-                    minRange: follower.patient_detail.resp_range.min,
+                    maxRange: follower.resp_range.max,
+                    minRange: follower.resp_range.min,
                     sub: "bpm",
                     title: "resp",
-                    value: currentData?.resp[index],
+                    value: currentData?.rr[index],
                 },
                 {
-                    maxRange: follower.patient_detail.hr_range.max,
-                    minRange: follower.patient_detail.hr_range.min,
+                    maxRange: follower.hr_range.max,
+                    minRange: follower.hr_range.min,
                     sub: "bpm",
                     title: "hr",
                     value: currentData?.hr[index],

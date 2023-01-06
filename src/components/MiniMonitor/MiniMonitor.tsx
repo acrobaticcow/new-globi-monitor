@@ -16,9 +16,9 @@ import { MiniMonitorValueSpo2 } from "./Variants/MiniMonitorValueSpo2";
 import { MiniMonitorValuetemp } from "./Variants/MiniMonitorValueTemp";
 
 export interface MiniMonitorProps {
-    img?: string;
+    img?: string | null;
     name: string;
-    dob: string; // date of birt
+    dob: string | null; // date of birt
     className?: string;
     patientId: string;
 }
@@ -43,7 +43,9 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
         MonitorContext
     ) as MonitorContextType;
     const { data: socket, isLoading } = useSocketQuery(patientId);
-    const duration = socket ? (socket.to - socket.from) * 1000 : 5000;
+    const duration = socket
+        ? socket.to_ts - socket.from_ts
+        : undefined;
     const nameRef = useRef<HTMLParagraphElement>(null);
     const nameWrapperRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -111,24 +113,24 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
                 <MiniMonitorValueEcg
                     isLoading={isLoading}
                     duration={duration}
-                    ecgParam={socket?.param.ecg_param}
+                    ecgParam={socket?.ecg_data}
                 />
                 <MiniMonitorValueNibp
                     isLoading={isLoading}
                     duration={duration}
-                    nibpParam={socket?.param.nibp_param}
+                    nibpParam={socket?.nibp_data}
                 />
             </div>
             <div className="grid grid-cols-4 px-1">
                 <MiniMonitorValueSpo2
                     isLoading={isLoading}
                     duration={duration}
-                    spo2Param={socket?.param.spo2_param}
+                    spo2Param={socket?.spo2_data}
                 />
                 <MiniMonitorValuetemp
                     isLoading={isLoading}
                     duration={duration}
-                    tempParam={socket?.param.temp_param}
+                    tempParam={socket?.temp_data}
                 />
             </div>
         </div>

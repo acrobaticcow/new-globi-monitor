@@ -65,15 +65,17 @@ export const stTranslatorForNibp = (status: number) => {
   }
 };
 
-export const modeIconTranslatorForNibp = (mode: number) => {
-  switch (mode) {
-    case 0:
-      return <MdiHumanHandsdown className="h-5 w-5" />;
-    case 1:
-      return <MaterialSymbolsChildCare />;
-    case 2:
-      return <HealthiconsBaby0203AltOutline />;
-  }
+export const modeIconTranslatorForNibp = (
+    mode: number | undefined
+) => {
+    switch (mode) {
+        case 0:
+            return <MdiHumanHandsdown className="h-5 w-5" />;
+        case 1:
+            return <MaterialSymbolsChildCare />;
+        case 2:
+            return <HealthiconsBaby0203AltOutline />;
+    }
 };
 
 export const generalStTranslator = ({
