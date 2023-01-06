@@ -4,7 +4,7 @@ export const fetchFollowers = async (
   token: string = ""
 ): Promise<Followers> => {
   const res = await fetch(
-      "https://globicare-prod-djgdyxgtha-el.a.run.app/followers/request_details?accepted=true&type=FOLLOW_REQUEST'",
+      "https://globicare-prod-djgdyxgtha-el.a.run.app/followers/request_details?accepted=true&type=FOLLOW_REQUEST",
       {
           headers: {
               Authorization: `Bearer ${token}`,

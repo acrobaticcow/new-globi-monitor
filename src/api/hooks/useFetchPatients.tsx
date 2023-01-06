@@ -25,10 +25,20 @@ export const useSelectFollowers = (ids: string[]) => {
     enabled: !!user,
     staleTime: 1000 * 60 * 5,
     select: (data) => {
-      const something = data.data.filter(({ patient_detail: { patient_id } }) =>
-        ids.find((id) => patient_id === id)
-      );
-      return something;
+        // const something = data.data.filter(({ patient_detail: { patient_id } }) =>
+        //   ids.find((id) => patient_id === id)
+        // );
+        const copy = [...data.data];
+        const selected = ids.map((id) => {
+            const index = copy.findIndex(
+                ({ patient_detail: { patient_id } }) =>
+                    id === patient_id
+            );
+            const current = copy[index];
+            copy.splice(index, 1);
+            return current;
+        });
+        return selected;
     },
   });
 };

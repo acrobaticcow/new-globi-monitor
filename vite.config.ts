@@ -6,7 +6,7 @@ import react from "@vitejs/plugin-react-swc"; // only use this in development, b
 export default defineConfig({
     plugins: [
         react({
-            jsxImportSource: "@welldone-software/why-did-you-render", // <----- disable in production
+            // jsxImportSource: "@welldone-software/why-did-you-render", // <----- disable in production
         }),
     ],
 });

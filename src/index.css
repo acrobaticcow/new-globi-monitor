@@ -21,7 +21,7 @@
 
     /* Handle */
     ::-webkit-scrollbar-thumb {
-        @apply rounded-xl bg-neutral-300 hover:bg-neutral-200/75;
+        @apply rounded-xl bg-neutral-300/75 hover:bg-neutral-200/75;
     }
 
     @-moz-keyframes right-to-left {

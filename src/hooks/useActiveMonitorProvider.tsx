@@ -43,37 +43,41 @@ type Action =
 
 const reducer = produce((state: State, action: Action): State => {
     const { type, payload } = action;
+    const { activeMiniMonitorIds, activeMonitorIds } = state;
     switch (type) {
         case ActionKind.addMiniMonitorId:
-            if (state.activeMiniMonitorIds.includes(payload))
-                return state;
-            if (state.activeMiniMonitorIds.length < 2) {
-                state.activeMonitorIds.push(payload);
+            if (activeMiniMonitorIds.includes(payload)) break;
+            if (activeMiniMonitorIds.length < 2) {
+                activeMonitorIds.push(payload);
             }
-            state.activeMiniMonitorIds.push(payload);
-            return state;
+            activeMiniMonitorIds.push(payload);
+            break;
         case ActionKind.addMonitorId:
-            if (state.activeMonitorIds.includes(payload))
-                return state;
-            state.activeMonitorIds.push(payload);
-            return state;
-        case ActionKind.delMiniMonitorId:
-            state.activeMiniMonitorIds =
-                state.activeMiniMonitorIds.filter(
-                    (id) => id !== payload
-                );
-            state.activeMonitorIds = state.activeMonitorIds.filter(
-                (id) => id !== payload
+            if (activeMonitorIds.includes(payload)) return state;
+            activeMonitorIds.push(payload);
+            break;
+        case ActionKind.delMiniMonitorId: {
+            const miniIndex = activeMiniMonitorIds.findIndex(
+                (id) => id === payload
             );
-            return state;
+            if (miniIndex !== -1)
+                activeMiniMonitorIds.splice(miniIndex, 1);
+            const index = activeMonitorIds.findIndex(
+                (id) => id === payload
+            );
+            if (index !== -1) activeMonitorIds.splice(index, 1);
+            break;
+        }
         case ActionKind.delMonitorId:
-            state.activeMonitorIds = state.activeMonitorIds.filter(
-                (id) => id !== payload
+            const index = activeMonitorIds.findIndex(
+                (id) => id === payload
             );
-            return state;
+            if (index !== -1) activeMonitorIds.splice(index, 1);
+            break;
         default:
-            return state;
+            break;
     }
+    return state;
 });
 
 export const ActiveMonitorsProvider = ({
