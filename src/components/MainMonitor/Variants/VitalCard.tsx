@@ -1,14 +1,14 @@
 import { clsx } from "clsx";
 import type { FunctionComponent } from "react";
-import { cloneChild } from "../utils/function";
-import { WarningIcon } from "./Icons";
+import { cloneChild } from "../../../utils/function";
+import { WarningIcon } from "../../Icons";
 import {
     varTxtLight,
     varTxtBase,
     Variant,
-} from "../utils/textColorClass";
-import { generalStTranslator } from "../utils/paramTranslator";
-import { HeartIcon } from "./Icons";
+} from "../../../utils/textColorClass";
+import { generalStTranslator } from "../../../utils/paramTranslator";
+import { HeartIcon } from "../../Icons";
 
 type NumberOrUndefined = number | null | undefined;
 

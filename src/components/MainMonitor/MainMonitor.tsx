@@ -14,21 +14,22 @@ import { ArrayElement } from "../../models/utils.models";
 import Chart, { ConfigType } from "../Chart/Chart";
 import { HalfBatteryIcon } from "../Icons";
 import { Mask } from "../Mask";
-import MainEcgParam from "./Variants/MainEcgParam";
-import { MainNibpParam } from "./Variants/MainNibpParam";
-import { MainSpo2Param } from "./Variants/MainSpo2Param";
-import { MainTempParam } from "./Variants/MainTempParam";
+import * as MainMonitorValue from "./Variants/Variants";
 /**
  * Chuyển từ độc c sang độ f
  */
-
+type Param = {
+    ecg: MainMonitorValue.EcgParam;
+    nibp: MainMonitorValue.NibpParam;
+    spo2: MainMonitorValue.Spo2Param;
+    temp: MainMonitorValue.TempParam;
+};
 interface MainMonitorProps {
     className?: string;
     isError?: boolean;
     follower: ArrayElement<Followers["data"]>;
     itemId: string;
 }
-
 const ecgConfig: ConfigType = {
         color: "00FF00",
         WINDOW_POINTS: 1250,
@@ -73,6 +74,32 @@ const MainMonitor: FC<MainMonitorProps> = ({
     ) as ActiveMonitorsApiContextType;
     const duration = socket
         ? socket.to_ts - socket.from_ts
+        : undefined;
+    const param: Param | undefined = !!socket
+        ? {
+              ecg: {
+                  rr: socket.ecg_data.rr.values,
+                  hr: socket.ecg_data.hr.values,
+                  status: socket.ecg_data.status.values,
+              },
+              nibp: {
+                  cuff: socket.nibp_data.cuff,
+                  sys: socket.nibp_data.sys,
+                  dia: socket.nibp_data.dia,
+                  map: socket.nibp_data.map,
+                  mode: socket.nibp_data.patient_mode,
+                  status: socket.nibp_data.status,
+              },
+              spo2: {
+                  pr: socket.spo2_data.pr.values,
+                  spo2: socket.spo2_data.spo2_point.values,
+                  status: socket.spo2_data.status.values,
+              },
+              temp: {
+                  status: socket.temp_data.status,
+                  temps: socket.temp_data.temp,
+              },
+          }
         : undefined;
     return (
         <div
@@ -185,24 +212,24 @@ const MainMonitor: FC<MainMonitorProps> = ({
                     id="main-monitor__param"
                     className="col-span-2 ml-2 grid grid-rows-4"
                 >
-                    <MainEcgParam
+                    <MainMonitorValue.Ecg
                         follower={follower}
-                        ecgParam={socket?.ecg_data}
+                        param={param?.ecg}
                         duration={duration}
                     />
-                    <MainSpo2Param
+                    <MainMonitorValue.Nibp
                         follower={follower}
-                        spo2Param={socket?.spo2_data}
+                        param={param?.nibp}
                         duration={duration}
                     />
-                    <MainTempParam
+                    <MainMonitorValue.Spo2
                         follower={follower}
-                        tempsParam={socket?.temp_data}
+                        param={param?.spo2}
                         duration={duration}
                     />
-                    <MainNibpParam
+                    <MainMonitorValue.Temp
                         follower={follower}
-                        nibpParam={socket?.nibp_data}
+                        param={param?.temp}
                         duration={duration}
                     />
                 </div>

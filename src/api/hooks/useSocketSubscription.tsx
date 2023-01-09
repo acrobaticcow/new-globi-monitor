@@ -15,6 +15,23 @@ import { useFetchUser } from "./useFetchUser";
  * ! so do not call this func everywhere to get the cache
  * * only call it once, and if you want to access the cache else where then use useQuery with the correct key and empty queryFn just like below.
  */
+type Param = {
+    rr: SocketData["ecg_data"]["rr"]["values"];
+    hr: SocketData["ecg_data"]["hr"]["values"];
+    spo2: SocketData["spo2_data"]["spo2_point"]["values"];
+    pr: SocketData["spo2_data"]["pr"]["values"];
+    temp: SocketData["temp_data"]["temp"];
+    sys: SocketData["nibp_data"]["sys"];
+    dia: SocketData["nibp_data"]["dia"];
+    map: SocketData["nibp_data"]["map"];
+    cuff: SocketData["nibp_data"]["cuff"];
+    ecgStatus: SocketData["ecg_data"]["status"]["values"];
+    spo2Status: SocketData["spo2_data"]["status"]["values"];
+    nibpStatus: SocketData["nibp_data"]["status"];
+    tempStatus: SocketData["temp_data"]["status"];
+};
+type KeyParam = keyof Param;
+
 export const useSocketQuery = (
     patientId: string | undefined,
     options: UseQueryOptions<
@@ -64,7 +81,25 @@ export const useSocketQuery = (
             console.log(`join-status: ${status}`);
         }
         function onNewRecords(res: SocketData) {
-            
+            // const param: Param = {
+            //     dia: res.nibp_data.dia,
+            //     sys: res.nibp_data.sys,
+            //     cuff: res.nibp_data.cuff,
+            //     map: res.nibp_data.map,
+            //     hr: res.ecg_data.hr.values,
+            //     rr: res.ecg_data.rr.values,
+            //     pr: res.spo2_data.pr.values,
+            //     spo2: res.spo2_data.spo2_point.values,
+            //     temp: res.temp_data.temp,
+            //     ecgStatus: res.ecg_data.status.values,
+            //     spo2Status: res.spo2_data.status.values,
+            //     nibpStatus: res.nibp_data.status,
+            //     tempStatus: res.temp_data.status,
+            // };
+            // let key: KeyParam;
+            // for (key in param) {
+            //     param[key]
+            // }
 
             if (user)
                 queryClient.setQueryData(

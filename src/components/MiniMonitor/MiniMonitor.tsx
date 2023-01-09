@@ -1,5 +1,6 @@
 import clsx from "clsx";
-import { FC, useContext, useEffect } from "react";
+import type { FC } from "react";
+import { memo, useMemo, useContext, useEffect } from "react";
 import { useRef } from "react";
 import { UserCircle } from "../Icons";
 import {
@@ -10,11 +11,18 @@ import {
 } from "../../hooks/useActiveMonitorProvider";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
-import { MiniMonitorValueEcg } from "./Variants/MiniMonitorValueEcg";
-import { MiniMonitorValueNibp } from "./Variants/MiniMonitorValueNibp";
-import { MiniMonitorValueSpo2 } from "./Variants/MiniMonitorValueSpo2";
-import { MiniMonitorValuetemp } from "./Variants/MiniMonitorValueTemp";
+import * as MiniMonitorValue from "./MiniMonitorValueVariant/Variants";
+const MemoizedMiniMonitorValueEcg = memo(MiniMonitorValue.Ecg);
+const MemoizedMiniMonitorValueNibp = memo(MiniMonitorValue.Nibp);
+const MemoizedMiniMonitorValueSpo2 = memo(MiniMonitorValue.Spo2);
+const MemoizedMiniMonitorValueTemp = memo(MiniMonitorValue.Temp);
 
+type Param = {
+    ecg: MiniMonitorValue.MiniEcgParam;
+    nibp: MiniMonitorValue.MiniNibpParam;
+    spo2: MiniMonitorValue.MiniSpo2Param;
+    temp: MiniMonitorValue.MiniTempParam;
+};
 export interface MiniMonitorProps {
     img?: string | null;
     name: string;
@@ -48,6 +56,29 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
         : undefined;
     const nameRef = useRef<HTMLParagraphElement>(null);
     const nameWrapperRef = useRef<HTMLDivElement>(null);
+    const param: Param | undefined = useMemo(
+        () =>
+            !!socket
+                ? {
+                      ecg: {
+                          hr: socket.ecg_data.hr.values,
+                          rr: socket.ecg_data.rr.values,
+                      },
+                      nibp: {
+                          dia: socket.nibp_data.dia,
+                          sys: socket.nibp_data.sys,
+                      },
+                      spo2: {
+                          pr: socket.spo2_data.pr.values,
+                          spo2: socket.spo2_data.spo2_point.values,
+                      },
+                      temp: {
+                          temp: socket.temp_data.temp,
+                      },
+                  }
+                : undefined,
+        [socket]
+    );
     useEffect(() => {
         if (!nameRef.current || !nameWrapperRef.current) return;
         if (
@@ -55,7 +86,7 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
         ) {
             nameRef.current.classList.add("animation-right-to-left");
         }
-    }, [nameRef, nameWrapperRef]);
+    }, []);
     return (
         <div
             className={clsx(
@@ -110,27 +141,27 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
                 </button>
             </div>
             <div className="mb-1 mt-4 grid grid-cols-4 justify-between px-1">
-                <MiniMonitorValueEcg
+                <MemoizedMiniMonitorValueEcg
                     isLoading={isLoading}
                     duration={duration}
-                    ecgParam={socket?.ecg_data}
+                    param={param?.ecg}
                 />
-                <MiniMonitorValueNibp
+                <MemoizedMiniMonitorValueNibp
                     isLoading={isLoading}
                     duration={duration}
-                    nibpParam={socket?.nibp_data}
+                    param={param?.nibp}
                 />
             </div>
             <div className="grid grid-cols-4 px-1">
-                <MiniMonitorValueSpo2
+                <MemoizedMiniMonitorValueSpo2
                     isLoading={isLoading}
                     duration={duration}
-                    spo2Param={socket?.spo2_data}
+                    param={param?.spo2}
                 />
-                <MiniMonitorValuetemp
+                <MemoizedMiniMonitorValueTemp
                     isLoading={isLoading}
                     duration={duration}
-                    tempParam={socket?.temp_data}
+                    param={param?.temp}
                 />
             </div>
         </div>

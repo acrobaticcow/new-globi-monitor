@@ -81,6 +81,7 @@ export const useCustomizeValueInterval = <
              */
             const currentData = dataPool[0];
             const anyKey = Object.keys(currentData)[0];
+            console.log(duration);
             const commonLength = currentData[anyKey].length;
             const intervalFn = (commonLength: number) => {
                 setIndex((prev) => {
@@ -125,7 +126,7 @@ export const useCustomizeValueInterval = <
 
     useEffect(
         () => () => {
-            clearInterval(intervalIdRef.current);
+            clearTimeout(intervalIdRef.current);
         },
         []
     );

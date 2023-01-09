@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import type { FC } from "react";
-import { Variant, varTxtBase } from "../../utils/textColorClass";
+import { Variant, varTxtBase } from "../../../utils/textColorClass";
 
 interface MiniMonitorValueProps {
   /**
