@@ -105,7 +105,6 @@ export const useSocketQuery = (
                     [user.user_id, patientId, Promise],
                     res
                 );
-            console.log(res);
         }
         return () => {
             socket.off("connect", onConnect);

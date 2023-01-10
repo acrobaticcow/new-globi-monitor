@@ -29,6 +29,7 @@ export interface MiniMonitorProps {
     dob: string | null; // date of birt
     className?: string;
     patientId: string;
+    itemId: string;
 }
 
 const isEllipsisActive = (inner: any, outer: any) => {

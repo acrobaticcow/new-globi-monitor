@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import type { FC } from "react";
 import { useContext } from "react";
+import { VisibilityContext } from "react-horizontal-scrolling-menu";
 import { useFetchUser } from "../../api/hooks/useFetchUser";
 import {
     ActiveMonitorsApiContext,
@@ -62,12 +63,14 @@ const MainMonitor: FC<MainMonitorProps> = ({
     className,
     follower,
 }) => {
+    const { isItemVisible } = useContext(VisibilityContext);
     const patient_id = follower.user_id;
+    const isVisible = isItemVisible(patient_id);
     const { data: user } = useFetchUser();
     const { data: socket } = useQuery<SocketData>({
         queryKey: [user?.user_id, patient_id, Promise],
         queryFn: () => new Promise<SocketData>(() => {}),
-        enabled: !!user,
+        enabled: !!user && isVisible,
     });
     const { onDelMonitorId } = useContext(
         ActiveMonitorsApiContext
@@ -195,18 +198,22 @@ const MainMonitor: FC<MainMonitorProps> = ({
                     id="main-monitor__wave"
                     className="col-span-3 grid h-full grid-cols-1 grid-rows-3 gap-0.5 pt-2"
                 >
-                    <Chart
-                        data={socket}
-                        config={ecgConfig}
-                    />
-                    <Chart
-                        data={socket}
-                        config={respConfig}
-                    />
-                    <Chart
-                        data={socket}
-                        config={spo2Config}
-                    />
+                    {isVisible && (
+                        <>
+                            <Chart
+                                data={socket}
+                                config={ecgConfig}
+                            />
+                            <Chart
+                                data={socket}
+                                config={respConfig}
+                            />
+                            <Chart
+                                data={socket}
+                                config={spo2Config}
+                            />
+                        </>
+                    )}
                 </div>
                 <div
                     id="main-monitor__param"
