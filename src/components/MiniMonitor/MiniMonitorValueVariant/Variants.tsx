@@ -20,18 +20,13 @@ export const Nibp: FC<NibpProps> = ({
     isLoading,
     param,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        param,
-        duration
-    );
-
     return (
         <MiniMonitorValue
             isLoading={isLoading}
             name="sys / dia"
             unit="mmHg"
-            value={currentData?.sys[index]}
-            value2={currentData?.dia[index] ?? null}
+            value={param?.sys.pop()}
+            value2={param?.dia.pop() ?? null}
             type="nibp"
             className="col-span-2"
         />
@@ -50,25 +45,20 @@ export const Spo2: FC<Spo2Props> = ({
     param,
     isLoading,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        param,
-        duration
-    );
-
     return (
         <>
             <MiniMonitorValue
                 isLoading={isLoading}
                 name="resp"
                 unit="brpm"
-                value={currentData?.spo2[index]}
+                value={param?.spo2.pop()}
                 type="spo2"
             />
             <MiniMonitorValue
                 isLoading={isLoading}
                 name="hr"
                 unit="bpm"
-                value={currentData?.pr[index]}
+                value={param?.pr.pop()}
                 type="spo2"
             />
         </>
@@ -86,21 +76,12 @@ export const Temp: FC<TempProps> = ({
     param,
     isLoading,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        param,
-        duration
-    );
-
     return (
         <MiniMonitorValue
             isLoading={isLoading}
             name="resp"
             unit="brpm"
-            value={
-                currentData?.temp
-                    ? currentData?.temp[index]
-                    : undefined
-            }
+            value={param?.temp.pop()}
             type="temp"
         />
     );
@@ -118,25 +99,20 @@ export const Ecg: FC<EcgProps> = ({
     param,
     isLoading,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        param,
-        duration
-    );
-
     return (
         <>
             <MiniMonitorValue
                 isLoading={isLoading}
                 name="resp"
                 unit="brpm"
-                value={currentData?.rr[index]}
+                value={param?.rr.pop()}
                 type="ecg"
             />
             <MiniMonitorValue
                 isLoading={isLoading}
                 name="hr"
                 unit="bpm"
-                value={currentData?.hr[index]}
+                value={param?.hr.pop()}
                 type="ecg"
             />
         </>

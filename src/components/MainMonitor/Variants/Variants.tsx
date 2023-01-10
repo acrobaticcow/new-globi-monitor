@@ -25,31 +25,26 @@ export const Ecg: FC<EcgProps> = ({
     param,
     duration = 5000,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        param,
-        duration
-    );
-
     return (
         <VitalMonitorBlock
             Icon={<HeartIcon className=" h-5 w-5 " />}
             type="ecg"
             isPing
-            status={currentData?.status[index]}
+            status={param?.status.pop()}
             childrenProps={[
                 {
                     maxRange: follower.resp_range.max,
                     minRange: follower.resp_range.min,
                     sub: "bpm",
                     title: "resp",
-                    value: currentData?.rr[index],
+                    value: param?.rr.pop(),
                 },
                 {
                     maxRange: follower.hr_range.max,
                     minRange: follower.hr_range.min,
                     sub: "bpm",
                     title: "hr",
-                    value: currentData?.hr[index],
+                    value: param?.hr.pop(),
                 },
             ]}
         />
@@ -72,26 +67,19 @@ export const Nibp: FC<NibpProps> = ({
     param,
     duration = 5000,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        param,
-        duration
-    );
-
     return (
         <VitalMonitorBlock
-            Icon={
-                currentData && modeIconTranslatorForNibp(param?.mode)
-            }
+            Icon={param && modeIconTranslatorForNibp(param?.mode)}
             type="nibp"
-            status={currentData?.status[index]}
+            status={param?.status.pop()}
             childrenProps={[
                 {
                     maxRange: follower.nibp_range.high_pressure.max,
                     minRange: follower.nibp_range.high_pressure.min,
                     maxRange2: follower.nibp_range.low_pressure.max,
                     minRange2: follower.nibp_range.low_pressure.min,
-                    value: currentData?.sys[index],
-                    value2: currentData?.dia[index] ?? null,
+                    value: param?.sys.pop(),
+                    value2: param?.dia.pop() ?? null,
                     sub: "nibp",
                     title: "sys/dia",
                 },
@@ -101,16 +89,13 @@ export const Nibp: FC<NibpProps> = ({
                     maxRange: undefined,
                     minRange: undefined,
                     value:
-                        currentData?.status[index] !== 1
-                            ? currentData?.map[index]
-                            : currentData?.cuff[index],
+                        param?.status.pop() !== 1
+                            ? param?.map.pop()
+                            : param?.cuff.pop(),
                     direction: "left",
                     showRange: false,
                     sub: "mmHg",
-                    title:
-                        currentData?.status[index] !== 1
-                            ? "map"
-                            : "cuff",
+                    title: param?.status.pop() !== 1 ? "map" : "cuff",
                 },
             ]}
         />
@@ -130,32 +115,26 @@ export const Spo2: FC<Spo2Props> = ({
     param,
     duration = 5000,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        param,
-        duration
-    );
-    console.log(currentData);
-
     return (
         <VitalMonitorBlock
             Icon={<HeartIcon className="h-5 w-5" />}
             type="spo2"
             isPing
-            status={currentData?.status[index]}
+            status={param?.status.pop()}
             childrenProps={[
                 {
                     maxRange: follower.spo2_range.max,
                     minRange: follower.spo2_range.min,
                     sub: "%",
                     title: "spo2",
-                    value: currentData?.spo2[index],
+                    value: param?.spo2.pop(),
                 },
                 {
                     maxRange: follower.pr_range.max,
                     minRange: follower.pr_range.min,
                     sub: "bpm",
                     title: "pr",
-                    value: currentData?.pr[index],
+                    value: param?.pr.pop(),
                 },
             ]}
         />
@@ -173,21 +152,16 @@ export const Temp: FC<TempProps> = ({
     param,
     duration = 5000,
 }) => {
-    const { currentData, index } = useCustomizeValueInterval(
-        param,
-        duration
-    );
-
     return (
         <VitalMonitorBlock
             Icon={<FluentTemperature16Filled className="h-5 w-5" />}
             type="temp"
-            status={currentData?.status[index]}
+            status={param?.status.pop()}
             childrenProps={[
                 {
                     maxRange: follower.temp_range.max,
                     minRange: follower.temp_range.min,
-                    value: currentData?.temps[index],
+                    value: param?.temps.pop(),
                     sub: "°C",
                     title: "Temp 1",
                 },
