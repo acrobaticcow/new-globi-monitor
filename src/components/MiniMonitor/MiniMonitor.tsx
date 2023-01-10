@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import type { FC } from "react";
-import { memo, useMemo, useContext, useEffect } from "react";
+import { useMemo, useContext, useEffect } from "react";
 import { useRef } from "react";
 import { UserCircle } from "../Icons";
 import {
@@ -12,10 +12,10 @@ import {
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { useSocketQuery } from "../../api/hooks/useSocketSubscription";
 import * as MiniMonitorValue from "./MiniMonitorValueVariant/Variants";
-const MemoizedMiniMonitorValueEcg = memo(MiniMonitorValue.Ecg);
-const MemoizedMiniMonitorValueNibp = memo(MiniMonitorValue.Nibp);
-const MemoizedMiniMonitorValueSpo2 = memo(MiniMonitorValue.Spo2);
-const MemoizedMiniMonitorValueTemp = memo(MiniMonitorValue.Temp);
+const MiniMonitorValueEcg = MiniMonitorValue.Ecg;
+const MiniMonitorValueNibp = MiniMonitorValue.Nibp;
+const MiniMonitorValueSpo2 = MiniMonitorValue.Spo2;
+const MiniMonitorValueTemp = MiniMonitorValue.Temp;
 
 type Param = {
     ecg: MiniMonitorValue.MiniEcgParam;
@@ -141,24 +141,24 @@ const MiniMonitor: FC<MiniMonitorProps> = ({
                 </button>
             </div>
             <div className="mb-1 mt-4 grid grid-cols-4 justify-between px-1">
-                <MemoizedMiniMonitorValueEcg
+                <MiniMonitorValueEcg
                     isLoading={isLoading}
                     duration={duration}
                     param={param?.ecg}
                 />
-                <MemoizedMiniMonitorValueNibp
+                <MiniMonitorValueNibp
                     isLoading={isLoading}
                     duration={duration}
                     param={param?.nibp}
                 />
             </div>
             <div className="grid grid-cols-4 px-1">
-                <MemoizedMiniMonitorValueSpo2
+                <MiniMonitorValueSpo2
                     isLoading={isLoading}
                     duration={duration}
                     param={param?.spo2}
                 />
-                <MemoizedMiniMonitorValueTemp
+                <MiniMonitorValueTemp
                     isLoading={isLoading}
                     duration={duration}
                     param={param?.temp}

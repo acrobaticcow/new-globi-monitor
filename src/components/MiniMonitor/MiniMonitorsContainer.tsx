@@ -15,7 +15,6 @@ const MiniMonitorsContainer: FC<MiniMonitorsProps> = () => {
         MiniMonitorContext
     ) as MiniMonitorContextType;
     const { data } = useSelectFollowers(activeMiniMonitorIds);
-    console.log("user_id", data && data.map((el) => el.user_id));
 
     return (
         <div className="grid h-2/5 w-full grid-cols-12 border-t-2 border-neutral-400 bg-neutral-600 shadow-neutral-600/30 shadow-inner">

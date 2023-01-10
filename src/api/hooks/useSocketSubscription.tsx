@@ -30,7 +30,6 @@ type Param = {
     nibpStatus: SocketData["nibp_data"]["status"];
     tempStatus: SocketData["temp_data"]["status"];
 };
-type KeyParam = keyof Param;
 
 export const useSocketQuery = (
     patientId: string | undefined,
@@ -106,6 +105,7 @@ export const useSocketQuery = (
                     [user.user_id, patientId, Promise],
                     res
                 );
+            console.log(res);
         }
         return () => {
             socket.off("connect", onConnect);

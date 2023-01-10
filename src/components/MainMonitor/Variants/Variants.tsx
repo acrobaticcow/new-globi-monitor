@@ -134,6 +134,7 @@ export const Spo2: FC<Spo2Props> = ({
         param,
         duration
     );
+    console.log(currentData);
 
     return (
         <VitalMonitorBlock

@@ -50,8 +50,10 @@ export const Spo2: FC<Spo2Props> = ({
     param,
     isLoading,
 }) => {
-    const { currentData, index } =
-        useCustomizeValueInterval<MiniSpo2Param>(param, duration);
+    const { currentData, index } = useCustomizeValueInterval(
+        param,
+        duration
+    );
 
     return (
         <>
@@ -94,7 +96,11 @@ export const Temp: FC<TempProps> = ({
             isLoading={isLoading}
             name="resp"
             unit="brpm"
-            value={currentData?.temp[index]}
+            value={
+                currentData?.temp
+                    ? currentData?.temp[index]
+                    : undefined
+            }
             type="temp"
         />
     );
@@ -112,8 +118,10 @@ export const Ecg: FC<EcgProps> = ({
     param,
     isLoading,
 }) => {
-    const { currentData, index } =
-        useCustomizeValueInterval<MiniEcgParam>(param, duration);
+    const { currentData, index } = useCustomizeValueInterval(
+        param,
+        duration
+    );
 
     return (
         <>
