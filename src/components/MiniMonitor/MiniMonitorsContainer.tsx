@@ -9,11 +9,10 @@ import { useSelectFollowers } from "../../api/hooks/useFetchPatients";
 import { GeneralInfo } from "./GeneralInfo";
 import { ScrollMenu } from "react-horizontal-scrolling-menu";
 import {
-    LeftArrow,
     onWheel,
-    RightArrow,
     scrollVisibilityApiType,
 } from "../horizontalScrollingMenu/Utils";
+import "./miniHorizontalList.css";
 
 interface MiniMonitorsProps {}
 
@@ -25,13 +24,15 @@ const MiniMonitorsContainer: FC<MiniMonitorsProps> = () => {
     const apiRef = useRef({} as scrollVisibilityApiType);
 
     return (
-        <div className="grid h-fit w-full grid-cols-12 border-t-2 border-neutral-400 bg-neutral-600 shadow-neutral-600/30 shadow-inner">
-            <div className="col-span-3 overflow-x-scroll pl-2 pt-2">
+        <div className="grid h-2/5 w-full grid-cols-12 border-t-2 border-neutral-400 bg-neutral-600 shadow-neutral-600/30 shadow-inner">
+            <div className=" col-span-3 py-2 pl-2">
                 <GeneralInfo />
             </div>
             <ScrollMenu
-                wrapperClassName="col-span-9 p-2"
-                scrollContainerClassName="grid gap-2 h-full auto-cols-[25%] grid-flow-col grid-rows-2"
+                wrapperClassName="col-span-9 overflow-y-hidden
+             relative min-h-full"
+                scrollContainerClassName="grid gap-2 p-2 h-full auto-cols-[25%] grid-flow-col 
+                grid-rows-2"
                 separatorClassName="hidden"
                 onWheel={onWheel}
                 apiRef={apiRef}
